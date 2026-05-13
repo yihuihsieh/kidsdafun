@@ -89,6 +89,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
       <div class="infobox" id="infobox">點選區域可拖移位置，拉右下角控點可調整大小</div>
       <button class="btn btn-opt" onclick="optimize()">✦ 優化對齊</button>
       <button class="btn btn-add" onclick="addZone()">＋ 新增區域</button>
+      <button class="btn" style="color:#e65100;border-color:#ffcc80;font-weight:600" onclick="saveAsDefault()">★ 設為預設</button>
       <button class="btn" onclick="resetAll()">↺ 重設</button>
     </div>
     <div class="map-wrap"><canvas id="cv"></canvas></div>
@@ -103,7 +104,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
       <div class="pal-item" onclick="addObj('food')"><span class="pal-icon">🚐</span>餐車</div>
       <div class="pal-item" onclick="addObj('stage')"><span class="pal-icon">🎤</span>舞台</div>
       <div class="pal-item" onclick="addObj('info')"><span class="pal-icon">ℹ️</span>服務台</div>
-      <div class="pal-item" onclick="addObj('tent')"><span class="pal-icon">❎</span>帳篷3×3</div>
+      <div class="pal-item" onclick="addObj('tent')"><span class="pal-icon">⛺</span>帳篷3×3</div>
       <div class="pal-item" onclick="addObj('medic')"><span class="pal-icon">🏥</span>救護站</div>
       <div class="pal-item" onclick="addObj('power')"><span class="pal-icon">⚡</span>發電機</div>
     </div>
@@ -136,7 +137,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         </tr></thead><tbody id="otbody"></tbody></table>
       </div>
     </div>
-    <p class="note">座標系：原點(0,0)=公園路緩衝區東端起點。X→西遞增。配置圖格線=10m，細部圖格線=1m。<br>📐 配置圖：可拖移區域、調整大小。🔍 細部圖：區域固定不可移動，僅可拖移小物件；小物件尺寸為固定規格。<br>❎ 帳篷數：尚未放置帳篷物件時顯示「估算」（面積÷9m²）；放置後自動切換為「實際統計」。</p>
+    <p class="note">座標系：原點(0,0)=公園路緩衝區東端起點。X→西遞增。配置圖格線=10m，細部圖格線=1m。<br>📐 配置圖：可拖移區域、調整大小。🔍 細部圖：區域固定不可移動，僅可拖移小物件；小物件尺寸為固定規格。<br>⛺ 帳篷數：尚未放置帳篷物件時顯示「估算」（面積÷9m²）；放置後自動切換為「實際統計」。</p>
   </div>
 
   <div class="card">
@@ -201,7 +202,7 @@ var OBJ_DEF={
   food:  {label:'餐車',    emoji:'🚐',w:4,h:3,c:'#ffa726'},
   stage: {label:'舞台',    emoji:'🎤',w:12,h:8,c:'#ab47bc'},
   info:  {label:'服務台',  emoji:'ℹ️',w:3,h:2,c:'#66bb6a'},
-  tent:  {label:'帳篷3×3',emoji:'❎',w:3,h:3,c:'#8d6e63'},
+  tent:  {label:'帳篷3×3',emoji:'⛺',w:3,h:3,c:'#8d6e63'},
   medic: {label:'救護站',  emoji:'🏥',w:3,h:3,c:'#ef5350'},
   power: {label:'發電機',  emoji:'⚡',w:2,h:2,c:'#fdd835'},
 };
@@ -353,7 +354,7 @@ function drawLifeStreet(){
     var tentY=cy(lsBottom), tentH=lsBottom*sc;
     ctx.fillStyle='rgba(139,195,74,0.08)'; ctx.fillRect(rx,tentY,rw,tentH);
     ctx.fillStyle='rgba(139,195,74,0.35)'; ctx.font='9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('❎ 帳篷帶（南側）',cx(s.x+s.w/2),tentY+tentH/2+3);
+    ctx.fillText('⛺ 帳篷帶（南側）',cx(s.x+s.w/2),tentY+tentH/2+3);
     var nTopY=cy(s.y+s.h), nH=(s.h-lsTop)*sc;
     ctx.fillStyle='rgba(200,50,50,0.05)'; ctx.fillRect(rx,nTopY,rw,nH);
     ctx.fillStyle='rgba(200,50,50,0.20)'; ctx.font='9px sans-serif';
@@ -597,8 +598,40 @@ function onMove(e){
 function onUp(){drag=null; cv.style.cursor='default';}
 
 function addObj(type){var d=OBJ_DEF[type]; objects.push({type:type,label:d.label,emoji:d.emoji,w:d.w,h:d.h,c:d.c,ox:192,oy:Math.max(0,38-d.h)}); selType='obj'; selIdx=objects.length-1; renderObjTable(); updateInfo(); draw();}
-function addZone(){zones.push({name:'新區域',ox:190,oy:10,l:15,w:15,c:COLORS[zones.length%COLORS.length]}); selType='zone'; selIdx=zones.length-1; renderTable(); updateInfo(); draw();}
-function resetAll(){zones=DEFAULT_ZONES.map(function(z){return Object.assign({},z);}); objects=[]; selIdx=-1; selType='zone'; renderTable(); renderObjTable(); updateInfo(); draw();}
+function saveAsDefault(){
+  /* 將目前 zones + objects 存入 localStorage 作為新的預設值 */
+  try{
+    localStorage.setItem('dafun_default_zones', JSON.stringify(zones));
+    localStorage.setItem('dafun_default_objects', JSON.stringify(objects));
+    var st=document.getElementById('export-status');
+    st.textContent='★ 已將目前配置設為預設（下次重設或開啟頁面將還原至此）';
+    st.style.color='#e65100';
+    setTimeout(function(){st.textContent=''; st.style.color='#2e7d32';},4000);
+  }catch(e){alert('無法儲存：'+e.message);}
+}
+function loadDefaultFromStorage(){
+  /* 頁面載入時若 localStorage 有自訂預設，使用它 */
+  try{
+    var z=localStorage.getItem('dafun_default_zones');
+    var o=localStorage.getItem('dafun_default_objects');
+    if(z) zones=JSON.parse(z);
+    if(o) objects=JSON.parse(o);
+  }catch(e){}
+}
+function resetAll(){
+  /* 優先還原 localStorage 中的自訂預設；若無則用原始預設 */
+  try{
+    var z=localStorage.getItem('dafun_default_zones');
+    var o=localStorage.getItem('dafun_default_objects');
+    zones = z ? JSON.parse(z) : DEFAULT_ZONES.map(function(dz){return Object.assign({},dz);});
+    objects = o ? JSON.parse(o) : [];
+  }catch(e){
+    zones=DEFAULT_ZONES.map(function(dz){return Object.assign({},dz);});
+    objects=[];
+  }
+  selIdx=-1; selType='zone';
+  renderTable(); renderObjTable(); updateInfo(); draw();
+}
 
 /* ── 統計實際放置在某 zone 範圍內的帳篷數 ── */
 function countTentsInZone(z){
@@ -772,6 +805,7 @@ function loadProject(event){
   reader.readAsText(file, 'utf-8');
 }
 
+loadDefaultFromStorage();
 renderTable(); renderObjTable(); updateInfo(); requestAnimationFrame(draw);
 window.addEventListener('resize',function(){if(document.getElementById('panel-map').classList.contains('active'))draw();});
 </script>
