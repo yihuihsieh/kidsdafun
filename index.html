@@ -627,6 +627,7 @@ function onMove(e){
 function onUp(){drag=null; cv.style.cursor='default';}
 
 function addObj(type){var d=OBJ_DEF[type]; objects.push({type:type,label:d.label,emoji:d.emoji,w:d.w,h:d.h,c:d.c,ox:192,oy:Math.max(0,38-d.h)}); selType='obj'; selIdx=objects.length-1; renderObjTable(); updateInfo(); draw();}
+function addZone(){zones.push({name:'新區域',ox:190,oy:10,l:15,w:15,c:COLORS[zones.length%COLORS.length]}); selType='zone'; selIdx=zones.length-1; renderTable(); updateInfo(); draw();}
 function saveAsDefault(){
   /* 將目前 zones + objects 存入 localStorage 作為新的預設值 */
   try{
