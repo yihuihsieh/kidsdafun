@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
+<html lang="zh-TW"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -86,14 +84,14 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         <button class="vt-btn active" id="vt-layout" onclick="setView('layout')">📐 配置圖（10m格）</button>
         <button class="vt-btn" id="vt-detail" onclick="setView('detail')">🔍 細部圖（1m格）</button>
       </div>
-      <div class="infobox" id="infobox">點選區域可拖移位置，拉右下角控點可調整大小</div>
+      <div class="infobox" id="infobox"><span style="color:#2e7d32">✓ 無重疊</span>　帳篷總計 <strong>1234</strong> 頂（估算）　點選區域可拖移</div>
       <button class="btn btn-opt" onclick="optimize()">✦ 優化對齊</button>
       <button class="btn btn-add" onclick="addZone()">＋ 新增區域</button>
       <button class="btn" style="color:#e65100;border-color:#ffcc80;font-weight:600" onclick="saveAsDefault()">★ 設為預設</button>
       <button class="btn" onclick="resetAll()">↺ 重設</button>
     </div>
-    <div class="map-wrap"><canvas id="cv"></canvas></div>
-    <div class="legend" id="legend-bar"></div>
+    <div class="map-wrap"><canvas id="cv" width="1799" height="716" style="width: 1199px; height: 477.417px; cursor: default;"></canvas></div>
+    <div class="legend" id="legend-bar"><div class="leg-item"><div class="leg-box" style="background:#e0d0e8;opacity:0.6"></div>⑥ 總統府</div><div class="leg-item"><div class="leg-box" style="background:#d4eac6;opacity:0.6"></div>⑤ 總統府北廣場</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>④b 凱道西緩衝區 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#fff3d0;opacity:0.6"></div>④ 凱道西段</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>③ 懷寧街路口 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#fff3d0;opacity:0.6"></div>② 凱道東段</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>① 公園路緩衝區 <span class="nogo-badge">淨空</span></div><div class="leg-item" style="color:#aaa"><small>格線：10m × 10m</small></div></div>
   </div>
 
   <div class="card" id="obj-panel" style="display:none">
@@ -133,7 +131,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         <th style="width:90px" id="th-tent">帳篷數（估算）</th>
         <th style="width:92px">段別/位置</th>
         <th style="width:26px"></th>
-      </tr></thead><tbody id="tbody"></tbody></table>
+      </tr></thead><tbody id="tbody"><tr><td><span class="sw" style="background:#AB47BC" onclick="pickC(3)"></span></td><td><input type="text" value="主視覺區" oninput="updZ(3,'name',this.value)"></td><td><input type="number" value="8" min="1" max="200" step="1" oninput="updZS(3,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(3,'w',+this.value)"></td><td style="color:#6b6960">320</td><td><span style="font-weight:600;color:#AB47BC">~35</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(139,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(3)">✕</button></td></tr><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(16)"></span></td><td><input type="text" value="運動動一動" oninput="updZ(16,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(16,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(16,'w',+this.value)"></td><td style="color:#6b6960">1400</td><td><span style="font-weight:600;color:#378ADD">~155</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(118,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(16)">✕</button></td></tr><tr><td><span class="sw" style="background:#8BC34A" onclick="pickC(0)"></span></td><td><input type="text" value="戶外影像互動區" oninput="updZ(0,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(0,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(0,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#8BC34A">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(83,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(0)">✕</button></td></tr><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(1)"></span></td><td><input type="text" value="兒本交通" oninput="updZ(1,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(1,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(1,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#378ADD">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(83,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(1)">✕</button></td></tr><tr><td><span class="sw" style="background:#0F6E56" onclick="pickC(2)"></span></td><td><input type="text" value="氣候變遷學堂" oninput="updZ(2,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(2,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(2,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#0F6E56">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(48,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(2)">✕</button></td></tr><tr><td><span class="sw" style="background:#D85A30" onclick="pickC(15)"></span></td><td><input type="text" value="翻轉小學堂" oninput="updZ(15,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(15,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(15,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#D85A30">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(48,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(15)">✕</button></td></tr><tr><td><span class="sw" style="background:#1D9E75" onclick="pickC(4)"></span></td><td><input type="text" value="運動動一動" oninput="updZ(4,'name',this.value)"></td><td><input type="number" value="40" min="1" max="200" step="1" oninput="updZS(4,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(4,'w',+this.value)"></td><td style="color:#6b6960">1600</td><td><span style="font-weight:600;color:#1D9E75">~177</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">④凱道西段<br>(174,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(4)">✕</button></td></tr><tr><td><span class="sw" style="background:#EF9F27" onclick="pickC(5)"></span></td><td><input type="text" value="親子休息區" oninput="updZ(5,'name',this.value)"></td><td><input type="number" value="71" min="1" max="200" step="1" oninput="updZS(5,'l',+this.value)"></td><td><input type="number" value="29" min="1" max="110" step="1" oninput="updZS(5,'w',+this.value)"></td><td style="color:#6b6960">2059</td><td><span style="font-weight:600;color:#EF9F27">~228</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(190,81)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(5)">✕</button></td></tr><tr><td><span class="sw" style="background:#534AB7" onclick="pickC(6)"></span></td><td><input type="text" value="客家菜市場" oninput="updZ(6,'name',this.value)"></td><td><input type="number" value="18" min="1" max="200" step="1" oninput="updZS(6,'l',+this.value)"></td><td><input type="number" value="28" min="1" max="110" step="1" oninput="updZS(6,'w',+this.value)"></td><td style="color:#6b6960">504</td><td><span style="font-weight:600;color:#534AB7">~56</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(163,40)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(6)">✕</button></td></tr><tr><td><span class="sw" style="background:#D4537E" onclick="pickC(7)"></span></td><td><input type="text" value="菜市場備用區域" oninput="updZ(7,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(7,'l',+this.value)"></td><td><input type="number" value="13" min="1" max="110" step="1" oninput="updZS(7,'w',+this.value)"></td><td style="color:#6b6960">78</td><td><span style="font-weight:600;color:#D4537E">~8</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(169,68)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(7)">✕</button></td></tr><tr><td><span class="sw" style="background:#1565C0" onclick="pickC(10)"></span></td><td><input type="text" value="氣候變遷高峰會議/兒童電影院(大禮堂)" oninput="updZ(10,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(10,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(10,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#1565C0">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(323,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(10)">✕</button></td></tr><tr><td><span class="sw" style="background:#00838F" onclick="pickC(9)"></span></td><td><input type="text" value="Kids Meet(新聞中心)" oninput="updZ(9,'name',this.value)"></td><td><input type="number" value="14" min="1" max="200" step="1" oninput="updZS(9,'l',+this.value)"></td><td><input type="number" value="14" min="1" max="110" step="1" oninput="updZS(9,'w',+this.value)"></td><td style="color:#6b6960">196</td><td><span style="font-weight:600;color:#00838F">~21</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(320,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(9)">✕</button></td></tr><tr><td><span class="sw" style="background:#7F77DD" onclick="pickC(11)"></span></td><td><input type="text" value="兒童活動(敞廳)" oninput="updZ(11,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(11,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(11,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#7F77DD">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(303,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(11)">✕</button></td></tr><tr><td><span class="sw" style="background:#85B7EB" onclick="pickC(8)"></span></td><td><input type="text" value="說故事區(南苑)" oninput="updZ(8,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(8,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(8,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#85B7EB">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(293,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(8)">✕</button></td></tr><tr><td><span class="sw" style="background:#1D9E75" onclick="pickC(14)"></span></td><td><input type="text" value="待定(北苑)" oninput="updZ(14,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(14,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(14,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#1D9E75">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(293,60)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(14)">✕</button></td></tr><tr><td><span class="sw" style="background:#7F77DD" onclick="pickC(13)"></span></td><td><input type="text" value="主視覺背板" oninput="updZ(13,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(13,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(13,'w',+this.value)"></td><td style="color:#6b6960">240</td><td><span style="font-weight:600;color:#7F77DD">~26</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">—<br>(197,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(13)">✕</button></td></tr><tr><td><span class="sw" style="background:#E24B4A" onclick="pickC(12)"></span></td><td><input type="text" value="入口意象/城門" oninput="updZ(12,'name',this.value)"></td><td><input type="number" value="10" min="1" max="200" step="1" oninput="updZS(12,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(12,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#E24B4A">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">—<br>(25,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(12)">✕</button></td></tr><tr style="background: rgb(245, 245, 240); font-weight: 600; border-top: 2px solid rgb(211, 209, 199);"><td></td><td style="font-weight:700">合計</td><td></td><td></td><td style="color:#333">11197 m²</td><td><span style="color:#1565c0">~1234</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:10px;color:#9a9890">面積÷9m²</td><td></td></tr></tbody></table>
     </div>
     <div id="otbl-section" style="display:none">
       <div class="card-title" style="margin-top:14px">小物件列表</div>
@@ -162,7 +160,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
              <input id="load-project" type="file" accept=".json,application/json" style="display:none" onchange="loadProject(event)">
 
     </div>
-    <div id="export-status"></div>
+    <div id="export-status">✓ 已載入可編輯規劃 JSON</div>
   </div>
 </div>
 
@@ -171,14 +169,14 @@ td input[type=number]:focus{border-color:#888780;outline:none}
   <h2>操作手冊 — 2026 大FUN凱道場布規劃工具</h2>
   <h2>一、格線說明</h2>
   <table>
-    <tr><th>視圖</th><th>格線尺寸</th><th>用途</th></tr>
+    <tbody><tr><th>視圖</th><th>格線尺寸</th><th>用途</th></tr>
     <tr><td><span class="badge bb">📐 配置圖</span></td><td>10m × 10m</td><td>整體區域配置，快速規劃</td></tr>
     <tr><td><span class="badge bg">🔍 細部圖</span></td><td>1m × 1m</td><td>精細設施配置，帳篷/廁所精確定位</td></tr>
-  </table>
+  </tbody></table>
   <div class="tip">💡 細部圖 1m 格線可精確放置小物件，每格即代表真實場地 1 公尺。</div>
   <h2>二、場地段別</h2>
   <table>
-    <tr><th>段別</th><th>名稱</th><th>長×寬</th><th>尾點</th><th>備註</th></tr>
+    <tbody><tr><th>段別</th><th>名稱</th><th>長×寬</th><th>尾點</th><th>備註</th></tr>
     <tr><td>①</td><td>公園路緩衝區</td><td>30×40m</td><td>0m</td><td><span class="badge br">淨空</span></td></tr>
     <tr><td>②</td><td>凱道東段</td><td>113×40m</td><td>30→143m</td><td></td></tr>
     <tr><td>③</td><td>懷寧街路口</td><td>11×40m</td><td>143→154m</td><td><span class="badge br">淨空</span></td></tr>
@@ -186,7 +184,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
     <tr><td>④b</td><td>凱道西緩衝區</td><td>30×40m</td><td>195→225m</td><td><span class="badge br">淨空</span></td></tr>
     <tr><td>⑤</td><td>總統府北廣場</td><td>71×70m</td><td>④b+④北側</td><td></td></tr>
     <tr><td>⑥</td><td>總統府</td><td>80×80m</td><td>253m</td><td>建築物</td></tr>
-  </table>
+  </tbody></table>
   <div class="warn">⚠️ 北側嚴禁設置帳篷。</div>
 </div></div>
 </div>
@@ -228,23 +226,36 @@ var OBJ_DEF={
   power: {label:'發電機',  emoji:'⚡',w:2,h:2,c:'#fdd835', isTent:false},
 };
 
+/*%%DEFAULT_ZONES_START%%*/
 var DEFAULT_ZONES=[
-  {name:'戶外影像互動區', ox:190, oy:0,  l:37, w:40, c:'#8BC34A'},
-  {name:'兒本交通',       ox:227, oy:0,  l:38, w:40, c:'#378ADD'},
-  {name:'氣候變遷學堂',   ox:265, oy:0,  l:38, w:40, c:'#0F6E56'},
-  {name:'主視覺區',       ox:138, oy:0,  l:10, w:40, c:'#AB47BC'},
-  {name:'運動動一動',     ox:148, oy:0,  l:31, w:40, c:'#1D9E75'},
-  {name:'親子休息區',     ox:108, oy:40, l:71, w:30, c:'#EF9F27'},
-  {name:'小孩菜市場',     ox:108, oy:70, l:36, w:40, c:'#534AB7'},
-  {name:'小老闆市集',     ox:143, oy:70, l:36, w:40, c:'#D4537E'},
-  {name:'說故事區',         ox:0,  oy:60, l:20, w:20, c:'#85B7EB'},
-  {name:'Kids Meet',        ox:20, oy:60, l:20, w:20, c:'#00838F'},
-  {name:'氣候變遷高峰會議', ox:0,  oy:40, l:20, w:20, c:'#1565C0'},
-  {name:'兒童電影院',       ox:20, oy:40, l:20, w:20, c:'#7F77DD'},
+  {name:"戶外影像互動區", ox:233, oy:20, l:35, w:20, c:"#8BC34A"},
+  {name:"兒本交通", ox:233, oy:0, l:35, w:20, c:"#378ADD"},
+  {name:"氣候變遷學堂", ox:268, oy:20, l:35, w:20, c:"#0F6E56"},
+  {name:"主視覺區", ox:190, oy:0, l:8, w:40, c:"#AB47BC"},
+  {name:"運動動一動", ox:139, oy:0, l:40, w:40, c:"#1D9E75"},
+  {name:"親子休息區", ox:108, oy:81, l:71, w:29, c:"#EF9F27"},
+  {name:"客家菜市場", ox:161, oy:40, l:18, w:28, c:"#534AB7"},
+  {name:"菜市場備用區域", ox:161, oy:68, l:6, w:13, c:"#D4537E"},
+  {name:"說故事區(南苑)", ox:30, oy:0, l:20, w:20, c:"#85B7EB"},
+  {name:"Kids Meet(新聞中心)", ox:6, oy:20, l:14, w:14, c:"#00838F"},
+  {name:"氣候變遷高峰會議/兒童電影院(大禮堂)", ox:0, oy:34, l:20, w:20, c:"#1565C0"},
+  {name:"兒童活動(敞廳)", ox:20, oy:34, l:20, w:20, c:"#7F77DD"},
+  {name:"入口意象/城門", ox:303, oy:0, l:10, w:40, c:"#E24B4A"},
+  {name:"主視覺背板", ox:133, oy:0, l:6, w:40, c:"#7F77DD"},
+  {name:"待定(北苑)", ox:30, oy:60, l:20, w:20, c:"#1D9E75"},
+  {name:"翻轉小學堂", ox:268, oy:0, l:35, w:20, c:"#D85A30"},
+  {name:"運動動一動", ox:198, oy:0, l:35, w:40, c:"#378ADD"}
 ];
+/*%%DEFAULT_ZONES_END%%*/
+
+/*%%DEFAULT_OBJECTS_START%%*/
+var DEFAULT_OBJECTS=[
+
+];
+/*%%DEFAULT_OBJECTS_END%%*/
 
 var zones=DEFAULT_ZONES.map(function(z){return Object.assign({},z);}),
-    objects=[], selIdx=-1, selType='zone', drag=null, sc=1, viewMode='layout';
+    objects=DEFAULT_OBJECTS.map(function(o){return Object.assign({},o);}), selIdx=-1, selType='zone', drag=null, sc=1, viewMode='layout';
 var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 
 function showPanel(id,btn){
@@ -629,36 +640,60 @@ function onUp(){drag=null; cv.style.cursor='default';}
 function addObj(type){var d=OBJ_DEF[type]; objects.push({type:type,label:d.label,emoji:d.emoji,w:d.w,h:d.h,c:d.c,ox:192,oy:Math.max(0,38-d.h)}); selType='obj'; selIdx=objects.length-1; renderObjTable(); updateInfo(); draw();}
 function addZone(){zones.push({name:'新區域',ox:190,oy:10,l:15,w:15,c:COLORS[zones.length%COLORS.length]}); selType='zone'; selIdx=zones.length-1; renderTable(); updateInfo(); draw();}
 function saveAsDefault(){
-  /* 將目前 zones + objects 存入 localStorage 作為新的預設值 */
-  try{
-    localStorage.setItem('dafun_default_zones', JSON.stringify(zones));
-    localStorage.setItem('dafun_default_objects', JSON.stringify(objects));
-    var st=document.getElementById('export-status');
-    st.textContent='★ 已將目前配置設為預設（下次重設或開啟頁面將還原至此）';
-    st.style.color='#e65100';
-    setTimeout(function(){st.textContent=''; st.style.color='#2e7d32';},4000);
-  }catch(e){alert('無法儲存：'+e.message);}
+  /* 讀取目前頁面完整 HTML 原始碼，替換 DEFAULT_ZONES / DEFAULT_OBJECTS 兩段，下載新檔案 */
+  var html=document.documentElement.outerHTML;
+
+  /* 產生整潔的 zones JSON（每行一個物件） */
+  var zonesStr='var DEFAULT_ZONES=[\n'
+    +zones.map(function(z){
+      return '  {name:'+JSON.stringify(z.name)
+        +', ox:'+Math.round(z.ox)+', oy:'+Math.round(z.oy)
+        +', l:'+z.l+', w:'+z.w+', c:'+JSON.stringify(z.c)+'}';
+    }).join(',\n')
+    +'\n];';
+
+  /* 產生整潔的 objects JSON */
+  var objStr='var DEFAULT_OBJECTS=[\n'
+    +objects.map(function(o){
+      return '  {type:'+JSON.stringify(o.type)
+        +', label:'+JSON.stringify(o.label)
+        +', emoji:'+JSON.stringify(o.emoji)
+        +', w:'+o.w+', h:'+o.h
+        +', c:'+JSON.stringify(o.c)
+        +', ox:'+Math.round(o.ox)+', oy:'+Math.round(o.oy)+'}';
+    }).join(',\n')
+    +'\n];';
+
+  /* 替換標記之間的內容 */
+  html=html.replace(
+    /\/\*%%DEFAULT_ZONES_START%%\*\/[\s\S]*?\/\*%%DEFAULT_ZONES_END%%\*\//,
+    '/*%%DEFAULT_ZONES_START%%*/\n'+zonesStr+'\n/*%%DEFAULT_ZONES_END%%*/'
+  );
+  html=html.replace(
+    /\/\*%%DEFAULT_OBJECTS_START%%\*\/[\s\S]*?\/\*%%DEFAULT_OBJECTS_END%%\*\//,
+    '/*%%DEFAULT_OBJECTS_START%%*/\n'+objStr+'\n/*%%DEFAULT_OBJECTS_END%%*/'
+  );
+
+  /* 下載修改後的 HTML */
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  var d=new Date().toLocaleDateString('zh-TW').replace(/\//g,'-');
+  a.href=url; a.download='大FUN凱道場佈規劃圖_2026_'+d+'.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  var st=document.getElementById('export-status');
+  st.textContent='★ 已下載含新預設的 HTML 檔案，之後開啟該檔案即為目前配置';
+  st.style.color='#e65100';
+  setTimeout(function(){st.textContent=''; st.style.color='#2e7d32';},5000);
 }
 function loadDefaultFromStorage(){
-  /* 頁面載入時若 localStorage 有自訂預設，使用它 */
-  try{
-    var z=localStorage.getItem('dafun_default_zones');
-    var o=localStorage.getItem('dafun_default_objects');
-    if(z) zones=JSON.parse(z);
-    if(o) objects=JSON.parse(o);
-  }catch(e){}
+  /* localStorage 已不再使用，保留函式避免錯誤 */
 }
 function resetAll(){
-  /* 優先還原 localStorage 中的自訂預設；若無則用原始預設 */
-  try{
-    var z=localStorage.getItem('dafun_default_zones');
-    var o=localStorage.getItem('dafun_default_objects');
-    zones = z ? JSON.parse(z) : DEFAULT_ZONES.map(function(dz){return Object.assign({},dz);});
-    objects = o ? JSON.parse(o) : [];
-  }catch(e){
-    zones=DEFAULT_ZONES.map(function(dz){return Object.assign({},dz);});
-    objects=[];
-  }
+  zones=DEFAULT_ZONES.map(function(z){return Object.assign({},z);});
+  objects=DEFAULT_OBJECTS.map(function(o){return Object.assign({},o);});
   selIdx=-1; selType='zone';
   renderTable(); renderObjTable(); updateInfo(); draw();
 }
@@ -840,5 +875,6 @@ loadDefaultFromStorage();
 renderTable(); renderObjTable(); updateInfo(); requestAnimationFrame(draw);
 window.addEventListener('resize',function(){if(document.getElementById('panel-map').classList.contains('active'))draw();});
 </script>
-</body>
-</html>
+
+
+</body></html>
