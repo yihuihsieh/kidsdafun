@@ -573,10 +573,18 @@ function onDown(e){
     var item=hit.type==='zone'?zones[hit.idx]:objects[hit.idx];
     var w=hit.type==='zone'?item.l:item.w, wh=hit.type==='zone'?item.w:item.h;
     var hm=HANDLE_M*(hit.type==='obj'?0.7:1);
-    /* 細部圖：obj 只能移動（不能 resize）；zone 完全不可拖 */
-    var mode=(hit.type==='zone')||(viewMode==='detail')
-      ? (hit.type==='zone'?'locked':'move')
-      : (isHnd(r.rx,r.ry,item.ox,item.oy,w,wh,hm)?'resize':'move');
+    /* 判斷 drag mode：
+       細部圖 + zone        → locked（不可移動）
+       細部圖 + obj         → move（只移動，不 resize）
+       配置圖 + zone 或 obj → move 或 resize（看是否點到控點）*/
+    var mode;
+    if(viewMode==='detail'&&hit.type==='zone'){
+      mode='locked';
+    } else if(viewMode==='detail'&&hit.type==='obj'){
+      mode='move';
+    } else {
+      mode=isHnd(r.rx,r.ry,item.ox,item.oy,w,wh,hm)?'resize':'move';
+    }
     if(mode==='locked'){drag=null; cv.style.cursor='not-allowed';}
     else{drag={type:hit.type,idx:hit.idx,mode:mode,offX:r.rx-item.ox,offY:r.ry-item.oy,startRx:r.rx,startRy:r.ry,startL:w,startW:wh}; cv.style.cursor=mode==='resize'?'nwse-resize':'grabbing';}
   } else {selIdx=-1; drag=null;}
