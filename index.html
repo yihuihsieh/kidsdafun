@@ -84,7 +84,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         <button class="vt-btn" id="vt-layout" onclick="setView('layout')">📐 配置圖（10m格）</button>
         <button class="vt-btn active" id="vt-detail" onclick="setView('detail')">🔍 細部圖（1m格）</button>
       </div>
-      <div class="infobox" id="infobox"><strong>廣播塔</strong>　(97,34)&nbsp;|&nbsp;6×6m（固定尺寸）</div>
+      <div class="infobox" id="infobox"><strong>廣播塔</strong>　(158,81)&nbsp;|&nbsp;6×6m（固定尺寸）</div>
       <button class="btn btn-opt" onclick="optimize()">✦ 優化對齊</button>
       <button class="btn btn-add" onclick="addZone()">＋ 新增區域</button>
       <button class="btn" style="color:#e65100;border-color:#ffcc80;font-weight:600" onclick="saveAsDefault()">★ 設為預設</button>
@@ -143,7 +143,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
           <th style="width:40px">H m</th>
           <th style="width:86px">位置 (x,y)</th>
           <th style="width:26px"></th>
-        </tr></thead><tbody id="otbody"><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(173,40)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(0)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(139,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(1)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(190,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(2)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(297,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(3)">✕</button></td></tr><tr class="hl"><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(233,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(4)">✕</button></td></tr></tbody></table>
+        </tr></thead><tbody id="otbody"><tr class="hl"><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(172,81)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(0)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(139,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(1)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(190,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(2)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(297,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(3)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(233,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(4)">✕</button></td></tr></tbody></table>
       </div>
     </div>
     <p class="note">座標系：原點(0,0)=公園路緩衝區東端起點。X→西遞增。配置圖格線=10m，細部圖格線=1m。<br>📐 配置圖：可拖移區域、調整大小。🔍 細部圖：區域固定不可移動，僅可拖移小物件；小物件尺寸為固定規格。<br>⛺ 帳篷數：尚未放置帳篷物件時顯示「估算」（面積÷9m²）；放置後自動切換為「實際統計」。</p>
@@ -251,7 +251,7 @@ var DEFAULT_ZONES=[
 
 /*%%DEFAULT_OBJECTS_START%%*/
 var DEFAULT_OBJECTS=[
-  {type:"broadcast", label:"廣播塔", emoji:"📢", w:6, h:6, c:"#546e7a", ox:173, oy:40},
+  {type:"broadcast", label:"廣播塔", emoji:"📢", w:6, h:6, c:"#546e7a", ox:172, oy:81},
   {type:"broadcast", label:"廣播塔", emoji:"📢", w:6, h:6, c:"#546e7a", ox:139, oy:34},
   {type:"broadcast", label:"廣播塔", emoji:"📢", w:6, h:6, c:"#546e7a", ox:190, oy:0},
   {type:"broadcast", label:"廣播塔", emoji:"📢", w:6, h:6, c:"#546e7a", ox:297, oy:0},
@@ -880,6 +880,7 @@ loadDefaultFromStorage();
 renderTable(); renderObjTable(); updateInfo(); requestAnimationFrame(draw);
 window.addEventListener('resize',function(){if(document.getElementById('panel-map').classList.contains('active'))draw();});
 </script>
+
 
 
 
