@@ -1,6 +1,9 @@
-<html lang="zh-TW"><head>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 大FUN凱道 — 場布規劃圖</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;background:#f4f3ef;color:#2c2c2a}
@@ -84,14 +87,15 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         <button class="vt-btn" id="vt-layout" onclick="setView('layout')">📐 配置圖（10m格）</button>
         <button class="vt-btn active" id="vt-detail" onclick="setView('detail')">🔍 細部圖（1m格）</button>
       </div>
-      <div class="infobox" id="infobox"><strong>廣播塔</strong>　(158,81)&nbsp;|&nbsp;6×6m（固定尺寸）</div>
+      <button class="btn" id="btn-toggle-zone" onclick="toggleZoneVisibility()" style="color:#0066cc;border-color:#90caf9;font-weight:600">👁 隱藏活動區域</button>
+      <div class="infobox" id="infobox"></div>
       <button class="btn btn-opt" onclick="optimize()">✦ 優化對齊</button>
       <button class="btn btn-add" onclick="addZone()">＋ 新增區域</button>
       <button class="btn" style="color:#e65100;border-color:#ffcc80;font-weight:600" onclick="saveAsDefault()">★ 設為預設</button>
       <button class="btn" onclick="resetAll()">↺ 重設</button>
     </div>
     <div class="map-wrap"><canvas id="cv" width="1799" height="716" style="width: 1199px; height: 477.417px; cursor: default;"></canvas></div>
-    <div class="legend" id="legend-bar"><div class="leg-item"><div class="leg-box" style="background:#e0d0e8;opacity:0.6"></div>⑥ 總統府</div><div class="leg-item"><div class="leg-box" style="background:#d4eac6;opacity:0.6"></div>⑤ 總統府北廣場</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>④b 凱道西緩衝區 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#fff3d0;opacity:0.6"></div>④ 凱道西段</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>③ 懷寧街路口 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#fff3d0;opacity:0.6"></div>② 凱道東段</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>① 公園路緩衝區 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#8BC34A;opacity:0.3"></div>帳篷帶（南側）</div><div class="leg-item" style="color:#aaa"><small>格線：1m × 1m（細）/ 10m × 10m（粗）</small></div></div>
+    <div class="legend" id="legend-bar"></div>
   </div>
 
   <div class="card" id="obj-panel" style="display: block;">
@@ -131,7 +135,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         <th style="width:90px" id="th-tent">帳篷數（估算）</th>
         <th style="width:92px">段別/位置</th>
         <th style="width:26px"></th>
-      </tr></thead><tbody id="tbody"><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(15)"></span></td><td><input type="text" value="運動動一動" oninput="updZ(15,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(15,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(15,'w',+this.value)"></td><td style="color:#6b6960">1400</td><td><span style="font-weight:600;color:#378ADD">~155</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(126,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(15)">✕</button></td></tr><tr><td><span class="sw" style="background:#AB47BC" onclick="pickC(3)"></span></td><td><input type="text" value="主視覺區" oninput="updZ(3,'name',this.value)"></td><td><input type="number" value="8" min="1" max="200" step="1" oninput="updZS(3,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(3,'w',+this.value)"></td><td style="color:#6b6960">320</td><td><span style="font-weight:600;color:#AB47BC">~35</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(104,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(3)">✕</button></td></tr><tr><td><span class="sw" style="background:#1D9E75" onclick="pickC(4)"></span></td><td><input type="text" value="運動動一動" oninput="updZ(4,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(4,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(4,'w',+this.value)"></td><td style="color:#6b6960">1400</td><td><span style="font-weight:600;color:#1D9E75">~155</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(83,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(4)">✕</button></td></tr><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(1)"></span></td><td><input type="text" value="兒本交通" oninput="updZ(1,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(1,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(1,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#378ADD">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(48,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(1)">✕</button></td></tr><tr><td><span class="sw" style="background:#0F6E56" onclick="pickC(2)"></span></td><td><input type="text" value="氣候變遷學堂" oninput="updZ(2,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(2,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(2,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#0F6E56">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">②凱道東段<br>(48,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(2)">✕</button></td></tr><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(16)"></span></td><td><input type="text" value="彩繪區" oninput="updZ(16,'name',this.value)"></td><td><input type="number" value="40" min="1" max="200" step="1" oninput="updZS(16,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(16,'w',+this.value)"></td><td style="color:#6b6960">800</td><td><span style="font-weight:600;color:#378ADD">~88</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">④凱道西段<br>(174,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(16)">✕</button></td></tr><tr><td><span class="sw" style="background:#D4537E" onclick="pickC(17)"></span></td><td><input type="text" value="戲水區" oninput="updZ(17,'name',this.value)"></td><td><input type="number" value="40" min="1" max="200" step="1" oninput="updZS(17,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(17,'w',+this.value)"></td><td style="color:#6b6960">800</td><td><span style="font-weight:600;color:#D4537E">~88</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">④凱道西段<br>(174,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(17)">✕</button></td></tr><tr><td><span class="sw" style="background:#8BC34A" onclick="pickC(0)"></span></td><td><input type="text" value="戶外影像互動區" oninput="updZ(0,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(0,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(0,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:600;color:#8BC34A">~77</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(208,43)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(0)">✕</button></td></tr><tr><td><span class="sw" style="background:#EF9F27" onclick="pickC(5)"></span></td><td><input type="text" value="親子休息區" oninput="updZ(5,'name',this.value)"></td><td><input type="number" value="71" min="1" max="200" step="1" oninput="updZS(5,'l',+this.value)"></td><td><input type="number" value="29" min="1" max="110" step="1" oninput="updZS(5,'w',+this.value)"></td><td style="color:#6b6960">2059</td><td><span style="font-weight:600;color:#EF9F27">~228</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(190,81)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(5)">✕</button></td></tr><tr><td><span class="sw" style="background:#534AB7" onclick="pickC(6)"></span></td><td><input type="text" value="客家菜市場" oninput="updZ(6,'name',this.value)"></td><td><input type="number" value="18" min="1" max="200" step="1" oninput="updZS(6,'l',+this.value)"></td><td><input type="number" value="28" min="1" max="110" step="1" oninput="updZS(6,'w',+this.value)"></td><td style="color:#6b6960">504</td><td><span style="font-weight:600;color:#534AB7">~56</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(163,40)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(6)">✕</button></td></tr><tr><td><span class="sw" style="background:#D4537E" onclick="pickC(7)"></span></td><td><input type="text" value="菜市場備用區域" oninput="updZ(7,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(7,'l',+this.value)"></td><td><input type="number" value="13" min="1" max="110" step="1" oninput="updZS(7,'w',+this.value)"></td><td style="color:#6b6960">78</td><td><span style="font-weight:600;color:#D4537E">~8</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑤北廣場<br>(169,68)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(7)">✕</button></td></tr><tr><td><span class="sw" style="background:#1565C0" onclick="pickC(10)"></span></td><td><input type="text" value="氣候變遷高峰會議/兒童電影院(大禮堂)" oninput="updZ(10,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(10,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(10,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#1565C0">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(323,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(10)">✕</button></td></tr><tr><td><span class="sw" style="background:#00838F" onclick="pickC(9)"></span></td><td><input type="text" value="Kids Meet(新聞中心)" oninput="updZ(9,'name',this.value)"></td><td><input type="number" value="14" min="1" max="200" step="1" oninput="updZS(9,'l',+this.value)"></td><td><input type="number" value="14" min="1" max="110" step="1" oninput="updZS(9,'w',+this.value)"></td><td style="color:#6b6960">196</td><td><span style="font-weight:600;color:#00838F">~21</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(320,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(9)">✕</button></td></tr><tr><td><span class="sw" style="background:#7F77DD" onclick="pickC(11)"></span></td><td><input type="text" value="兒童活動(敞廳)" oninput="updZ(11,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(11,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(11,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#7F77DD">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(303,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(11)">✕</button></td></tr><tr><td><span class="sw" style="background:#85B7EB" onclick="pickC(8)"></span></td><td><input type="text" value="說故事區(南苑)" oninput="updZ(8,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(8,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(8,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#85B7EB">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(293,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(8)">✕</button></td></tr><tr><td><span class="sw" style="background:#1D9E75" onclick="pickC(14)"></span></td><td><input type="text" value="待定(北苑)" oninput="updZ(14,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(14,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(14,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#1D9E75">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">⑥總統府<br>(293,60)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(14)">✕</button></td></tr><tr><td><span class="sw" style="background:#7F77DD" onclick="pickC(13)"></span></td><td><input type="text" value="主視覺背板" oninput="updZ(13,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(13,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(13,'w',+this.value)"></td><td style="color:#6b6960">240</td><td><span style="font-weight:600;color:#7F77DD">~26</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">—<br>(197,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(13)">✕</button></td></tr><tr><td><span class="sw" style="background:#E24B4A" onclick="pickC(12)"></span></td><td><input type="text" value="入口意象/城門" oninput="updZ(12,'name',this.value)"></td><td><input type="number" value="10" min="1" max="200" step="1" oninput="updZS(12,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(12,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:600;color:#E24B4A">~44</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:11px">—<br>(25,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(12)">✕</button></td></tr><tr style="background: rgb(245, 245, 240); font-weight: 600; border-top: 2px solid rgb(211, 209, 199);"><td></td><td style="font-weight:700">合計</td><td></td><td></td><td style="color:#333">11897 m²</td><td><span style="color:#1565c0">~1311</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span></td><td style="font-size:10px;color:#9a9890">面積÷9m²</td><td></td></tr></tbody></table>
+      </tr></thead><tbody id="tbody"></tbody></table>
     </div>
     <div id="otbl-section" style="display: block;">
       <div class="card-title" style="margin-top:14px">小物件列表</div>
@@ -143,7 +147,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
           <th style="width:40px">H m</th>
           <th style="width:86px">位置 (x,y)</th>
           <th style="width:26px"></th>
-        </tr></thead><tbody id="otbody"><tr class="hl"><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(172,81)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(0)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(139,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(1)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(190,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(2)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(297,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(3)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="font-size:11px;color:#9a9890">(233,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(4)">✕</button></td></tr></tbody></table>
+        </tr></thead><tbody id="otbody"></tbody></table>
       </div>
     </div>
     <p class="note">座標系：原點(0,0)=公園路緩衝區東端起點。X→西遞增。配置圖格線=10m，細部圖格線=1m。<br>📐 配置圖：可拖移區域、調整大小。🔍 細部圖：區域固定不可移動，僅可拖移小物件；小物件尺寸為固定規格。<br>⛺ 帳篷數：尚未放置帳篷物件時顯示「估算」（面積÷9m²）；放置後自動切換為「實際統計」。</p>
@@ -154,11 +158,9 @@ td input[type=number]:focus{border-color:#888780;outline:none}
     <div class="export-row">
       <button class="btn btn-exp" onclick="exportWord()">📄 匯出 Word</button>
       <button class="btn btn-pdf" onclick="exportPDF()">📑 列印 / PDF</button>
-
-             <button class="btn" onclick="saveProject()">💾 儲存規劃 JSON</button>
-             <button class="btn" onclick="document.getElementById('load-project').click()">📂 載入規劃 JSON</button>
-             <input id="load-project" type="file" accept=".json,application/json" style="display:none" onchange="loadProject(event)">
-
+      <button class="btn" onclick="saveProject()">💾 儲存規劃 JSON</button>
+      <button class="btn" onclick="document.getElementById('load-project').click()">📂 載入規劃 JSON</button>
+      <input id="load-project" type="file" accept=".json,application/json" style="display:none" onchange="loadProject(event)">
     </div>
     <div id="export-status" style="color: rgb(46, 125, 50);"></div>
   </div>
@@ -206,24 +208,21 @@ var CW=333, CH=110;
 var MAR={top:62, right:75, bottom:58, left:42};
 var COLORS=['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
 var OBJ_DEF={
-  /* ── 帳篷類 ── */
   tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63', isTent:true},
   ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b', isTent:true},
   royal:    {label:'宮廷帳',    emoji:'⛺️', w:5,  h:5,  c:'#5d4037', isTent:true},
   king10:   {label:'10米帝王帳',emoji:'🛖',  w:10, h:10, c:'#6d4c41', isTent:true},
   king15:   {label:'15米帝王帳',emoji:'🏠',  w:15, h:15, c:'#4e342e', isTent:true},
-  /* ── 設施類 ── */
   broadcast:{label:'廣播塔',    emoji:'📢',  w:6,  h:6,  c:'#546e7a', isTent:false},
   toilet2:  {label:'流動廁所',  emoji:'🧻',  w:3,  h:3,  c:'#00acc1', isTent:false},
   nursing:  {label:'哺乳車',    emoji:'🧸',  w:4,  h:3,  c:'#f06292', isTent:false},
   water:    {label:'水車',      emoji:'🚰',  w:3,  h:3,  c:'#29b6f6', isTent:false},
-  /* ── 原有設施 ── */
-  toilet:{label:'洗手區',  emoji:'🚿',w:3,h:3,c:'#26c6da', isTent:false},
-  food:  {label:'餐車',    emoji:'🚐',w:4,h:3,c:'#ffa726', isTent:false},
-  stage: {label:'舞台',    emoji:'🎤',w:12,h:8,c:'#ab47bc', isTent:false},
-  info:  {label:'服務台',  emoji:'ℹ️',w:3,h:2,c:'#66bb6a', isTent:false},
-  medic: {label:'救護站',  emoji:'🏥',w:3,h:3,c:'#ef5350', isTent:false},
-  power: {label:'發電機',  emoji:'⚡',w:2,h:2,c:'#fdd835', isTent:false},
+  toilet:   {label:'洗手區',    emoji:'🚿',w:3,h:3,c:'#26c6da', isTent:false},
+  food:     {label:'餐車',      emoji:'🚐',w:4,h:3,c:'#ffa726', isTent:false},
+  stage:    {label:'舞台',      emoji:'🎤',w:12,h:8,c:'#ab47bc', isTent:false},
+  info:     {label:'服務台',    emoji:'ℹ️',w:3,h:2,c:'#66bb6a', isTent:false},
+  medic:    {label:'救護站',    emoji:'🏥',w:3,h:3,c:'#ef5350', isTent:false},
+  power:    {label:'發電機',    emoji:'⚡',w:2,h:2,c:'#fdd835', isTent:false},
 };
 
 /*%%DEFAULT_ZONES_START%%*/
@@ -260,7 +259,9 @@ var DEFAULT_OBJECTS=[
 /*%%DEFAULT_OBJECTS_END%%*/
 
 var zones=DEFAULT_ZONES.map(function(z){return Object.assign({},z);}),
-    objects=DEFAULT_OBJECTS.map(function(o){return Object.assign({},o);}), selIdx=-1, selType='zone', drag=null, sc=1, viewMode='layout';
+    objects=DEFAULT_OBJECTS.map(function(o){return Object.assign({},o);}), selIdx=-1, selType='zone', drag=null, sc=1, viewMode='detail';
+
+var showZonesEnabled = true;
 var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 
 function showPanel(id,btn){
@@ -270,6 +271,7 @@ function showPanel(id,btn){
   btn.classList.add('active');
   if(id==='map') requestAnimationFrame(draw);
 }
+
 function setView(mode){
   viewMode=mode;
   document.getElementById('vt-layout').classList.toggle('active',mode==='layout');
@@ -278,6 +280,23 @@ function setView(mode){
   document.getElementById('otbl-section').style.display=mode==='detail'?'block':'none';
   updateInfo(); draw();
 }
+
+function toggleZoneVisibility(){
+  showZonesEnabled = !showZonesEnabled;
+  var btn = document.getElementById('btn-toggle-zone');
+  if(showZonesEnabled){
+    btn.textContent = '👁 隱藏活動區域';
+    btn.style.color = '#0066cc';
+    btn.style.borderColor = '#90caf9';
+  } else {
+    btn.textContent = '👁 顯示活動區域';
+    btn.style.color = '#666';
+    btn.style.borderColor = '#ccc';
+    if(selType === 'zone') selIdx = -1;
+  }
+  updateInfo(); draw();
+}
+
 function setupCanvas(){
   DPR=window.devicePixelRatio||1;
   var cssW=cv.parentElement.clientWidth||900;
@@ -296,7 +315,8 @@ function draw(){
   ctx.clearRect(0,0,g.cssW,CH*sc+MAR.top+MAR.bottom);
   drawSegments(); drawGrid();
   if(viewMode==='detail') drawLifeStreet();
-  drawNoGoHatch(); drawZones();
+  drawNoGoHatch(); 
+  if(showZonesEnabled) drawZones();
   if(viewMode==='detail') drawObjects();
   drawLabels(); drawDimensions(); renderLegend();
 }
@@ -318,10 +338,7 @@ function drawSegments(){
 }
 
 function drawGrid(){
-  /* ── 格線間距：配置圖=10m，細部圖=1m ── */
   var step = (viewMode==='detail') ? 1 : 10;
-
-  /* 細1m格（淡）+ 粗10m格（稍深） */
   for(var x=0; x<=CW; x+=step){
     var is10 = (x % 10 === 0);
     ctx.strokeStyle = is10 ? 'rgba(0,0,0,0.13)' : 'rgba(0,0,0,0.04)';
@@ -334,14 +351,10 @@ function drawGrid(){
     ctx.lineWidth   = is10y ? 0.7 : 0.3;
     ctx.beginPath(); ctx.moveTo(cx(0),cy(y)); ctx.lineTo(cx(CW),cy(y)); ctx.stroke();
   }
-
-  /* Y軸刻度標籤：每 10m 標一次（兩種模式都標） */
   for(var yl=0; yl<=CH; yl+=10){
     ctx.fillStyle='#b0ada4'; ctx.font='10px sans-serif'; ctx.textAlign='right';
     ctx.fillText(yl+'m', cx(0)-5, cy(yl)+4);
   }
-
-  /* 底部尾點座標（不標原點0m） */
   var milestones=[
     {ix:303, disp:'30m',  col:'#2a4ab0'},
     {ix:190, disp:'143m', col:'#2a4ab0'},
@@ -359,7 +372,6 @@ function drawGrid(){
     ctx.fillText(m.disp,px,baseY);
   });
   ctx.fillStyle='#9a9890'; ctx.font='9px sans-serif'; ctx.textAlign='center';
-  /* 細部圖時在說明旁標注格線尺寸 */
   var gridNote = (viewMode==='detail') ? '← 西　各段尾點距起點(0,0)距離　東 →　｜格線：1m×1m'
                                         : '← 西　各段尾點距起點(0,0)距離　東 →　｜格線：10m×10m';
   ctx.fillText(gridNote, cx(CW/2), cy(0)+30);
@@ -406,35 +418,55 @@ function wrapL(s,wpx,fs){
 }
 
 function drawZones(){
-  for(var ii=0;ii<zones.length;ii++){
-    for(var jj=ii+1;jj<zones.length;jj++){
-      var a=zones[ii], b=zones[jj];
+  var isDetail = (viewMode === 'detail');
+  for(var i=0;i<zones.length;i++){
+    for(var j=i+1;j<zones.length;j++){
+      var a=zones[i], b=zones[j];
       var lx=Math.max(a.ox,b.ox), ly=Math.max(a.oy,b.oy);
       var rx2=Math.min(a.ox+a.l,b.ox+b.l), ry2=Math.min(a.oy+a.w,b.oy+b.w);
-      if(rx2>lx&&ry2>ly){ctx.fillStyle='rgba(220,60,60,0.35)'; ctx.fillRect(cx(lx),cy(ry2),(rx2-lx)*sc,(ry2-ly)*sc);}
+      if(rx2>lx&&ry2>ly){
+        ctx.fillStyle='rgba(220,60,60,0.35)'; 
+        ctx.fillRect(cx(lx),cy(ry2),(rx2-lx)*sc,(ry2-ly)*sc);
+      }
     }
   }
   zones.forEach(function(z,i){
     var sel=(selType==='zone'&&i===selIdx);
     var rx=cx(z.ox), ry=cy(z.oy+z.w), rw=z.l*sc, rh=z.w*sc;
-    ctx.globalAlpha=sel?0.35:0.20; ctx.fillStyle=z.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    
+    if (isDetail) {
+      ctx.globalAlpha = sel ? 0.15 : 0.06;
+    } else {
+      ctx.globalAlpha = sel ? 0.35 : 0.20;
+    }
+    ctx.fillStyle=z.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    
+    ctx.save();
+    if (isDetail) ctx.globalAlpha = 0.4;
     ctx.strokeStyle=z.c; ctx.lineWidth=sel?2.5:1.5; ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
+    ctx.restore();
+    
     if(sel){
       ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=0.8; ctx.setLineDash([4,3]);
       ctx.strokeRect(rx+3,ry+3,rw-6,rh-6); ctx.setLineDash([]); ctx.restore();
       ctx.fillStyle=z.c; ctx.fillRect(rx+rw-HANDLE_M*sc,ry+rh-HANDLE_M*sc,HANDLE_M*sc,HANDLE_M*sc);
     }
+    
     var fs=rw>90?12:rw>55?11:rw>30?10:8;
     ctx.fillStyle=z.c; ctx.font='bold '+fs+'px sans-serif'; ctx.textAlign='center';
     var lines=wrapL(z.name,rw,fs), tyStart=ry+fs+4;
     lines.forEach(function(ln,li){ctx.fillText(ln,rx+rw/2,tyStart+li*(fs+2),rw-4);});
-    if(rh>fs*2+20){
-      ctx.globalAlpha=0.7; ctx.font=(fs-1)+'px sans-serif';
-      var dy=tyStart+lines.length*(fs+2)+2;
-      ctx.fillText(z.l+'×'+z.w+'m',rx+rw/2,dy,rw-4);
-      if(rh>fs*2+34){ctx.font='10px sans-serif'; ctx.fillText((z.l*z.w)+'m²',rx+rw/2,dy+12,rw-4);}
-      ctx.globalAlpha=1;
+    
+    if(!isDetail) {
+      if(rh>fs*2+20){
+        ctx.globalAlpha=0.7; ctx.font=(fs-1)+'px sans-serif';
+        var dy=tyStart+lines.length*(fs+2)+2;
+        ctx.fillText(z.l+'×'+z.w+'m',rx+rw/2,dy,rw-4);
+        if(rh>fs*2+34){ctx.font='10px sans-serif'; ctx.fillText((z.l*z.w)+'m²',rx+rw/2,dy+12,rw-4);}
+        ctx.globalAlpha=1;
+      }
     }
+    
     if(sel){
       ctx.fillStyle='#333'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
       ctx.fillText('('+Math.round(CW-z.ox-z.l/2)+','+Math.round(z.oy)+')',rx+rw/2,ry-5);
@@ -456,7 +488,7 @@ function drawObjects(){
     var efs=Math.max(10,Math.min(20,Math.min(rw,rh)*0.5));
     ctx.font=efs+'px serif'; ctx.textAlign='center'; ctx.fillText(o.emoji,rx+rw/2,ry+rh/2+efs*0.2);
     if(rh>efs+10&&rw>28){ctx.font='9px sans-serif'; ctx.fillStyle=o.c; ctx.fillText(o.label,rx+rw/2,ry+rh-3,rw-4);}
-    if(sel){ctx.fillStyle='#333'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText('('+Math.round(CW-o.ox-o.w/2)+','+Math.round(o.oy)+')',rx+rw/2,ry-5);}
+    if(sel){ctx.fillStyle='#333'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText('('+Math.round(o.ox)+','+Math.round(o.oy)+')',rx+rw/2,ry-5);}
   });
 }
 
@@ -494,7 +526,7 @@ function drawDimensions(){
   ctx.strokeStyle='rgba(60,130,60,0.4)'; ctx.lineWidth=0.8;
   ctx.beginPath(); ctx.moveTo(vx,cy(40)); ctx.lineTo(vx,cy(110)); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(vx-3,cy(40)+4); ctx.lineTo(vx,cy(40)); ctx.lineTo(vx+3,cy(40)+4); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(vx-3,cy(110)-4); ctx.lineTo(vx,cy(110)); ctx.lineTo(vx+3,cy(110)-4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(vx-3,cy(110)-4); ctx.lineTo(vx,cy(110)); ctx.lineTo(vx+3,cy(110)-4); stroke();
   ctx.save(); ctx.translate(vx-8,cy(75)); ctx.rotate(-Math.PI/2);
   ctx.fillStyle='#5a8a3a'; ctx.font='10px sans-serif'; ctx.textAlign='center';
   ctx.fillText('⑤ 70m',0,0); ctx.restore();
@@ -566,18 +598,23 @@ function getPos(e){var r=cv.getBoundingClientRect(),src=e.touches?e.touches[0]:e
 function toReal(px,py){return{rx:(px-MAR.left)/sc,ry:CH-(py-MAR.top)/sc};}
 function inR(rx,ry,ox,oy,w,h){return rx>=ox&&rx<=ox+w&&ry>=oy&&ry<=oy+h;}
 function isHnd(rx,ry,ox,oy,w,h,hm){return rx>=ox+w-hm&&rx<=ox+w&&ry>=oy&&ry<=oy+hm;}
+
 function hitTest(px,py){
   var r=toReal(px,py);
-  /* 細部圖：只命中小物件，zone 不可選取 */
   if(viewMode==='detail'){
     for(var i=objects.length-1;i>=0;i--){var o=objects[i]; if(inR(r.rx,r.ry,o.ox,o.oy,o.w,o.h)) return{type:'obj',idx:i};}
+    if(showZonesEnabled){
+      for(var j=zones.length-1;j>=0;j--){var z=zones[j]; if(inR(r.rx,r.ry,z.ox,z.oy,z.l,z.w)) return{type:'zone',idx:j};}
+    }
     return null;
   }
-  /* 配置圖：先物件後 zone */
   for(var i2=objects.length-1;i2>=0;i2--){var o2=objects[i2]; if(inR(r.rx,r.ry,o2.ox,o2.oy,o2.w,o2.h)) return{type:'obj',idx:i2};}
-  for(var j=zones.length-1;j>=0;j--){var z=zones[j]; if(inR(r.rx,r.ry,z.ox,z.oy,z.l,z.w)) return{type:'zone',idx:j};}
+  if(showZonesEnabled){
+    for(var j=zones.length-1;j>=0;j--){var z=zones[j]; if(inR(r.rx,r.ry,z.ox,z.oy,z.l,z.w)) return{type:'zone',idx:j};}
+  }
   return null;
 }
+
 cv.addEventListener('mousedown',onDown); cv.addEventListener('touchstart',onDown,{passive:false});
 cv.addEventListener('mousemove',onMove); cv.addEventListener('touchmove',onMove,{passive:false});
 cv.addEventListener('mouseup',onUp); cv.addEventListener('touchend',onUp); document.addEventListener('mouseup',onUp);
@@ -589,10 +626,6 @@ function onDown(e){
     var item=hit.type==='zone'?zones[hit.idx]:objects[hit.idx];
     var w=hit.type==='zone'?item.l:item.w, wh=hit.type==='zone'?item.w:item.h;
     var hm=HANDLE_M*(hit.type==='obj'?0.7:1);
-    /* 判斷 drag mode：
-       細部圖 + zone        → locked（不可移動）
-       細部圖 + obj         → move（只移動，不 resize）
-       配置圖 + zone 或 obj → move 或 resize（看是否點到控點）*/
     var mode;
     if(viewMode==='detail'&&hit.type==='zone'){
       mode='locked';
@@ -606,19 +639,17 @@ function onDown(e){
   } else {selIdx=-1; drag=null;}
   updateInfo(); renderTable(); renderObjTable(); draw();
 }
+
 function onMove(e){
   e.preventDefault(); var p=getPos(e),r=toReal(p.x,p.y);
   if(drag){
-    /* zone 移動（配置圖限定） */
     if(drag.type==='zone'&&viewMode!=='detail'){
       var z=zones[drag.idx];
       if(drag.mode==='move'){z.ox=Math.max(0,Math.min(CW-z.l,Math.round(r.rx-drag.offX)));z.oy=Math.max(0,Math.min(CH-z.w,Math.round(r.ry-drag.offY)));}
       else{z.l=Math.max(1,Math.min(Math.round(drag.startL+(r.rx-drag.startRx)),CW-z.ox));z.w=Math.max(1,Math.min(Math.round(drag.startW-(r.ry-drag.startRy)),CH-z.oy));}
     }
-    /* 小物件移動（只能 move，不能 resize） */
     else if(drag.type==='obj'){
       var o=objects[drag.idx];
-      /* 細部圖只允許 move */
       o.ox=Math.max(0,Math.min(CW-o.w,Math.round(r.rx-drag.offX)));
       o.oy=Math.max(0,Math.min(CH-o.h,Math.round(r.ry-drag.offY)));
     }
@@ -626,11 +657,9 @@ function onMove(e){
   } else {
     var h2=hitTest(p.x,p.y);
     if(h2){
-      /* 細部圖中 obj 只能 move */
-      cv.style.cursor='grab';
+      cv.style.cursor= (viewMode==='detail' && h2.type==='zone') ? 'not-allowed' : 'grab';
     } else {
-      /* 細部圖中滑過 zone 區域顯示禁止 */
-      if(viewMode==='detail'){
+      if(viewMode==='detail' && showZonesEnabled){
         var rr=toReal(p.x,p.y);
         var onZone=zones.some(function(z){return inR(rr.rx,rr.ry,z.ox,z.oy,z.l,z.w);});
         cv.style.cursor=onZone?'not-allowed':'default';
@@ -644,11 +673,9 @@ function onUp(){drag=null; cv.style.cursor='default';}
 
 function addObj(type){var d=OBJ_DEF[type]; objects.push({type:type,label:d.label,emoji:d.emoji,w:d.w,h:d.h,c:d.c,ox:192,oy:Math.max(0,38-d.h)}); selType='obj'; selIdx=objects.length-1; renderObjTable(); updateInfo(); draw();}
 function addZone(){zones.push({name:'新區域',ox:190,oy:10,l:15,w:15,c:COLORS[zones.length%COLORS.length]}); selType='zone'; selIdx=zones.length-1; renderTable(); updateInfo(); draw();}
-function saveAsDefault(){
-  /* 讀取目前頁面完整 HTML 原始碼，替換 DEFAULT_ZONES / DEFAULT_OBJECTS 兩段，下載新檔案 */
-  var html=document.documentElement.outerHTML;
 
-  /* 產生整潔的 zones JSON（每行一個物件） */
+function saveAsDefault(){
+  var html=document.documentElement.outerHTML;
   var zonesStr='var DEFAULT_ZONES=[\n'
     +zones.map(function(z){
       return '  {name:'+JSON.stringify(z.name)
@@ -656,8 +683,6 @@ function saveAsDefault(){
         +', l:'+z.l+', w:'+z.w+', c:'+JSON.stringify(z.c)+'}';
     }).join(',\n')
     +'\n];';
-
-  /* 產生整潔的 objects JSON */
   var objStr='var DEFAULT_OBJECTS=[\n'
     +objects.map(function(o){
       return '  {type:'+JSON.stringify(o.type)
@@ -668,8 +693,6 @@ function saveAsDefault(){
         +', ox:'+Math.round(o.ox)+', oy:'+Math.round(o.oy)+'}';
     }).join(',\n')
     +'\n];';
-
-  /* 替換標記之間的內容 */
   html=html.replace(
     /\/\*%%DEFAULT_ZONES_START%%\*\/[\s\S]*?\/\*%%DEFAULT_ZONES_END%%\*\//,
     '/*%%DEFAULT_ZONES_START%%*/\n'+zonesStr+'\n/*%%DEFAULT_ZONES_END%%*/'
@@ -678,8 +701,6 @@ function saveAsDefault(){
     /\/\*%%DEFAULT_OBJECTS_START%%\*\/[\s\S]*?\/\*%%DEFAULT_OBJECTS_END%%\*\//,
     '/*%%DEFAULT_OBJECTS_START%%*/\n'+objStr+'\n/*%%DEFAULT_OBJECTS_END%%*/'
   );
-
-  /* 下載修改後的 HTML */
   var blob=new Blob([html],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
@@ -687,15 +708,13 @@ function saveAsDefault(){
   a.href=url; a.download='大FUN凱道場佈規劃圖_2026_'+d+'.html';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
-
   var st=document.getElementById('export-status');
   st.textContent='★ 已下載含新預設的 HTML 檔案，之後開啟該檔案即為目前配置';
   st.style.color='#e65100';
   setTimeout(function(){st.textContent=''; st.style.color='#2e7d32';},5000);
 }
-function loadDefaultFromStorage(){
-  /* localStorage 已不再使用，保留函式避免錯誤 */
-}
+
+function loadDefaultFromStorage(){}
 function resetAll(){
   zones=DEFAULT_ZONES.map(function(z){return Object.assign({},z);});
   objects=DEFAULT_OBJECTS.map(function(o){return Object.assign({},o);});
@@ -703,7 +722,6 @@ function resetAll(){
   renderTable(); renderObjTable(); updateInfo(); draw();
 }
 
-/* ── 統計實際放置在某 zone 範圍內的帳篷類物件數 ── */
 function countTentsInZone(z){
   var count=0;
   objects.forEach(function(o){
@@ -727,6 +745,7 @@ function tentCell(z){
 
 function updateInfo(){
   var box=document.getElementById('infobox'),ov=countOverlaps();
+  if(!box) return;
   if(selIdx<0){
     var totalTents=hasTentObjects()?zones.reduce(function(a,z){return a+countTentsInZone(z);},0):zones.reduce(function(a,z){return a+Math.floor(z.l*z.w/TENT);},0);
     var tl=hasTentObjects()?'實際':'估算';
@@ -744,13 +763,14 @@ function updateInfo(){
   }
   else if(selType==='obj'&&objects[selIdx]){
     var o=objects[selIdx];
-    box.innerHTML='<strong>'+o.label+'</strong>　('+Math.round(CW-o.ox-o.w/2)+','+Math.round(o.oy)+')'+'&nbsp;|&nbsp;'+o.w+'×'+o.h+'m（固定尺寸）';
+    box.innerHTML='<strong>'+o.label+'</strong>　('+Math.round(o.ox)+','+Math.round(o.oy)+')'+'&nbsp;|&nbsp;'+o.w+'×'+o.h+'m（固定尺寸）';
   }
 }
+
 function renderTable(){
   var th=document.getElementById('th-tent');
   if(th) th.textContent=hasTentObjects()?'帳篷數（實際）':'帳篷數（估算）';
-  var tb=document.getElementById('tbody'); tb.innerHTML='';
+  var tb=document.getElementById('tbody'); if(!tb) return; tb.innerHTML='';
   var indices=zones.map(function(_,i){return i;});
   indices.sort(function(a,b){var oa=getSegOrder(zones[a]),ob=getSegOrder(zones[b]); return oa!==ob?oa-ob:zones[a].ox-zones[b].ox;});
   var totalArea=0,totalReal=0,totalEst=0;
@@ -777,11 +797,11 @@ function renderTable(){
     +'<td style="font-size:10px;color:#9a9890">'+(hasTentObjects()?'實際統計':'面積÷9m²')+'</td><td></td>';
   tb.appendChild(sumTr);
 }
+
 function renderObjTable(){
-  var tb=document.getElementById('otbody'); tb.innerHTML='';
+  var tb=document.getElementById('otbody'); if(!tb) return; tb.innerHTML='';
   objects.forEach(function(o,i){
     var sel=(selType==='obj'&&i===selIdx),tr=document.createElement('tr'); if(sel)tr.className='hl';
-    /* W/H 改為純文字顯示，不可編輯 */
     tr.innerHTML='<td style="font-size:15px;text-align:center">'+o.emoji+'</td><td>'+o.label+'</td>'
       +'<td style="color:#6b6960;text-align:center">'+o.w+'</td>'
       +'<td style="color:#6b6960;text-align:center">'+o.h+'</td>'
@@ -790,14 +810,17 @@ function renderObjTable(){
     tb.appendChild(tr);
   });
 }
+
 function updZ(i,k,v){zones[i][k]=v; updateInfo(); draw();}
 function updZS(i,k,v){var z=zones[i]; z[k]=Math.max(1,v); if(k==='l')z.ox=Math.min(z.ox,CW-z.l); if(k==='w')z.oy=Math.min(z.oy,CH-z.w); renderTable(); updateInfo(); draw();}
 function updO(i,k,v){objects[i][k]=Math.max(1,v); renderObjTable(); updateInfo(); draw();}
 function delZ(i){zones.splice(i,1); if(selType==='zone'&&selIdx===i)selIdx=-1; else if(selType==='zone'&&selIdx>i)selIdx--; renderTable(); updateInfo(); draw();}
 function delO(i){objects.splice(i,1); if(selType==='obj'&&selIdx===i)selIdx=-1; else if(selType==='obj'&&selIdx>i)selIdx--; renderObjTable(); updateInfo(); draw();}
+
 var _pt=-1;
 function pickC(i){_pt=i; var el=document.getElementById('_cp'); if(!el){el=document.createElement('input');el.type='color';el.id='_cp';el.style.cssText='position:absolute;opacity:0;width:0;height:0';document.body.appendChild(el);el.addEventListener('input',function(e){if(_pt>=0){zones[_pt].c=e.target.value;renderTable();draw();}});} el.value=zones[_pt].c; el.click();}
 function capturePNG(){selIdx=-1; draw(); return cv.toDataURL('image/png');}
+
 function zoneTableRows(fw){
   var hdr=hasTentObjects()?'帳篷數（實際）':'帳篷數（估算）';
   var s='<table'+(fw?' border="1" style="border-collapse:collapse;width:100%"':'')+'><thead><tr><th>#</th><th>區域名稱</th><th>長(m)</th><th>寬(m)</th><th>面積(m²)</th><th>'+hdr+'</th><th>段別</th></tr></thead><tbody>';
@@ -810,6 +833,7 @@ function zoneTableRows(fw){
   s+='<tr style="font-weight:bold;background:#f5f5f0"><td></td><td>合計</td><td></td><td></td><td>'+totalArea+'</td><td>'+totalTents+'</td><td></td></tr>';
   return s+'</tbody></table>';
 }
+
 function exportPDF(){var img=capturePNG(),d=new Date().toLocaleDateString('zh-TW'),ml=viewMode==='layout'?'配置圖':'細部圖'; var w=window.open('','_blank'); if(!w){document.getElementById('export-status').textContent='⚠ 請允許瀏覽器彈出視窗';return;} w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:serif;margin:12mm}img{width:100%;max-width:1000px}table{width:100%;border-collapse:collapse;font-size:9pt}td,th{border:1px solid #ccc;padding:3pt 5pt}th{background:#f0f0ea}@media print{body{margin:8mm}}</style></head><body><h1>2026 大FUN凱道 — '+ml+'</h1><p>'+d+'</p><img src="'+img+'"><h2>區域清單</h2>'+zoneTableRows(false)+'</body></html>'); w.document.close(); setTimeout(function(){w.print();},700); document.getElementById('export-status').textContent='✓ 已開啟列印視窗';}
 function exportWord(){var img=capturePNG(),d=new Date().toLocaleDateString('zh-TW'),ml=viewMode==='layout'?'配置圖':'細部圖'; var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>body{font-family:"微軟正黑體",sans-serif;margin:2cm}img{width:16cm}table{width:100%;border-collapse:collapse;font-size:10pt}td,th{border:1px solid #ccc;padding:3pt 6pt}th{background:#f0f0ea}</style></head><body><h1>2026 大FUN凱道 — '+ml+'</h1><p>'+d+'</p><p><img src="'+img+'"></p><h2>區域清單</h2>'+zoneTableRows(true)+'</body></html>'; var blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'}); var url=URL.createObjectURL(blob),a=document.createElement('a'); a.href=url; a.download='凱道場布規劃_'+ml+'_'+d.replace(/\//g,'-')+'.doc'; document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url); document.getElementById('export-status').textContent='✓ Word 檔已下載';}
 
@@ -821,18 +845,15 @@ function saveProject(){
     zones: zones,
     objects: objects
   };
-
   var json = JSON.stringify(data, null, 2);
   var blob = new Blob([json], {type: 'application/json;charset=utf-8'});
   var url = URL.createObjectURL(blob);
-
   var a = document.createElement('a');
   a.href = url;
   a.download = '凱道場布規劃_可編輯資料_' + new Date().toISOString().slice(0,10) + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-
   URL.revokeObjectURL(url);
   document.getElementById('export-status').textContent = '✓ 已儲存可編輯規劃 JSON';
 }
@@ -840,50 +861,39 @@ function saveProject(){
 function loadProject(event){
   var file = event.target.files[0];
   if(!file) return;
-
   var reader = new FileReader();
   reader.onload = function(e){
     try {
       var data = JSON.parse(e.target.result);
-
       if(!Array.isArray(data.zones)){
         throw new Error('JSON 格式錯誤：找不到 zones');
       }
-
       zones = data.zones;
       objects = Array.isArray(data.objects) ? data.objects : [];
-
       if(data.viewMode === 'layout' || data.viewMode === 'detail'){
         setView(data.viewMode);
       }
-
       selIdx = -1;
       selType = 'zone';
-
       renderTable();
       renderObjTable();
       updateInfo();
       draw();
-
       document.getElementById('export-status').textContent = '✓ 已載入可編輯規劃 JSON';
     } catch(err) {
       document.getElementById('export-status').textContent = '⚠ 載入失敗：' + err.message;
     }
-
     event.target.value = '';
   };
-
   reader.readAsText(file, 'utf-8');
 }
 
-loadDefaultFromStorage();
-renderTable(); renderObjTable(); updateInfo(); requestAnimationFrame(draw);
+// 初始化啟動
+renderTable(); 
+renderObjTable(); 
+updateInfo(); 
+requestAnimationFrame(draw);
 window.addEventListener('resize',function(){if(document.getElementById('panel-map').classList.contains('active'))draw();});
 </script>
-
-
-
-
-
-
-</body></html>
+</body>
+</html>
