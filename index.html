@@ -185,7 +185,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
     <tr><td>⑤</td><td>總統府北廣場</td><td>71×70m</td><td>④b+④北側</td><td></td></tr>
     <tr><td>⑥</td><td>總統府</td><td>80×80m</td><td>253m</td><td>建築物</td></tr>
   </tbody></table>
-  <div class="warn">⚠️ 北側嚴禁設置帳篷。</div>
+  <div class="warn">⚠️ 北側靠北廣場處設置帳篷需留通道。</div>
 </div></div>
 </div>
 
@@ -409,7 +409,7 @@ function drawLifeStreet(){
     var nTopY=cy(s.y+s.h), nH=(s.h-lsTop)*sc;
     ctx.fillStyle='rgba(200,50,50,0.05)'; ctx.fillRect(rx,nTopY,rw,nH);
     ctx.fillStyle='rgba(200,50,50,0.20)'; ctx.font='9px sans-serif';
-    ctx.fillText('🚫 禁設帳篷（北側）',cx(s.x+s.w/2),nTopY+nH/2+3);
+    ctx.fillText('⛺ 帳篷帶（北側）',cx(s.x+s.w/2),nTopY+nH/2+3);
   });
 }
 
