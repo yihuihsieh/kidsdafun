@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>場布規劃圖 — 大底圖隨意定位版</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;background:#f4f3ef;color:#2c2c2a}
+.nav{background:#1a1a18;color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.nav-title{font-size:15px;font-weight:700;letter-spacing:0.5px}
+.nav-sub{font-size:11px;color:#9a9890;margin-top:2px}
+.nav-tabs{display:flex;gap:6px}
+.tab-btn{padding:5px 16px;border:1px solid rgba(255,255,255,0.22);border-radius:20px;background:transparent;color:#c2c0b6;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.tab-btn:hover{background:rgba(255,255,255,0.10)}
+.tab-btn.active{background:#fff;color:#1a1a18;font-weight:600;border-color:#fff}
+.panel{display:none;padding:14px 18px;max-width:1400px;margin:0 auto}
+.panel.active{display:block}
+.card{background:#fff;border-radius:12px;border:1px solid #e0dfd6;padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;color:#444441;margin-bottom:10px}
+.map-wrap{border-radius:8px;overflow:hidden;background:#faf9f5;touch-action:none;user-select:none}
+canvas{display:block;width:100%;height:auto}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.infobox{font-size:12px;color:#6b6960;background:#f5f5f0;padding:6px 10px;border-radius:6px;flex:1;min-width:160px;line-height:1.5}
+.infobox strong{color:#2c2c2a;font-weight:600}
+.view-toggle{display:flex;gap:0;border:1px solid #d3d1c7;border-radius:6px;overflow:hidden}
+.vt-btn{padding:5px 14px;border:none;background:#fff;font-size:12px;cursor:pointer;color:#6b6960;font-family:inherit;white-space:nowrap;transition:all .12s;border-right:1px solid #d3d1c7}
+.vt-btn:last-child{border-right:none}
+.vt-btn:hover{background:#f5f5f0}
+.vt-btn.active{background:#1565c0;color:#fff;font-weight:600}
+.btn{padding:5px 13px;border:1px solid #d3d1c7;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;color:#2c2c2a;font-family:inherit;white-space:nowrap}
+.btn:hover{background:#f5f5f0}
+.palette{display:flex;flex-wrap:wrap;gap:6px}
+.pal-item{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #e0dfd6;border-radius:6px;cursor:pointer;font-size:12px;background:#fff;user-select:none;white-space:nowrap}
+.pal-item:hover{background:#f0f0ea;border-color:#b4b2a9}
+.pal-icon{font-size:15px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f5f5f0;color:#6b6960;font-weight:600;padding:5px 8px;text-align:left;border-bottom:1px solid #e0dfd6;white-space:nowrap}
+td{padding:4px 8px;border-bottom:1px solid #f0f0ea;vertical-align:middle}
+td input[type=text]{width:100%;border:none;background:transparent;font-size:12px;color:#2c2c2a;outline:none}
+td input[type=number]{width:50px;border:1px solid #e0dfd6;border-radius:4px;padding:2px 4px;font-size:12px;background:#f9f8f4;color:#2c2c2a;text-align:center;font-family:inherit}
+td input[type=number]:focus{border-color:#888780;outline:none}
+.sw{width:16px;height:16px;border-radius:3px;cursor:pointer;border:1px solid #e0dfd6;display:inline-block;vertical-align:middle}
+.note{font-size:11px;color:#9a9890;margin-top:6px;line-height:1.6}
+.hl td{background:#e8f0fe}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div>
+    <div class="nav-title">場布規劃工具 — 大底圖隨意對焦版</div>
+    <div class="nav-sub">自由移動 20m × 35m 規劃範圍</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showPanel('map',this)">🗺 場佈圖</button>
+    <button class="tab-btn" onclick="showPanel('manual',this)">📖 操作手冊</button>
+  </div>
+</div>
+
+<div id="panel-map" class="panel active">
+  <div class="card" style="margin-top:12px">
+    <div class="toolbar">
+      <div class="view-toggle">
+        <button class="vt-btn active" id="vt-layout" onclick="setView('layout')">📐 移動 20x35 框架</button>
+        <button class="vt-btn" id="vt-detail" onclick="setView('detail')">🔍 精細場布 (放物件)</button>
+      </div>
+      <button class="btn" id="btn-toggle-zone" onclick="toggleZoneVisibility()" style="color:#0066cc;border-color:#90caf9;font-weight:600">👁 隱藏活動區域</button>
+      
+      <button class="btn" onclick="document.getElementById('bg-uploader').click()" style="color:#7b1fa2;border-color:#e1bee7;font-weight:600">📂 載入底圖</button>
+      <input type="file" id="bg-uploader" accept="image/*" style="display:none" onchange="handleBgUpload(event)">
+      <button class="btn" id="btn-toggle-bg" onclick="toggleBgVisibility()" style="color:#555;border-color:#ccc;display:none;">👁 隱藏底圖</button>
+      
+      <div class="infobox" id="infobox"></div>
+      <button class="btn" style="color:#1565c0; border-color:#90caf9;" onclick="addZone()">＋ 新增區域</button>
+      <button class="btn" onclick="resetAll()">↺ 重設</button>
+    </div>
+    <div class="map-wrap"><canvas id="cv" width="900" height="600" style="width: 600px; height: 400px; cursor: default;"></canvas></div>
+    <div class="legend" id="legend-bar"></div>
+  </div>
+
+  <div class="card" id="obj-panel" style="display: none;">
+    <div class="card-title">小物件（點擊新增到地圖，再拖移到目標位置）</div>
+    <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:4px">⛺ 帳篷類（計入帳篷統計）</div>
+    <div class="palette" style="margin-bottom:8px">
+      <div class="pal-item" onclick="addObj('tent')"><span class="pal-icon">❎</span>帳篷 3×3m</div>
+      <div class="pal-item" onclick="addObj('ali_tent')"><span class="pal-icon">⛱️</span>阿里山帳 4×4m</div>
+      <div class="pal-item" onclick="addObj('royal')"><span class="pal-icon">⛺️</span>宮廷帳 5×5m</div>
+      <div class="pal-item" onclick="addObj('king10')"><span class="pal-icon">🛖</span>10米帝王帳 10×10m</div>
+      <div class="pal-item" onclick="addObj('king15')"><span class="pal-icon">🏠</span>15米帝王帳 15×15m</div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:4px">🔧 設施類</div>
+    <div class="palette">
+      <div class="pal-item" onclick="addObj('broadcast')"><span class="pal-icon">📢</span>廣播塔 6×6m</div>
+      <div class="pal-item" onclick="addObj('toilet2')"><span class="pal-icon">🚾</span>流動廁所 3×3m</div>
+      <div class="pal-item" onclick="addObj('nursing')"><span class="pal-icon">🧸</span>哺乳車 4×3m</div>
+      <div class="pal-item" onclick="addObj('water')"><span class="pal-icon">🚰</span>水車 3×3m</div>
+      <div class="pal-item" onclick="addObj('toilet')"><span class="pal-icon">🚿</span>洗手區 3×3m</div>
+      <div class="pal-item" onclick="addObj('food')"><span class="pal-icon">🚐</span>餐車 4×3m</div>
+      <div class="pal-item" onclick="addObj('stage')"><span class="pal-icon">🎤</span>舞台 12×8m</div>
+      <div class="pal-item" onclick="addObj('info')"><span class="pal-icon">ℹ️</span>服務台 3×2m</div>
+      <div class="pal-item" onclick="addObj('medic')"><span class="pal-icon">🏥</span>救護站 3×3m</div>
+      <div class="pal-item" onclick="addObj('power')"><span class="pal-icon">⚡</span>發電機 2×2m</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">活動區域列表</div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th style="width:20px"></th>
+        <th style="min-width:110px">區域名稱</th>
+        <th style="width:54px">長 m</th>
+        <th style="width:54px">寬 m</th>
+        <th style="width:64px">面積 m²</th>
+        <th style="width:92px">相對位置 (於框內)</th>
+        <th style="width:26px"></th>
+      </tr></thead><tbody id="tbody"></tbody></table>
+    </div>
+    <div id="otbl-section" style="display: none;">
+      <div class="card-title" style="margin-top:14px">小物件列表</div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th style="width:26px"></th>
+          <th style="min-width:90px">物件名稱</th>
+          <th style="width:40px">W m</th>
+          <th style="width:40px">H m</th>
+          <th style="width:86px">絕對座標 (於圖上)</th>
+          <th style="width:26px"></th>
+        </tr></thead><tbody id="otbody"></tbody></table>
+      </div>
+    </div>
+    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。<br>2. 保持在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色的 20mx35m 粗線框**到目標布置範圍。<br>3. 切換至「🔍 精細場布」模式鎖定邊框，即可點擊「＋ 新增區域」或下方小物件丟進紅色框內進行擺設。</p>
+  </div>
+</div>
+
+<div id="panel-manual" class="panel">
+<div class="card" style="margin-top:12px"><div class="manual">
+  <h2>操作手冊 — 大底圖隨意對焦移動版</h2>
+  <p>1. 📐 <b>移動框架模式</b>：在此模式下，用滑鼠按住拖曳，可以移動紅色粗線的 20x35米 工作框架到大圖上的特定區域。</p>
+  <p>2. 🔍 <b>精細場布模式</b>：工作框架固定鎖定。您可以自由在框架內點選新增活動色塊、或擺放各尺寸帳篷設施。</p>
+</div></div>
+</div>
+
+<script>
+var HANDLE_M=2.5, DPR=1;
+
+// 虛擬地圖總背景尺寸 (公尺)
+var screenW=60, screenH=40; 
+// 您的場布固定工作框大小 (20m x 35m)
+var frameW=35, frameH=20;    
+
+// 紅色框架在大圖上的位置 (可拖移)
+var frameX=10, frameY=15;
+
+var MAR={top:30, right:30, bottom:30, left:30};
+var COLORS=['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
+
+var OBJ_DEF={
+  tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63', isTent:true},
+  ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b', isTent:true},
+  royal:    {label:'宮廷帳',    emoji:'⛺️', w:5,  h:5,  c:'#5d4037', isTent:true},
+  king10:   {label:'10米帝王帳',emoji:'🛖',  w:10, h:10, c:'#6d4c41', isTent:true},
+  king15:   {label:'15米帝王帳',emoji:'🏠',  w:15, h:15, c:'#4e342e', isTent:true},
+  broadcast:{label:'廣播塔',    emoji:'📢',  w:6,  h:6,  c:'#546e7a', isTent:false},
+  toilet2:  {label:'流動廁所',  emoji:'🚾',  w:3,  h:3,  c:'#00acc1', isTent:false},
+  nursing:  {label:'哺乳車',    emoji:'🧸',  w:4,  h:3,  c:'#f06292', isTent:false},
+  water:    {label:'水車',      emoji:'🚰',  w:3,  h:3,  c:'#29b6f6', isTent:false},
+  toilet:   {label:'洗手區',    emoji:'🚿',w:3,h:3,c:'#26c6da', isTent:false},
+  food:     {label:'餐車',      emoji:'🚐',w:4,h:3,c:'#ffa726', isTent:false},
+  stage:    {label:'舞台',      emoji:'🎤',w:12,h:8,c:'#ab47bc', isTent:false},
+  info:     {label:'服務台',    emoji:'ℹ️',w:3,h:2,c:'#66bb6a', isTent:false},
+  medic:    {label:'救護站',    emoji:'🏥',w:3,h:3,c:'#ef5350', isTent:false},
+  power:    {label:'發電機',    emoji:'⚡',w:2,h:2,c:'#fdd835', isTent:false},
+};
+
+var zones=[]; 
+var objects=[];
+var selIdx=-1, selType='zone', drag=null, sc=1, viewMode='layout';
+
+var showZonesEnabled = true;
+var bgImage = null;
+var showBgEnabled = true;
+
+var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+
+function showPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav .tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='map') requestAnimationFrame(draw);
+}
+
+function setView(mode){
+  viewMode=mode;
+  document.getElementById('vt-layout').classList.toggle('active',mode==='layout');
+  document.getElementById('vt-detail').classList.toggle('active',mode==='detail');
+  document.getElementById('obj-panel').style.display=mode==='detail'?'block':'none';
+  document.getElementById('otbl-section').style.display=mode==='detail'?'block':'none';
+  selIdx = -1;
+  updateInfo(); draw();
+}
+
+function toggleZoneVisibility(){
+  showZonesEnabled = !showZonesEnabled;
+  var btn = document.getElementById('btn-toggle-zone');
+  btn.textContent = showZonesEnabled ? '👁 隱藏活動區域' : '👁 顯示活動區域';
+  if(!showZonesEnabled && selType==='zone') selIdx = -1;
+  updateInfo(); draw();
+}
+
+function handleBgUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      bgImage = img;
+      showBgEnabled = true;
+      document.getElementById('btn-toggle-bg').style.display = 'inline-block';
+      document.getElementById('btn-toggle-bg').textContent = '👁 隱藏底圖';
+      draw();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleBgVisibility() {
+  if (!bgImage) return;
+  showBgEnabled = !showBgEnabled;
+  var btn = document.getElementById('btn-toggle-bg');
+  btn.textContent = showBgEnabled ? '👁 隱藏底圖' : '👁 顯示底圖';
+  draw();
+}
+
+function setupCanvas(){
+  var cssW=cv.parentElement.clientWidth||900;
+  sc=(cssW-MAR.left-MAR.right)/screenW;
+  var cssH=screenH*sc+MAR.top+MAR.bottom;
+  
+  // 固定使用高畫質渲染解析度，移除重複轉換造成的坐標擴大衝突錯誤
+  cv.width = cssW * 1.5; 
+  cv.height = cssH * 1.5;
+  cv.style.width = cssW+'px'; 
+  cv.style.height = cssH+'px';
+  ctx.setTransform(1.5, 0, 0, 1.5, 0, 0);
+  return {cssW:cssW};
+}
+
+function cx(m){return MAR.left+m*sc;}
+function cy(m){return MAR.top+(screenH-m)*sc;}
+
+function draw(){
+  var g=setupCanvas();
+  ctx.clearRect(0,0,g.cssW,screenH*sc+MAR.top+MAR.bottom);
+  
+  // 1. 滿版大底圖繪製
+  if (bgImage && showBgEnabled) {
+    ctx.save();
+    ctx.globalAlpha = 0.75;
+    ctx.drawImage(bgImage, cx(0), cy(screenH), screenW * sc, screenH * sc);
+    ctx.restore();
+  }
+
+  // 2. 繪製格線與工作框架
+  drawGrid();
+  drawTargetFrame(); 
+  
+  if(showZonesEnabled) drawZones();
+  if(viewMode==='detail') drawObjects();
+  updateInfo(); renderTable(); renderObjTable();
+}
+
+function drawGrid(){
+  // 網格線設定（清晰黑/灰色系）
+  for(var x=0; x<=screenW; x+=1){
+    var is5 = (x % 5 === 0);
+    var is10 = (x % 10 === 0);
+    if (!is5) continue; 
+    ctx.strokeStyle = is10 ? 'rgba(50,50,50,0.3)' : 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = is10 ? 1.0 : 0.5;
+    ctx.beginPath(); ctx.moveTo(cx(x),cy(0)); ctx.lineTo(cx(x),cy(screenH)); ctx.stroke();
+    
+    if (is10) {
+      ctx.fillStyle='#444'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(x+'m', cx(x), cy(0)+12);
+    }
+  }
+  for(var y=0; y<=screenH; y+=1){
+    var is5y = (y % 5 === 0);
+    var is10y = (y % 10 === 0);
+    if (!is5y) continue;
+    ctx.strokeStyle = is10y ? 'rgba(50,50,50,0.3)' : 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = is10y ? 1.0 : 0.5;
+    ctx.beginPath(); ctx.moveTo(cx(0),cy(y)); ctx.lineTo(cx(screenW),cy(y)); ctx.stroke();
+    
+    if (is10y) {
+      ctx.fillStyle='#444'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right';
+      ctx.fillText(y+'m', cx(0)-5, cy(y)+3);
+    }
+  }
+}
+
+function drawTargetFrame(){
+  var rx=cx(frameX), ry=cy(frameY+frameH), rw=frameW*sc, rh=frameH*sc;
+  
+  ctx.save();
+  // 框內加上微白色透光層，便於辨識工作空間範圍
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.fillRect(rx, ry, rw, rh);
+  
+  // 內部 1m 精細隱形虛線格
+  ctx.strokeStyle = 'rgba(211, 47, 47, 0.08)';
+  ctx.lineWidth = 0.4;
+  for(var x=1; x<frameW; x++){
+    ctx.beginPath(); ctx.moveTo(cx(frameX+x), cy(frameY)); ctx.lineTo(cx(frameX+x), cy(frameY+frameH)); ctx.stroke();
+  }
+  for(var y=1; y<frameH; y++){
+    ctx.beginPath(); ctx.moveTo(cx(frameX), cy(frameY+y)); ctx.lineTo(cx(frameX+frameW), cy(frameY+y)); ctx.stroke();
+  }
+
+  // 外部邊界線
+  ctx.strokeStyle = '#d32f2f';
+  ctx.lineWidth = (viewMode === 'layout') ? 3.0 : 1.5;
+  if(viewMode === 'layout') ctx.setLineDash([5, 3]);
+  ctx.strokeRect(rx, ry, rw, rh);
+  ctx.restore();
+
+  ctx.fillStyle = '#d32f2f'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(' 📌 目標布置框 (20m × 35m) 框左下起點:('+frameX+','+frameY+')', rx+4, ry+14);
+}
+
+function drawZones(){
+  var isDetail = (viewMode === 'detail');
+  zones.forEach(function(z,i){
+    var sel=(selType==='zone'&&i===selIdx);
+    var absX = frameX + z.ox;
+    var absY = frameY + z.oy;
+    var rx=cx(absX), ry=cy(absY+z.w), rw=z.l*sc, rh=z.w*sc;
+    
+    ctx.globalAlpha = isDetail ? (sel ? 0.15 : 0.06) : (sel ? 0.35 : 0.22);
+    ctx.fillStyle=z.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    
+    ctx.strokeStyle=z.c; ctx.lineWidth=sel?2.0 : 1.0;
+    ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
+    
+    var fs=10;
+    ctx.fillStyle=z.c; ctx.font='bold '+fs+'px sans-serif'; ctx.textAlign='center';
+    var lines=wrapL(z.name,rw,fs), tyStart=ry+fs+4;
+    lines.forEach(function(ln,li){ctx.fillText(ln,rx+rw/2,tyStart+li*(fs+2),rw-4);});
+  });
+}
+
+function drawObjects(){
+  objects.forEach(function(o,i){
+    var sel=(selType==='obj'&&i===selIdx);
+    var rx=cx(o.ox), ry=cy(o.oy+o.h), rw=o.w*sc, rh=o.h*sc;
+    ctx.globalAlpha=sel?0.4:0.25; ctx.fillStyle=o.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    ctx.strokeStyle=o.c; ctx.lineWidth=sel?1.8 : 1.0; ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
+    
+    var efs=Math.max(10,Math.min(16,rw*0.45));
+    ctx.font=efs+'px serif'; ctx.textAlign='center'; ctx.fillText(o.emoji,rx+rw/2,ry+rh/2+efs*0.3);
+  });
+}
+
+function getPos(e){var r=cv.getBoundingClientRect(),src=e.touches?e.touches[0]:e; return{x:src.clientX-r.left,y:src.clientY-r.top};}
+function toReal(px,py){return{rx:(px-MAR.left)/sc,ry:screenH-(py-MAR.top)/sc};}
+function inR(rx,ry,ox,oy,w,h){return rx>=ox&&rx<=ox+w&&ry>=oy&&ry<=oy+h;}
+
+cv.addEventListener('mousedown',onDown); cv.addEventListener('touchstart',onDown,{passive:false});
+cv.addEventListener('mousemove',onMove); cv.addEventListener('touchmove',onMove,{passive:false});
+cv.addEventListener('mouseup',onUp); cv.addEventListener('touchend',onUp);
+
+function onDown(e){
+  e.preventDefault(); var p=getPos(e), r=toReal(p.x,p.y);
+  
+  if(viewMode === 'layout') {
+    if(inR(r.rx, r.ry, frameX, frameY, frameW, frameH)) {
+      drag = { type:'frame', offX: r.rx - frameX, offY: r.ry - frameY };
+    } else {
+      frameX = Math.max(0, Math.min(screenW-frameW, Math.round(r.rx - frameW/2)));
+      frameY = Math.max(0, Math.min(screenH-frameH, Math.round(r.ry - frameH/2)));
+      drag = { type:'frame', offX: frameW/2, offY: frameH/2 };
+      draw();
+    }
+    return;
+  }
+  
+  for(var i=objects.length-1;i>=0;i--){
+    if(inR(r.rx,r.ry,objects[i].ox,objects[i].oy,objects[i].w,objects[i].h)){
+      selType='obj'; selIdx=i; drag={type:'obj', idx:i, offX:r.rx-objects[i].ox, offY:r.ry-objects[i].oy};
+      draw(); return;
+    }
+  }
+  if(showZonesEnabled){
+    for(var j=zones.length-1;j>=0;j--){
+      var z = zones[j];
+      if(inR(r.rx,r.ry, frameX+z.ox, frameY+z.oy, z.l, z.w)){
+        selType='zone'; selIdx=j; drag=null; updateInfo(); draw(); return;
+      }
+    }
+  }
+  selIdx=-1; drag=null; draw();
+}
+
+function onMove(e){
+  e.preventDefault(); var p=getPos(e), r=toReal(p.x,p.y);
+  if(!drag) return;
+  
+  if(drag.type === 'frame') {
+    frameX = Math.max(0, Math.min(screenW-frameW, Math.round(r.rx - drag.offX)));
+    frameY = Math.max(0, Math.min(screenH-frameH, Math.round(r.ry - drag.offY)));
+  }
+  else if(drag.type === 'obj') {
+    var o = objects[drag.idx];
+    o.ox = Math.max(0, Math.min(screenW-o.w, Math.round(r.rx - drag.offX)));
+    o.oy = Math.max(0, Math.min(screenH-o.h, Math.round(r.ry - drag.offY)));
+  }
+  draw();
+}
+function onUp(){drag=null;}
+
+function addZone(){
+  // 新活動色塊預設長寬為 10x10m 丟入框內
+  zones.push({name:'新活動區域', ox:2, oy:2, l:10, w:10, c:COLORS[zones.length%COLORS.length]});
+  selType='zone'; selIdx=zones.length-1; draw();
+}
+function addObj(type){
+  var d=OBJ_DEF[type];
+  objects.push({type:type, label:d.label, emoji:d.emoji, w:d.w, h:d.h, c:d.c, ox:Math.round(frameX+frameW/2-d.w/2), oy:Math.round(frameY+frameH/2-d.h/2)});
+  selType='obj'; selIdx=objects.length-1; draw();
+}
+
+function delZ(i){zones.splice(i,1); selIdx=-1; draw();}
+function delO(i){objects.splice(i,1); selIdx=-1; draw();}
+
+function updateInfo(){
+  var box=document.getElementById('infobox'); if(!box) return;
+  if(viewMode === 'layout') {
+    box.innerHTML = '📐 <b>工作框移動模式</b>：請按住並拖曳紅框，將 20x35 米的布置範圍對準底圖。';
+    return;
+  }
+  if(selIdx<0){
+    box.innerHTML = '🔍 <b>精細配置模式</b>：工作框架已鎖定。可添加活動色塊或新增設施。';
+  } else if(selType === 'zone'){
+    var z = zones[selIdx];
+    box.innerHTML = '活動區：<strong>'+z.name+'</strong> | 框內相對位置:('+z.ox+','+z.oy+') | 面積：'+(z.l*z.w)+'m²';
+  } else {
+    var o = objects[selIdx];
+    box.innerHTML = '設施：<strong>'+o.label+'</strong> | 絕對位置:('+o.ox+','+o.oy+')';
+  }
+}
+
+function renderTable(){
+  var tb=document.getElementById('tbody'); if(!tb) return; tb.innerHTML='';
+  zones.forEach(function(z,i){
+    var tr=document.createElement('tr'); if(selType==='zone'&&i===selIdx) tr.className='hl';
+    tr.innerHTML='<td><span class="sw" style="background:'+z.c+'"></span></td>'
+      +'<td><input type="text" value="'+z.name+'" oninput="zones['+i+'].name=this.value;draw();"></td>'
+      +'<td><input type="number" value="'+z.l+'" oninput="zones['+i+'].l=+this.value;draw();"></td>'
+      +'<td><input type="number" value="'+z.w+'" oninput="zones['+i+'].w=+this.value;draw();"></td>'
+      +'<td>'+(z.l*z.w)+' m²</td>'
+      +'<td>相對框內 ('+z.ox+','+z.oy+')</td>'
+      +'<td><button class="btn" onclick="delZ('+i+')">✕</button></td>';
+    tb.appendChild(tr);
+  });
+}
+function renderObjTable(){
+  var tb=document.getElementById('otbody'); if(!tb) return; tb.innerHTML='';
+  objects.forEach(function(o,i){
+    var tr=document.createElement('tr'); if(selType==='obj'&&i===selIdx) tr.className='hl';
+    tr.innerHTML='<td>'+o.emoji+'</td><td>'+o.label+'</td><td>'+o.w+'</td><td>'+o.h+'</td>'
+      +'<td>圖上絕對 ('+o.ox+','+o.oy+')</td>'
+      +'<td><button class="btn" onclick="delO('+i+')">✕</button></td>';
+    tb.appendChild(tr);
+  });
+}
+
+function resetAll(){ zones=[]; objects=[]; selIdx=-1; draw(); }
+draw();
+</script>
+</body>
+</html>
