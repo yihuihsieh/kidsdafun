@@ -111,11 +111,11 @@ td input[type=number]:focus{border-color:#888780;outline:none}
     <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:4px">🔧 設施類</div>
     <div class="palette">
       <div class="pal-item" onclick="addObj('broadcast')"><span class="pal-icon">📢</span>廣播塔 6×6m</div>
-      <div class="pal-item" onclick="addObj('toilet2')"><span class="pal-icon">𚾜</span>流動廁所 3×3m</div>
+      <div class="pal-item" onclick="addObj('toilet2')"><span class="pal-icon">🚾</span>流動廁所 3×3m</div>
       <div class="pal-item" onclick="addObj('nursing')"><span class="pal-icon">🧸</span>哺乳車 4×3m</div>
-      <div class="pal-item" onclick="addObj('water')"><span class="pal-icon">𚰰</span>水車 3×3m</div>
+      <div class="pal-item" onclick="addObj('water')"><span class="pal-icon">🚰</span>水車 3×3m</div>
       <div class="pal-item" onclick="addObj('toilet')"><span class="pal-icon">🚿</span>洗手區 3×3m</div>
-      <div class="pal-item" onclick="addObj('food')"><span class="pal-icon"> Vans</span>餐車 4×3m</div>
+      <div class="pal-item" onclick="addObj('food')"><span class="pal-icon">🚐</span>餐車 4×3m</div>
       <div class="pal-item" onclick="addObj('stage')"><span class="pal-icon">🎤</span>舞台 12×8m</div>
       <div class="pal-item" onclick="addObj('info')"><span class="pal-icon">ℹ️</span>服務台 3×2m</div>
       <div class="pal-item" onclick="addObj('medic')"><span class="pal-icon">🏥</span>救護站 3×3m</div>
@@ -171,6 +171,7 @@ var frameX = 10, frameY = 15;
 var MAR = {top:30, right:30, bottom:30, left:30};
 var COLORS = ['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
 
+// 徹底修正此處字串與 Emoji 編碼問題，確保語法 100% 正確
 var OBJ_DEF = {
   tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63'},
   ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b'},
@@ -325,11 +326,9 @@ cv.addEventListener('wheel', function(e) {
 function cx(m) { return MAR.left + m * sc; }
 function cy(m) { return MAR.top + (screenH - m) * sc; }
 
-// 核心修正：調整繪製權重順序，圖片如果尚未載入，網格與框架也絕對會先跑出來
 function draw() {
   ctx.clearRect(0, 0, cv.width, cv.height);
   
-  // 1. 底圖繪製保護機制（安全獨立繪製）
   if (bgImage && bgImage.complete && bgImage.width > 0 && showBgEnabled) {
     ctx.save();
     ctx.globalAlpha = 0.75;
@@ -341,7 +340,6 @@ function draw() {
     ctx.restore();
   }
 
-  // 2. 核心架構（確保不管底圖存在與否，絕對看得到）
   drawGrid();
   drawTargetFrame(); 
   
@@ -607,20 +605,74 @@ function updateInfo() {
 }
 
 function renderTable() {
-  var tb = document.getElementById('tbody'); if (!tb) return; tb.innerHTML = '';
+  var tb = document.getElementById('tbody'); if (!tb) return; 
+  
+  var activeEl = document.activeElement;
+  var activeIdx = -1;
+  var activeType = null;
+  if (activeEl && activeEl.dataset) {
+    activeIdx = parseInt(activeEl.dataset.idx);
+    activeType = activeEl.dataset.type;
+  }
+
+  tb.innerHTML = '';
   var disabledStr = (viewMode !== 'zone') ? 'disabled' : '';
+  
   zones.forEach(function(z, i) {
-    var tr = document.createElement('tr'); if (selType === 'zone' && i === selIdx) tr.className = 'hl';
+    var tr = document.createElement('tr'); 
+    if (selType === 'zone' && i === selIdx) tr.className = 'hl';
+    
     tr.innerHTML = '<td><span class="sw" style="background:' + z.c + '"></span></td>'
-      + '<td><input type="text" value="' + z.name + '" ' + disabledStr + ' oninput="zones[' + i + '].name=this.value;draw();"></td>'
-      + '<td><input type="number" value="' + z.l + '" ' + disabledStr + ' oninput="zones[' + i + '].l=+this.value;draw();"></td>'
-      + '<td><input type="number" value="' + z.w + '" ' + disabledStr + ' oninput="zones[' + i + '].w=+this.value;draw();"></td>'
+      + '<td><input type="text" class="zone-name-input" data-idx="'+i+'" data-type="name" value="' + z.name + '" ' + disabledStr + '></td>'
+      + '<td><input type="number" class="zone-num-input" data-idx="'+i+'" data-type="l" value="' + z.l + '" ' + disabledStr + '></td>'
+      + '<td><input type="number" class="zone-num-input" data-idx="'+i+'" data-type="w" value="' + z.w + '" ' + disabledStr + '></td>'
       + '<td>' + (z.l * z.w) + ' m²</td>'
       + '<td>相對框內 (' + z.ox + ',' + z.oy + ')</td>'
       + '<td><button class="btn" ' + disabledStr + ' onclick="delZ(' + i + ')">✕</button></td>';
     tb.appendChild(tr);
   });
+
+  document.querySelectorAll('.zone-name-input').forEach(function(input) {
+    var idx = parseInt(input.dataset.idx);
+    var isComposing = false; 
+
+    input.addEventListener('compositionstart', function() {
+      isComposing = true; 
+    });
+
+    input.addEventListener('compositionend', function(e) {
+      isComposing = false; 
+      zones[idx].name = e.target.value;
+      draw(); 
+    });
+
+    input.addEventListener('input', function(e) {
+      if (!isComposing) {
+        zones[idx].name = e.target.value;
+        draw();
+      }
+    });
+  });
+
+  document.querySelectorAll('.zone-num-input').forEach(function(input) {
+    var idx = parseInt(input.dataset.idx);
+    var type = input.dataset.type;
+    input.addEventListener('input', function(e) {
+      zones[idx][type] = +e.target.value;
+      draw();
+    });
+  });
+
+  if (activeType) {
+    var targetEl = tb.querySelector('input[data-idx="'+activeIdx+'"][data-type="'+activeType+'"]');
+    if (targetEl) {
+      var len = targetEl.value.length;
+      targetEl.focus();
+      if(activeType === 'name') targetEl.setSelectionRange(len, len); 
+    }
+  }
 }
+
 function renderObjTable() {
   var tb = document.getElementById('otbody'); if (!tb) return; tb.innerHTML = '';
   objects.forEach(function(o, i) {
@@ -646,7 +698,6 @@ function saveProject() {
   a.click();
 }
 
-// 核心修正：讀取 Base64 採非同步 onload 安全防護，等圖片完全吃進去後再呼叫 draw()，絕不卡死
 function loadProject(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -671,7 +722,7 @@ function loadProject(event) {
           document.getElementById('btn-toggle-bg').style.display = 'inline-block';
           document.getElementById('btn-toggle-bg').textContent = '👁 隱藏底圖';
           updateBgCtrlPanelVisibility();
-          draw(); // 圖片完全載入完成，此時安全重繪
+          draw(); 
         };
         img.src = bgBase64Data;
       } else {
@@ -679,10 +730,7 @@ function loadProject(event) {
         bgBase64Data = null;
         updateBgCtrlPanelVisibility();
       }
-      
-      selIdx = -1; 
-      draw(); // 搶先進行第一次無圖重繪，防止畫面雪白
-      alert('專案與底圖已完整讀取成功！');
+      selIdx = -1; draw(); alert('專案與底圖已完整讀取成功！');
     } catch(err) { alert('檔案格式錯誤，無法讀取專案。'); }
   };
   reader.readAsText(file);
@@ -696,6 +744,7 @@ window.addEventListener('resize', function() {
   draw();
 });
 
+// 穩健型依序啟動
 initCanvasSize();
 draw();
 </script>
