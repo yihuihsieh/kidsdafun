@@ -158,7 +158,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
   <h2>操作手冊 — 大底圖隨意對焦移動版</h2>
   <p>1. 📐 <b>移動框架模式</b>：在此模式下，只能移動紅色粗線的 20x35米 工作框架，避免誤觸其他物件。</p>
   <p>2. ⬡ <b>區域場布(定區域)模式</b>：框架鎖定。此模式專門用來新增活動色塊、拖移區域位置，以及用滑鼠按住色塊<b>右下角灰色手把</b>來直接拖拉修改尺寸。</p>
-  <p>3. 🔍 <b>精細場布模式</b>：工作框架與區域皆鎖定。您可以自由在框架內擺放各尺寸帳篷設施，不用擔心手滑移到背景區域。</p>
+  <p>3. 🔍 <b>精細場布模式</b>：工作框架與區域皆鎖定。背景的活動區域會自動刷淡，且不顯示尺寸面積以方便小物件的擺設與對齊。</p>
   <p>4. 🌐 <b>底圖縮放與平移</b>：載入底圖後，除了控制面板外，亦可在畫布上直接使用<b>滑鼠滾輪</b>快速放大縮小底圖。</p>
 </div></div>
 </div>
@@ -171,7 +171,6 @@ var frameX = 10, frameY = 15;
 var MAR = {top:30, right:30, bottom:30, left:30};
 var COLORS = ['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
 
-// 徹底修正此處字串與 Emoji 編碼問題，確保語法 100% 正確
 var OBJ_DEF = {
   tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63'},
   ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b'},
@@ -400,8 +399,11 @@ function drawTargetFrame() {
   ctx.fillText(' 📌 目標布置框 (20m × 35m) 框左下起點:(' + frameX + ',' + frameY + ')', rx + 4, ry + 14);
 }
 
+// 核心修正：加入精細場布模式下的智慧顯示（顏色極淡、不顯示尺寸面積）
 function drawZones() {
   var isZoneOrLayout = (viewMode === 'zone' || viewMode === 'layout');
+  var isDetailMode = (viewMode === 'detail');
+  
   zones.forEach(function(z, i) {
     var sel = (selType === 'zone' && i === selIdx);
     var absX = frameX + z.ox;
@@ -409,7 +411,13 @@ function drawZones() {
     
     var rx = cx(absX), ry = cy(absY + z.w), rw = z.l * sc, rh = z.w * sc;
     
-    ctx.globalAlpha = !isZoneOrLayout ? 0.06 : (sel ? 0.45 : 0.25);
+    // 設定透明度：如果是精細場布(detail)模式，顏色刷得更淡 (0.05)
+    if (isDetailMode) {
+      ctx.globalAlpha = 0.05;
+    } else {
+      ctx.globalAlpha = !isZoneOrLayout ? 0.06 : (sel ? 0.45 : 0.25);
+    }
+    
     ctx.fillStyle = z.c; ctx.fillRect(rx, ry, rw, rh); ctx.globalAlpha = 1;
     ctx.strokeStyle = z.c; ctx.lineWidth = sel ? 2.5 : 1.0;
     ctx.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rh - 1);
@@ -430,7 +438,8 @@ function drawZones() {
     var nameLines = wrapL(z.name, rw - 4, fs);
     nameLines.forEach(function(ln) { txtArray.push(ln); });
     
-    if (rw > 40 && rh > 30) {
+    // 智慧過濾：只有在「非精細場布模式」且區塊夠大時，才塞入尺寸和面積
+    if (!isDetailMode && rw > 40 && rh > 30) {
       txtArray.push(z.l + '×' + z.w + 'm');
       txtArray.push((z.l * z.w) + 'm²');
     }
@@ -597,7 +606,7 @@ function updateInfo() {
     return;
   }
   if (selIdx < 0) {
-    box.innerHTML = '🔍 <b>精細配置模式</b>：工作框架與區域已鎖定。可點擊下方小物件放入框內布置。';
+    box.innerHTML = '🔍 <b>精細配置模式</b>：工作框架與區域已鎖定（色塊已自動刷淡且不顯示尺寸）。可點擊下方小物件放入框內布置。';
   } else {
     var o = objects[selIdx];
     box.innerHTML = '設施：<strong>' + o.label + '</strong> | 絕對位置:(' + o.ox + ',' + o.oy + ')';
@@ -744,7 +753,6 @@ window.addEventListener('resize', function() {
   draw();
 });
 
-// 穩健型依序啟動
 initCanvasSize();
 draw();
 </script>
