@@ -149,7 +149,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         </tr></thead><tbody id="otbody"></tbody></table>
       </div>
     </div>
-    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。（可用滾輪或控制鈕縮放、平移底圖）<br>2. 在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色粗線框**到目標布置範圍。<br>3. 切換至「⬡ 區域場布(定區域)」模式來點擊「＋ 新增區域」或進行區域位置、大小調整。（可拖曳色塊右下角修改尺寸）<br>4. 切換至「🔍 精細場布」模式，即可新增與擺設下方小物件設施。</p>
+    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。（可用控制鈕面板縮放、平移底圖）<br>2. 在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色粗線框**到目標布置範圍。<br>3. 切換至「⬡ 區域場布(定區域)」模式來點擊「＋ 新增區域」或進行區域位置、大小調整。（可拖曳色塊右下角修改尺寸）<br>4. 切換至「🔍 精細場布」模式，即可新增與擺設下方小物件設施。</p>
   </div>
 </div>
 
@@ -159,7 +159,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
   <p>1. 📐 <b>移動框架模式</b>：在此模式下，只能移動紅色粗線的 20x35米 工作框架，避免誤觸其他物件。</p>
   <p>2. ⬡ <b>區域場布(定區域)模式</b>：框架鎖定。此模式專門用來新增活動色塊、拖移區域位置，以及用滑鼠按住色塊<b>右下角灰色手把</b>來直接拖拉修改尺寸。</p>
   <p>3. 🔍 <b>精細場布模式</b>：工作框架與區域皆鎖定。背景的活動區域會自動刷淡，且不顯示尺寸面積以方便小物件的擺設與對齊。</p>
-  <p>4. 🌐 <b>底圖縮放與平移</b>：載入底圖後，除了控制面板外，亦可在畫布上直接使用<b>滑鼠滾輪</b>快速放大縮小底圖。</p>
+  <p>4. 🌐 <b>底圖縮放與平移</b>：載入底圖後，請使用上方的控制面板按鈕進行縮放（已取消滑鼠滾輪縮放監聽，避免捲動網頁時誤觸）。</p>
 </div></div>
 </div>
 
@@ -314,13 +314,7 @@ function resetBgTransform() {
   draw();
 }
 
-cv.addEventListener('wheel', function(e) {
-  if (bgImage && showBgEnabled) {
-    e.preventDefault();
-    var delta = e.deltaY < 0 ? 0.05 : -0.05;
-    adjustBgScale(delta);
-  }
-}, { passive: false });
+// 核心修改：已完全移除原本針對 cv 的 'wheel' 滾輪事件監聽器，防止滑鼠滾動造成底圖縮放
 
 function cx(m) { return MAR.left + m * sc; }
 function cy(m) { return MAR.top + (screenH - m) * sc; }
@@ -399,7 +393,6 @@ function drawTargetFrame() {
   ctx.fillText(' 📌 目標布置框 (20m × 35m) 框左下起點:(' + frameX + ',' + frameY + ')', rx + 4, ry + 14);
 }
 
-// 核心修正：加入精細場布模式下的智慧顯示（顏色極淡、不顯示尺寸面積）
 function drawZones() {
   var isZoneOrLayout = (viewMode === 'zone' || viewMode === 'layout');
   var isDetailMode = (viewMode === 'detail');
@@ -411,7 +404,6 @@ function drawZones() {
     
     var rx = cx(absX), ry = cy(absY + z.w), rw = z.l * sc, rh = z.w * sc;
     
-    // 設定透明度：如果是精細場布(detail)模式，顏色刷得更淡 (0.05)
     if (isDetailMode) {
       ctx.globalAlpha = 0.05;
     } else {
@@ -438,7 +430,6 @@ function drawZones() {
     var nameLines = wrapL(z.name, rw - 4, fs);
     nameLines.forEach(function(ln) { txtArray.push(ln); });
     
-    // 智慧過濾：只有在「非精細場布模式」且區塊夠大時，才塞入尺寸和面積
     if (!isDetailMode && rw > 40 && rh > 30) {
       txtArray.push(z.l + '×' + z.w + 'm');
       txtArray.push((z.l * z.w) + 'm²');
