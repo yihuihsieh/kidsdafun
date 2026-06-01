@@ -111,11 +111,11 @@ td input[type=number]:focus{border-color:#888780;outline:none}
     <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:4px">🔧 設施類</div>
     <div class="palette">
       <div class="pal-item" onclick="addObj('broadcast')"><span class="pal-icon">📢</span>廣播塔 6×6m</div>
-      <div class="pal-item" onclick="addObj('toilet2')"><span class="pal-icon">🚾</span>流動廁所 3×3m</div>
+      <div class="pal-item" onclick="addObj('toilet2')"><span class="pal-icon">𚾜</span>流動廁所 3×3m</div>
       <div class="pal-item" onclick="addObj('nursing')"><span class="pal-icon">🧸</span>哺乳車 4×3m</div>
-      <div class="pal-item" onclick="addObj('water')"><span class="pal-icon">🚰</span>水車 3×3m</div>
+      <div class="pal-item" onclick="addObj('water')"><span class="pal-icon">𚰰</span>水車 3×3m</div>
       <div class="pal-item" onclick="addObj('toilet')"><span class="pal-icon">🚿</span>洗手區 3×3m</div>
-      <div class="pal-item" onclick="addObj('food')"><span class="pal-icon">🚐</span>餐車 4×3m</div>
+      <div class="pal-item" onclick="addObj('food')"><span class="pal-icon"> Vans</span>餐車 4×3m</div>
       <div class="pal-item" onclick="addObj('stage')"><span class="pal-icon">🎤</span>舞台 12×8m</div>
       <div class="pal-item" onclick="addObj('info')"><span class="pal-icon">ℹ️</span>服務台 3×2m</div>
       <div class="pal-item" onclick="addObj('medic')"><span class="pal-icon">🏥</span>救護站 3×3m</div>
@@ -196,6 +196,7 @@ var selIdx = -1, selType = 'zone', drag = null, sc = 1, viewMode = 'layout';
 var showZonesEnabled = true;
 var bgImage = null;
 var showBgEnabled = true;
+var bgBase64Data = null;
 
 var bgScale = 1.0;
 var bgOffsetX = 0; 
@@ -265,6 +266,8 @@ function handleBgUpload(event) {
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
+    bgBase64Data = e.target.result;
+    
     var img = new Image();
     img.onload = function() {
       bgImage = img;
@@ -322,10 +325,12 @@ cv.addEventListener('wheel', function(e) {
 function cx(m) { return MAR.left + m * sc; }
 function cy(m) { return MAR.top + (screenH - m) * sc; }
 
+// 核心修正：調整繪製權重順序，圖片如果尚未載入，網格與框架也絕對會先跑出來
 function draw() {
   ctx.clearRect(0, 0, cv.width, cv.height);
   
-  if (bgImage && showBgEnabled) {
+  // 1. 底圖繪製保護機制（安全獨立繪製）
+  if (bgImage && bgImage.complete && bgImage.width > 0 && showBgEnabled) {
     ctx.save();
     ctx.globalAlpha = 0.75;
     var tw = screenW * sc * bgScale;
@@ -336,6 +341,7 @@ function draw() {
     ctx.restore();
   }
 
+  // 2. 核心架構（確保不管底圖存在與否，絕對看得到）
   drawGrid();
   drawTargetFrame(); 
   
@@ -418,28 +424,23 @@ function drawZones() {
       ctx.strokeRect(rx + rw - 8, ry + rh - 8, 8, 8);
     }
     
-    // 文字文字換行與資訊組合繪製
     var fs = 10;
     ctx.fillStyle = z.c; 
     ctx.textAlign = 'center';
     
-    // 把名稱、尺寸、面積依序加入文字佇列中
     var txtArray = [];
     var nameLines = wrapL(z.name, rw - 4, fs);
     nameLines.forEach(function(ln) { txtArray.push(ln); });
     
-    // 如果區塊夠大，就把尺寸和面積也塞進去文字行列中
     if (rw > 40 && rh > 30) {
       txtArray.push(z.l + '×' + z.w + 'm');
       txtArray.push((z.l * z.w) + 'm²');
     }
     
-    // 計算整體文字堆疊的高度，使其在色塊垂直居中
     var totalHeight = txtArray.length * (fs + 2);
     var tyStart = ry + (rh - totalHeight) / 2 + fs;
     
     txtArray.forEach(function(ln, li) {
-      // 區名用粗體，尺寸和面積用稍微細一點或同等粗體（這裡統一用清晰的 sans-serif）
       ctx.font = (li < nameLines.length) ? 'bold ' + fs + 'px sans-serif' : '9px sans-serif';
       ctx.fillText(ln, rx + rw / 2, tyStart + li * (fs + 2), rw - 4);
     });
@@ -635,6 +636,7 @@ function saveProject() {
   var projectData = {
     frameX: frameX, frameY: frameY,
     bgScale: bgScale, bgOffsetX: bgOffsetX, bgOffsetY: bgOffsetY,
+    bgBase64Data: bgBase64Data, 
     zones: zones, objects: objects
   };
   var blob = new Blob([JSON.stringify(projectData, null, 2)], {type : 'application/json'});
@@ -644,6 +646,7 @@ function saveProject() {
   a.click();
 }
 
+// 核心修正：讀取 Base64 採非同步 onload 安全防護，等圖片完全吃進去後再呼叫 draw()，絕不卡死
 function loadProject(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -658,14 +661,35 @@ function loadProject(event) {
       if (data.bgOffsetY !== undefined) bgOffsetY = data.bgOffsetY;
       if (data.zones !== undefined) zones = data.zones;
       if (data.objects !== undefined) objects = data.objects;
-      selIdx = -1; draw(); alert('專案讀取成功！');
+      
+      if (data.bgBase64Data) {
+        bgBase64Data = data.bgBase64Data;
+        var img = new Image();
+        img.onload = function() {
+          bgImage = img;
+          showBgEnabled = true;
+          document.getElementById('btn-toggle-bg').style.display = 'inline-block';
+          document.getElementById('btn-toggle-bg').textContent = '👁 隱藏底圖';
+          updateBgCtrlPanelVisibility();
+          draw(); // 圖片完全載入完成，此時安全重繪
+        };
+        img.src = bgBase64Data;
+      } else {
+        bgImage = null;
+        bgBase64Data = null;
+        updateBgCtrlPanelVisibility();
+      }
+      
+      selIdx = -1; 
+      draw(); // 搶先進行第一次無圖重繪，防止畫面雪白
+      alert('專案與底圖已完整讀取成功！');
     } catch(err) { alert('檔案格式錯誤，無法讀取專案。'); }
   };
   reader.readAsText(file);
   event.target.value = ''; 
 }
 
-function resetAll() { zones = []; objects = []; selIdx = -1; resetBgTransform(); draw(); }
+function resetAll() { zones = []; objects = []; selIdx = -1; bgImage = null; bgBase64Data = null; resetBgTransform(); draw(); }
 
 window.addEventListener('resize', function() {
   initCanvasSize();
