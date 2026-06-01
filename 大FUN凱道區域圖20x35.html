@@ -18,7 +18,7 @@ body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;background:#f4f3
 .panel.active{display:block}
 .card{background:#fff;border-radius:12px;border:1px solid #e0dfd6;padding:14px;margin-bottom:12px}
 .card-title{font-size:13px;font-weight:600;color:#444441;margin-bottom:10px}
-.map-wrap{border-radius:8px;overflow:hidden;background:#faf9f5;touch-action:none;user-select:none}
+.map-wrap{border-radius:8px;overflow:hidden;background:#faf9f5;touch-action:none;user-select:none;position:relative;width:100%}
 canvas{display:block;width:100%;height:auto}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
 .infobox{font-size:12px;color:#6b6960;background:#f5f5f0;padding:6px 10px;border-radius:6px;flex:1;min-width:160px;line-height:1.5}
@@ -44,6 +44,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
 .sw{width:16px;height:16px;border-radius:3px;cursor:pointer;border:1px solid #e0dfd6;display:inline-block;vertical-align:middle}
 .note{font-size:11px;color:#9a9890;margin-top:6px;line-height:1.6}
 .hl td{background:#e8f0fe}
+.bg-controls{display:none;align-items:center;gap:4px;background:#edece4;padding:4px 8px;border-radius:6px;border:1px solid #d3d1c7}
 </style>
 </head>
 <body>
@@ -64,19 +65,36 @@ td input[type=number]:focus{border-color:#888780;outline:none}
     <div class="toolbar">
       <div class="view-toggle">
         <button class="vt-btn active" id="vt-layout" onclick="setView('layout')">📐 移動 20x35 框架</button>
+        <button class="vt-btn" id="vt-zone" onclick="setView('zone')">⬡ 區域場布(定區域)</button>
         <button class="vt-btn" id="vt-detail" onclick="setView('detail')">🔍 精細場布 (放物件)</button>
       </div>
+      
       <button class="btn" id="btn-toggle-zone" onclick="toggleZoneVisibility()" style="color:#0066cc;border-color:#90caf9;font-weight:600">👁 隱藏活動區域</button>
       
       <button class="btn" onclick="document.getElementById('bg-uploader').click()" style="color:#7b1fa2;border-color:#e1bee7;font-weight:600">📂 載入底圖</button>
       <input type="file" id="bg-uploader" accept="image/*" style="display:none" onchange="handleBgUpload(event)">
       <button class="btn" id="btn-toggle-bg" onclick="toggleBgVisibility()" style="color:#555;border-color:#ccc;display:none;">👁 隱藏底圖</button>
       
+      <div class="bg-controls" id="bg-ctrl-panel">
+        <span style="font-size:11px;color:#555;font-weight:600">底圖控制:</span>
+        <button class="btn" style="padding:2px 8px" onclick="adjustBgScale(0.1)">➕ 放大</button>
+        <button class="btn" style="padding:2px 8px" onclick="adjustBgScale(-0.1)">➖ 縮小</button>
+        <button class="btn" style="padding:2px 8px" onclick="moveBg(-2,0)">⬅️</button>
+        <button class="btn" style="padding:2px 8px" onclick="moveBg(2,0)">➡️</button>
+        <button class="btn" style="padding:2px 8px" onclick="moveBg(0,-2)">⬆️</button>
+        <button class="btn" style="padding:2px 8px" onclick="moveBg(0,2)">⬇️</button>
+        <button class="btn" style="padding:2px 8px" onclick="resetBgTransform()">↺ 還原</button>
+      </div>
+
       <div class="infobox" id="infobox"></div>
-      <button class="btn" style="color:#1565c0; border-color:#90caf9;" onclick="addZone()">＋ 新增區域</button>
+      
+      <button class="btn" id="btn-add-zone" style="color:#1565c0; border-color:#90caf9; display:none;" onclick="addZone()">＋ 新增區域</button>
+      <button class="btn" style="color:#2e7d32; border-color:#a5d6a7; font-weight:600;" onclick="saveProject()">💾 儲存專案</button>
+      <button class="btn" style="color:#e65100; border-color:#ffcc80; font-weight:600;" onclick="document.getElementById('project-loader').click()">📂 讀取專案</button>
+      <input type="file" id="project-loader" accept=".json" style="display:none" onchange="loadProject(event)">
       <button class="btn" onclick="resetAll()">↺ 重設</button>
     </div>
-    <div class="map-wrap"><canvas id="cv" width="900" height="600" style="width: 600px; height: 400px; cursor: default;"></canvas></div>
+    <div class="map-wrap"><canvas id="cv"></canvas></div>
     <div class="legend" id="legend-bar"></div>
   </div>
 
@@ -131,83 +149,115 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         </tr></thead><tbody id="otbody"></tbody></table>
       </div>
     </div>
-    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。<br>2. 保持在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色的 20mx35m 粗線框**到目標布置範圍。<br>3. 切換至「🔍 精細場布」模式鎖定邊框，即可點擊「＋ 新增區域」或下方小物件丟進紅色框內進行擺設。</p>
+    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。（可用滾輪或控制鈕縮放、平移底圖）<br>2. 在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色粗線框**到目標布置範圍。<br>3. 切換至「⬡ 區域場布(定區域)」模式來點擊「＋ 新增區域」或進行區域位置、大小調整。<br>4. 切換至「🔍 精細場布」模式，即可新增與擺設下方小物件設施。</p>
   </div>
 </div>
 
 <div id="panel-manual" class="panel">
 <div class="card" style="margin-top:12px"><div class="manual">
   <h2>操作手冊 — 大底圖隨意對焦移動版</h2>
-  <p>1. 📐 <b>移動框架模式</b>：在此模式下，用滑鼠按住拖曳，可以移動紅色粗線的 20x35米 工作框架到大圖上的特定區域。</p>
-  <p>2. 🔍 <b>精細場布模式</b>：工作框架固定鎖定。您可以自由在框架內點選新增活動色塊、或擺放各尺寸帳篷設施。</p>
+  <p>1. 📐 <b>移動框架模式</b>：在此模式下，只能移動紅色粗線的 20x35米 工作框架，避免誤觸其他物件。</p>
+  <p>2. ⬡ <b>區域場布(定區域)模式</b>：框架鎖定。此模式專門用來新增活動色塊、拖移區域位置，以及透過表格修改尺寸。</p>
+  <p>3. 🔍 <b>精細場布模式</b>：工作框架與區域皆鎖定。您可以自由在框架內擺放各尺寸帳篷設施，不用擔心手滑移到背景區域。</p>
+  <p>4. 🌐 <b>底圖縮放與平移</b>：載入底圖後，除了控制面板外，亦可在畫布上直接使用<b>滑鼠滾輪</b>快速放大縮小底圖。</p>
 </div></div>
 </div>
 
 <script>
-var HANDLE_M=2.5, DPR=1;
+var screenW = 60, screenH = 40; 
+var frameW = 35, frameH = 20;    
+var frameX = 10, frameY = 15;
 
-// 虛擬地圖總背景尺寸 (公尺)
-var screenW=60, screenH=40; 
-// 您的場布固定工作框大小 (20m x 35m)
-var frameW=35, frameH=20;    
+var MAR = {top:30, right:30, bottom:30, left:30};
+var COLORS = ['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
 
-// 紅色框架在大圖上的位置 (可拖移)
-var frameX=10, frameY=15;
-
-var MAR={top:30, right:30, bottom:30, left:30};
-var COLORS=['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
-
-var OBJ_DEF={
-  tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63', isTent:true},
-  ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b', isTent:true},
-  royal:    {label:'宮廷帳',    emoji:'⛺️', w:5,  h:5,  c:'#5d4037', isTent:true},
-  king10:   {label:'10米帝王帳',emoji:'🛖',  w:10, h:10, c:'#6d4c41', isTent:true},
-  king15:   {label:'15米帝王帳',emoji:'🏠',  w:15, h:15, c:'#4e342e', isTent:true},
-  broadcast:{label:'廣播塔',    emoji:'📢',  w:6,  h:6,  c:'#546e7a', isTent:false},
-  toilet2:  {label:'流動廁所',  emoji:'🚾',  w:3,  h:3,  c:'#00acc1', isTent:false},
-  nursing:  {label:'哺乳車',    emoji:'🧸',  w:4,  h:3,  c:'#f06292', isTent:false},
-  water:    {label:'水車',      emoji:'🚰',  w:3,  h:3,  c:'#29b6f6', isTent:false},
-  toilet:   {label:'洗手區',    emoji:'🚿',w:3,h:3,c:'#26c6da', isTent:false},
-  food:     {label:'餐車',      emoji:'🚐',w:4,h:3,c:'#ffa726', isTent:false},
-  stage:    {label:'舞台',      emoji:'🎤',w:12,h:8,c:'#ab47bc', isTent:false},
-  info:     {label:'服務台',    emoji:'ℹ️',w:3,h:2,c:'#66bb6a', isTent:false},
-  medic:    {label:'救護站',    emoji:'🏥',w:3,h:3,c:'#ef5350', isTent:false},
-  power:    {label:'發電機',    emoji:'⚡',w:2,h:2,c:'#fdd835', isTent:false},
+var OBJ_DEF = {
+  tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63'},
+  ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b'},
+  royal:    {label:'宮廷帳',    emoji:'⛺️', w:5,  h:5,  c:'#5d4037'},
+  king10:   {label:'10米帝王帳',emoji:'🛖',  w:10, h:10, c:'#6d4c41'},
+  king15:   {label:'15米帝王帳',emoji:'🏠',  w:15, h:15, c:'#4e342e'},
+  broadcast:{label:'廣播塔',    emoji:'📢',  w:6,  h:6,  c:'#546e7a'},
+  toilet2:  {label:'流動廁所',  emoji:'🚾',  w:3,  h:3,  c:'#00acc1'},
+  nursing:  {label:'哺乳車',    emoji:'🧸',  w:4,  h:3,  c:'#f06292'},
+  water:    {label:'水車',      emoji:'🚰',  w:3,  h:3,  c:'#29b6f6'},
+  toilet:   {label:'洗手區',    emoji:'🚿',  w:3,  h:3,  c:'#26c6da'},
+  food:     {label:'餐車',      emoji:'🚐',  w:4,  h:3,  c:'#ffa726'},
+  stage:    {label:'舞台',      emoji:'🎤',  w:12, h:8,  c:'#ab47bc'},
+  info:     {label:'服務台',    emoji:'ℹ️',  w:3,  h:2,  c:'#66bb6a'},
+  medic:    {label:'救護站',    emoji:'🏥',  w:3,  h:3,  c:'#ef5350'},
+  power:    {label:'發電機',    emoji:'⚡',  w:2,  h:2,  c:'#fdd835'}
 };
 
-var zones=[]; 
-var objects=[];
-var selIdx=-1, selType='zone', drag=null, sc=1, viewMode='layout';
+var zones = []; 
+var objects = [];
+var selIdx = -1, selType = 'zone', drag = null, sc = 1, viewMode = 'layout';
 
 var showZonesEnabled = true;
 var bgImage = null;
 var showBgEnabled = true;
 
-var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+var bgScale = 1.0;
+var bgOffsetX = 0; 
+var bgOffsetY = 0; 
 
-function showPanel(id,btn){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.nav .tab-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('panel-'+id).classList.add('active');
-  btn.classList.add('active');
-  if(id==='map') requestAnimationFrame(draw);
+var cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+
+function initCanvasSize() {
+  var cssW = cv.parentElement.clientWidth || 900;
+  sc = (cssW - MAR.left - MAR.right) / screenW;
+  var cssH = screenH * sc + MAR.top + MAR.bottom;
+  
+  // 完全固定 1:1 解析度像素，杜絕 Ctx 狀態衝突
+  cv.width = cssW;
+  cv.height = cssH;
+  cv.style.width = cssW + 'px';
+  cv.style.height = cssH + 'px';
 }
 
-function setView(mode){
-  viewMode=mode;
-  document.getElementById('vt-layout').classList.toggle('active',mode==='layout');
-  document.getElementById('vt-detail').classList.toggle('active',mode==='detail');
-  document.getElementById('obj-panel').style.display=mode==='detail'?'block':'none';
-  document.getElementById('otbl-section').style.display=mode==='detail'?'block':'none';
+function wrapL(txt, maxW, fs) {
+  if (!txt) return [''];
+  var words = txt.split(''), lines = [], line = '';
+  ctx.font = 'bold ' + fs + 'px sans-serif';
+  for (var i = 0; i < words.length; i++) {
+    var test = line + words[i];
+    if (ctx.measureText(test).width > maxW && i > 0) {
+      lines.push(line); 
+      line = words[i];
+    } else {
+      line = test;
+    }
+  }
+  lines.push(line);
+  return lines;
+}
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav .tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'map') draw();
+}
+
+function setView(mode) {
+  viewMode = mode;
+  document.getElementById('vt-layout').classList.toggle('active', mode === 'layout');
+  document.getElementById('vt-zone').classList.toggle('active', mode === 'zone');
+  document.getElementById('vt-detail').classList.toggle('active', mode === 'detail');
+  
+  document.getElementById('btn-add-zone').style.display = (mode === 'zone') ? 'inline-block' : 'none';
+  document.getElementById('obj-panel').style.display = (mode === 'detail') ? 'block' : 'none';
+  document.getElementById('otbl-section').style.display = (mode === 'detail') ? 'block' : 'none';
   selIdx = -1;
   updateInfo(); draw();
 }
 
-function toggleZoneVisibility(){
+function toggleZoneVisibility() {
   showZonesEnabled = !showZonesEnabled;
   var btn = document.getElementById('btn-toggle-zone');
   btn.textContent = showZonesEnabled ? '👁 隱藏活動區域' : '👁 顯示活動區域';
-  if(!showZonesEnabled && selType==='zone') selIdx = -1;
+  if (!showZonesEnabled && selType === 'zone') selIdx = -1;
   updateInfo(); draw();
 }
 
@@ -220,8 +270,10 @@ function handleBgUpload(event) {
     img.onload = function() {
       bgImage = img;
       showBgEnabled = true;
+      resetBgTransform();
       document.getElementById('btn-toggle-bg').style.display = 'inline-block';
       document.getElementById('btn-toggle-bg').textContent = '👁 隱藏底圖';
+      updateBgCtrlPanelVisibility();
       draw();
     };
     img.src = e.target.result;
@@ -234,253 +286,329 @@ function toggleBgVisibility() {
   showBgEnabled = !showBgEnabled;
   var btn = document.getElementById('btn-toggle-bg');
   btn.textContent = showBgEnabled ? '👁 隱藏底圖' : '👁 顯示底圖';
+  updateBgCtrlPanelVisibility();
   draw();
 }
 
-function setupCanvas(){
-  var cssW=cv.parentElement.clientWidth||900;
-  sc=(cssW-MAR.left-MAR.right)/screenW;
-  var cssH=screenH*sc+MAR.top+MAR.bottom;
-  
-  // 固定使用高畫質渲染解析度，移除重複轉換造成的坐標擴大衝突錯誤
-  cv.width = cssW * 1.5; 
-  cv.height = cssH * 1.5;
-  cv.style.width = cssW+'px'; 
-  cv.style.height = cssH+'px';
-  ctx.setTransform(1.5, 0, 0, 1.5, 0, 0);
-  return {cssW:cssW};
+function updateBgCtrlPanelVisibility() {
+  var panel = document.getElementById('bg-ctrl-panel');
+  if (bgImage && showBgEnabled) { panel.style.display = 'flex'; } 
+  else { panel.style.display = 'none'; }
 }
 
-function cx(m){return MAR.left+m*sc;}
-function cy(m){return MAR.top+(screenH-m)*sc;}
+function adjustBgScale(delta) {
+  bgScale = Math.max(0.2, Math.min(5.0, bgScale + delta));
+  draw();
+}
+function moveBg(dx, dy) {
+  bgOffsetX += dx;
+  bgOffsetY += dy;
+  draw();
+}
+function resetBgTransform() {
+  bgScale = 1.0;
+  bgOffsetX = 0;
+  bgOffsetY = 0;
+  draw();
+}
 
-function draw(){
-  var g=setupCanvas();
-  ctx.clearRect(0,0,g.cssW,screenH*sc+MAR.top+MAR.bottom);
+cv.addEventListener('wheel', function(e) {
+  if (bgImage && showBgEnabled) {
+    e.preventDefault();
+    var delta = e.deltaY < 0 ? 0.05 : -0.05;
+    adjustBgScale(delta);
+  }
+}, { passive: false });
+
+function cx(m) { return MAR.left + m * sc; }
+function cy(m) { return MAR.top + (screenH - m) * sc; }
+
+function draw() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
   
-  // 1. 滿版大底圖繪製
   if (bgImage && showBgEnabled) {
     ctx.save();
     ctx.globalAlpha = 0.75;
-    ctx.drawImage(bgImage, cx(0), cy(screenH), screenW * sc, screenH * sc);
+    var tw = screenW * sc * bgScale;
+    var th = screenH * sc * bgScale;
+    var tx = cx(0) + bgOffsetX * sc - (tw - screenW * sc) / 2;
+    var ty = cy(screenH) - bgOffsetY * sc - (th - screenH * sc) / 2;
+    ctx.drawImage(bgImage, tx, ty, tw, th);
     ctx.restore();
   }
 
-  // 2. 繪製格線與工作框架
   drawGrid();
   drawTargetFrame(); 
   
-  if(showZonesEnabled) drawZones();
-  if(viewMode==='detail') drawObjects();
+  if (showZonesEnabled) drawZones();
+  if (viewMode === 'detail') drawObjects();
+  
   updateInfo(); renderTable(); renderObjTable();
 }
 
-function drawGrid(){
-  // 網格線設定（清晰黑/灰色系）
-  for(var x=0; x<=screenW; x+=1){
+function drawGrid() {
+  for (var x = 0; x <= screenW; x += 1) {
     var is5 = (x % 5 === 0);
     var is10 = (x % 10 === 0);
     if (!is5) continue; 
     ctx.strokeStyle = is10 ? 'rgba(50,50,50,0.3)' : 'rgba(0,0,0,0.1)';
     ctx.lineWidth = is10 ? 1.0 : 0.5;
-    ctx.beginPath(); ctx.moveTo(cx(x),cy(0)); ctx.lineTo(cx(x),cy(screenH)); ctx.stroke();
-    
+    ctx.beginPath(); ctx.moveTo(cx(x), cy(0)); ctx.lineTo(cx(x), cy(screenH)); ctx.stroke();
     if (is10) {
-      ctx.fillStyle='#444'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
-      ctx.fillText(x+'m', cx(x), cy(0)+12);
+      ctx.fillStyle = '#444'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(x + 'm', cx(x), cy(0) + 12);
     }
   }
-  for(var y=0; y<=screenH; y+=1){
+  for (var y = 0; y <= screenH; y += 1) {
     var is5y = (y % 5 === 0);
     var is10y = (y % 10 === 0);
     if (!is5y) continue;
     ctx.strokeStyle = is10y ? 'rgba(50,50,50,0.3)' : 'rgba(0,0,0,0.1)';
     ctx.lineWidth = is10y ? 1.0 : 0.5;
-    ctx.beginPath(); ctx.moveTo(cx(0),cy(y)); ctx.lineTo(cx(screenW),cy(y)); ctx.stroke();
-    
+    ctx.beginPath(); ctx.moveTo(cx(0), cy(y)); ctx.lineTo(cx(screenW), cy(y)); ctx.stroke();
     if (is10y) {
-      ctx.fillStyle='#444'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right';
-      ctx.fillText(y+'m', cx(0)-5, cy(y)+3);
+      ctx.fillStyle = '#444'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText(y + 'm', cx(0) - 5, cy(y) + 3);
     }
   }
 }
 
-function drawTargetFrame(){
-  var rx=cx(frameX), ry=cy(frameY+frameH), rw=frameW*sc, rh=frameH*sc;
-  
+function drawTargetFrame() {
+  var rx = cx(frameX), ry = cy(frameY + frameH), rw = frameW * sc, rh = frameH * sc;
   ctx.save();
-  // 框內加上微白色透光層，便於辨識工作空間範圍
   ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
   ctx.fillRect(rx, ry, rw, rh);
   
-  // 內部 1m 精細隱形虛線格
   ctx.strokeStyle = 'rgba(211, 47, 47, 0.08)';
   ctx.lineWidth = 0.4;
-  for(var x=1; x<frameW; x++){
-    ctx.beginPath(); ctx.moveTo(cx(frameX+x), cy(frameY)); ctx.lineTo(cx(frameX+x), cy(frameY+frameH)); ctx.stroke();
+  for (var x = 1; x < frameW; x++) {
+    ctx.beginPath(); ctx.moveTo(cx(frameX + x), cy(frameY)); ctx.lineTo(cx(frameX + x), cy(frameY + frameH)); ctx.stroke();
   }
-  for(var y=1; y<frameH; y++){
-    ctx.beginPath(); ctx.moveTo(cx(frameX), cy(frameY+y)); ctx.lineTo(cx(frameX+frameW), cy(frameY+y)); ctx.stroke();
+  for (var y = 1; y < frameH; y++) {
+    ctx.beginPath(); ctx.moveTo(cx(frameX), cy(frameY + y)); ctx.lineTo(cx(frameX + frameW), cy(frameY + y)); ctx.stroke();
   }
-
-  // 外部邊界線
   ctx.strokeStyle = '#d32f2f';
   ctx.lineWidth = (viewMode === 'layout') ? 3.0 : 1.5;
-  if(viewMode === 'layout') ctx.setLineDash([5, 3]);
+  if (viewMode === 'layout') ctx.setLineDash([5, 3]);
   ctx.strokeRect(rx, ry, rw, rh);
   ctx.restore();
 
   ctx.fillStyle = '#d32f2f'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'left';
-  ctx.fillText(' 📌 目標布置框 (20m × 35m) 框左下起點:('+frameX+','+frameY+')', rx+4, ry+14);
+  ctx.fillText(' 📌 目標布置框 (20m × 35m) 框左下起點:(' + frameX + ',' + frameY + ')', rx + 4, ry + 14);
 }
 
-function drawZones(){
-  var isDetail = (viewMode === 'detail');
-  zones.forEach(function(z,i){
-    var sel=(selType==='zone'&&i===selIdx);
+function drawZones() {
+  var isZoneOrLayout = (viewMode === 'zone' || viewMode === 'layout');
+  zones.forEach(function(z, i) {
+    var sel = (selType === 'zone' && i === selIdx);
     var absX = frameX + z.ox;
     var absY = frameY + z.oy;
-    var rx=cx(absX), ry=cy(absY+z.w), rw=z.l*sc, rh=z.w*sc;
+    var rx = cx(absX), ry = cy(absY + z.w), rw = z.l * sc, rh = z.w * sc;
     
-    ctx.globalAlpha = isDetail ? (sel ? 0.15 : 0.06) : (sel ? 0.35 : 0.22);
-    ctx.fillStyle=z.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    ctx.globalAlpha = !isZoneOrLayout ? 0.06 : (sel ? 0.45 : 0.25);
+    ctx.fillStyle = z.c; ctx.fillRect(rx, ry, rw, rh); ctx.globalAlpha = 1;
+    ctx.strokeStyle = z.c; ctx.lineWidth = sel ? 2.5 : 1.0;
+    ctx.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rh - 1);
     
-    ctx.strokeStyle=z.c; ctx.lineWidth=sel?2.0 : 1.0;
-    ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
-    
-    var fs=10;
-    ctx.fillStyle=z.c; ctx.font='bold '+fs+'px sans-serif'; ctx.textAlign='center';
-    var lines=wrapL(z.name,rw,fs), tyStart=ry+fs+4;
-    lines.forEach(function(ln,li){ctx.fillText(ln,rx+rw/2,tyStart+li*(fs+2),rw-4);});
+    var fs = 10;
+    ctx.fillStyle = z.c; ctx.font = 'bold ' + fs + 'px sans-serif'; ctx.textAlign = 'center';
+    var lines = wrapL(z.name, rw, fs), tyStart = ry + fs + 4;
+    lines.forEach(function(ln, li) { ctx.fillText(ln, rx + rw / 2, tyStart + li * (fs + 2), rw - 4); });
   });
 }
 
-function drawObjects(){
-  objects.forEach(function(o,i){
-    var sel=(selType==='obj'&&i===selIdx);
-    var rx=cx(o.ox), ry=cy(o.oy+o.h), rw=o.w*sc, rh=o.h*sc;
-    ctx.globalAlpha=sel?0.4:0.25; ctx.fillStyle=o.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
-    ctx.strokeStyle=o.c; ctx.lineWidth=sel?1.8 : 1.0; ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
-    
-    var efs=Math.max(10,Math.min(16,rw*0.45));
-    ctx.font=efs+'px serif'; ctx.textAlign='center'; ctx.fillText(o.emoji,rx+rw/2,ry+rh/2+efs*0.3);
+function drawObjects() {
+  objects.forEach(function(o, i) {
+    var sel = (selType === 'obj' && i === selIdx);
+    var rx = cx(o.ox), ry = cy(o.oy + o.h), rw = o.w * sc, rh = o.h * sc;
+    ctx.globalAlpha = sel ? 0.4 : 0.25; ctx.fillStyle = o.c; ctx.fillRect(rx, ry, rw, rh); ctx.globalAlpha = 1;
+    ctx.strokeStyle = o.c; ctx.lineWidth = sel ? 1.8 : 1.0; ctx.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rh - 1);
+    var efs = Math.max(10, Math.min(16, rw * 0.45));
+    ctx.font = efs + 'px serif'; ctx.textAlign = 'center'; ctx.fillText(o.emoji, rx + rw / 2, ry + rh / 2 + efs * 0.3);
   });
 }
 
-function getPos(e){var r=cv.getBoundingClientRect(),src=e.touches?e.touches[0]:e; return{x:src.clientX-r.left,y:src.clientY-r.top};}
-function toReal(px,py){return{rx:(px-MAR.left)/sc,ry:screenH-(py-MAR.top)/sc};}
-function inR(rx,ry,ox,oy,w,h){return rx>=ox&&rx<=ox+w&&ry>=oy&&ry<=oy+h;}
+function getPos(e) {
+  var r = cv.getBoundingClientRect();
+  var src = e.touches ? e.touches[0] : e; 
+  // 1:1 純粹對應，絕不發生滑鼠與畫布漂移
+  var x = (src.clientX - r.left) * (cv.width / r.width);
+  var y = (src.clientY - r.top) * (cv.height / r.height);
+  return {x: x, y: y};
+}
+function toReal(px, py) { return {rx: (px - MAR.left) / sc, ry: screenH - (py - MAR.top) / sc}; }
+function inR(rx, ry, ox, oy, w, h) { return rx >= ox && rx <= ox + w && ry >= oy && ry <= oy + h; }
 
-cv.addEventListener('mousedown',onDown); cv.addEventListener('touchstart',onDown,{passive:false});
-cv.addEventListener('mousemove',onMove); cv.addEventListener('touchmove',onMove,{passive:false});
-cv.addEventListener('mouseup',onUp); cv.addEventListener('touchend',onUp);
+cv.addEventListener('mousedown', onDown); cv.addEventListener('touchstart', onDown, {passive:false});
+cv.addEventListener('mousemove', onMove); cv.addEventListener('touchmove', onMove, {passive:false});
+cv.addEventListener('mouseup', onUp); cv.addEventListener('touchend', onUp);
 
-function onDown(e){
-  e.preventDefault(); var p=getPos(e), r=toReal(p.x,p.y);
-  
-  if(viewMode === 'layout') {
-    if(inR(r.rx, r.ry, frameX, frameY, frameW, frameH)) {
-      drag = { type:'frame', offX: r.rx - frameX, offY: r.ry - frameY };
+function onDown(e) {
+  e.preventDefault(); var p = getPos(e), r = toReal(p.x, p.y);
+  if (viewMode === 'layout') {
+    if (inR(r.rx, r.ry, frameX, frameY, frameW, frameH)) {
+      drag = { type: 'frame', offX: r.rx - frameX, offY: r.ry - frameY };
     } else {
-      frameX = Math.max(0, Math.min(screenW-frameW, Math.round(r.rx - frameW/2)));
-      frameY = Math.max(0, Math.min(screenH-frameH, Math.round(r.ry - frameH/2)));
-      drag = { type:'frame', offX: frameW/2, offY: frameH/2 };
+      frameX = Math.max(0, Math.min(screenW - frameW, Math.round(r.rx - frameW / 2)));
+      frameY = Math.max(0, Math.min(screenH - frameH, Math.round(r.ry - frameH / 2)));
+      drag = { type: 'frame', offX: frameW / 2, offY: frameH / 2 };
       draw();
     }
     return;
   }
-  
-  for(var i=objects.length-1;i>=0;i--){
-    if(inR(r.rx,r.ry,objects[i].ox,objects[i].oy,objects[i].w,objects[i].h)){
-      selType='obj'; selIdx=i; drag={type:'obj', idx:i, offX:r.rx-objects[i].ox, offY:r.ry-objects[i].oy};
-      draw(); return;
-    }
-  }
-  if(showZonesEnabled){
-    for(var j=zones.length-1;j>=0;j--){
-      var z = zones[j];
-      if(inR(r.rx,r.ry, frameX+z.ox, frameY+z.oy, z.l, z.w)){
-        selType='zone'; selIdx=j; drag=null; updateInfo(); draw(); return;
+  if (viewMode === 'zone') {
+    if (showZonesEnabled) {
+      for (var j = zones.length - 1; j >= 0; j--) {
+        var z = zones[j];
+        if (inR(r.rx, r.ry, frameX + z.ox, frameY + z.oy, z.l, z.w)) {
+          selType = 'zone'; selIdx = j; 
+          drag = { type: 'zone', idx: j, offX: r.rx - (frameX + z.ox), offY: r.ry - (frameY + z.oy) }; 
+          updateInfo(); draw(); return;
+        }
       }
     }
+    selIdx = -1; drag = null; draw();
+    return;
   }
-  selIdx=-1; drag=null; draw();
+  if (viewMode === 'detail') {
+    for (var i = objects.length - 1; i >= 0; i--) {
+      if (inR(r.rx, r.ry, objects[i].ox, objects[i].oy, objects[i].w, objects[i].h)) {
+        selType = 'obj'; selIdx = i; drag = { type: 'obj', idx: i, offX: r.rx - objects[i].ox, offY: r.ry - objects[i].oy };
+        draw(); return;
+      }
+    }
+    selIdx = -1; drag = null; draw();
+  }
 }
 
-function onMove(e){
-  e.preventDefault(); var p=getPos(e), r=toReal(p.x,p.y);
-  if(!drag) return;
-  
-  if(drag.type === 'frame') {
-    frameX = Math.max(0, Math.min(screenW-frameW, Math.round(r.rx - drag.offX)));
-    frameY = Math.max(0, Math.min(screenH-frameH, Math.round(r.ry - drag.offY)));
+function onMove(e) {
+  e.preventDefault(); var p = getPos(e), r = toReal(p.x, p.y);
+  if (!drag) return;
+  if (drag.type === 'frame' && viewMode === 'layout') {
+    frameX = Math.max(0, Math.min(screenW - frameW, Math.round(r.rx - drag.offX)));
+    frameY = Math.max(0, Math.min(screenH - frameH, Math.round(r.ry - drag.offY)));
   }
-  else if(drag.type === 'obj') {
+  else if (drag.type === 'zone' && viewMode === 'zone') {
+    var z = zones[drag.idx];
+    var targetAbsX = r.rx - drag.offX;
+    var targetAbsY = r.ry - drag.offY;
+    z.ox = Math.max(0, Math.min(frameW - z.l, Math.round(targetAbsX - frameX)));
+    z.oy = Math.max(0, Math.min(frameH - z.w, Math.round(targetAbsY - frameY)));
+  }
+  else if (drag.type === 'obj' && viewMode === 'detail') {
     var o = objects[drag.idx];
-    o.ox = Math.max(0, Math.min(screenW-o.w, Math.round(r.rx - drag.offX)));
-    o.oy = Math.max(0, Math.min(screenH-o.h, Math.round(r.ry - drag.offY)));
+    o.ox = Math.max(0, Math.min(screenW - o.w, Math.round(r.rx - drag.offX)));
+    o.oy = Math.max(0, Math.min(screenH - o.h, Math.round(r.ry - drag.offY)));
   }
   draw();
 }
-function onUp(){drag=null;}
+function onUp() { drag = null; }
 
-function addZone(){
-  // 新活動色塊預設長寬為 10x10m 丟入框內
-  zones.push({name:'新活動區域', ox:2, oy:2, l:10, w:10, c:COLORS[zones.length%COLORS.length]});
-  selType='zone'; selIdx=zones.length-1; draw();
+function addZone() {
+  if (viewMode !== 'zone') return;
+  zones.push({name: '新活動區域', ox: 2, oy: 2, l: 10, w: 10, c: COLORS[zones.length % COLORS.length]});
+  selType = 'zone'; selIdx = zones.length - 1; draw();
 }
-function addObj(type){
-  var d=OBJ_DEF[type];
-  objects.push({type:type, label:d.label, emoji:d.emoji, w:d.w, h:d.h, c:d.c, ox:Math.round(frameX+frameW/2-d.w/2), oy:Math.round(frameY+frameH/2-d.h/2)});
-  selType='obj'; selIdx=objects.length-1; draw();
+function addObj(type) {
+  var d = OBJ_DEF[type];
+  objects.push({type: type, label: d.label, emoji: d.emoji, w: d.w, h: d.h, c: d.c, ox: Math.round(frameX + frameW / 2 - d.w / 2), oy: Math.round(frameY + frameH / 2 - d.h / 2)});
+  selType = 'obj'; selIdx = objects.length - 1; draw();
 }
 
-function delZ(i){zones.splice(i,1); selIdx=-1; draw();}
-function delO(i){objects.splice(i,1); selIdx=-1; draw();}
+function delZ(i) { zones.splice(i, 1); selIdx = -1; draw(); }
+function delO(i) { objects.splice(i, 1); selIdx = -1; draw(); }
 
-function updateInfo(){
-  var box=document.getElementById('infobox'); if(!box) return;
-  if(viewMode === 'layout') {
-    box.innerHTML = '📐 <b>工作框移動模式</b>：請按住並拖曳紅框，將 20x35 米的布置範圍對準底圖。';
+function updateInfo() {
+  var box = document.getElementById('infobox'); if (!box) return;
+  if (viewMode === 'layout') {
+    box.innerHTML = '📐 <b>工作框移動模式</b>：請拖曳紅框對準底圖。此時無法動到區域與物件。';
     return;
   }
-  if(selIdx<0){
-    box.innerHTML = '🔍 <b>精細配置模式</b>：工作框架已鎖定。可添加活動色塊或新增設施。';
-  } else if(selType === 'zone'){
-    var z = zones[selIdx];
-    box.innerHTML = '活動區：<strong>'+z.name+'</strong> | 框內相對位置:('+z.ox+','+z.oy+') | 面積：'+(z.l*z.w)+'m²';
+  if (viewMode === 'zone') {
+    if (selIdx < 0) box.innerHTML = '⬡ <b>區域場布模式</b>：可點擊「＋ 新增區域」或在畫布上拖移各區色塊。';
+    else {
+      var z = zones[selIdx];
+      box.innerHTML = '活動區：<strong>' + z.name + '</strong> | 框內相對位置:(' + z.ox + ',' + z.oy + ') | 面積：' + (z.l * z.w) + 'm²';
+    }
+    return;
+  }
+  if (selIdx < 0) {
+    box.innerHTML = '🔍 <b>精細配置模式</b>：工作框架與區域已鎖定。可點擊下方小物件放入框內布置。';
   } else {
     var o = objects[selIdx];
-    box.innerHTML = '設施：<strong>'+o.label+'</strong> | 絕對位置:('+o.ox+','+o.oy+')';
+    box.innerHTML = '設施：<strong>' + o.label + '</strong> | 絕對位置:(' + o.ox + ',' + o.oy + ')';
   }
 }
 
-function renderTable(){
-  var tb=document.getElementById('tbody'); if(!tb) return; tb.innerHTML='';
-  zones.forEach(function(z,i){
-    var tr=document.createElement('tr'); if(selType==='zone'&&i===selIdx) tr.className='hl';
-    tr.innerHTML='<td><span class="sw" style="background:'+z.c+'"></span></td>'
-      +'<td><input type="text" value="'+z.name+'" oninput="zones['+i+'].name=this.value;draw();"></td>'
-      +'<td><input type="number" value="'+z.l+'" oninput="zones['+i+'].l=+this.value;draw();"></td>'
-      +'<td><input type="number" value="'+z.w+'" oninput="zones['+i+'].w=+this.value;draw();"></td>'
-      +'<td>'+(z.l*z.w)+' m²</td>'
-      +'<td>相對框內 ('+z.ox+','+z.oy+')</td>'
-      +'<td><button class="btn" onclick="delZ('+i+')">✕</button></td>';
+function renderTable() {
+  var tb = document.getElementById('tbody'); if (!tb) return; tb.innerHTML = '';
+  var disabledStr = (viewMode !== 'zone') ? 'disabled' : '';
+  zones.forEach(function(z, i) {
+    var tr = document.createElement('tr'); if (selType === 'zone' && i === selIdx) tr.className = 'hl';
+    tr.innerHTML = '<td><span class="sw" style="background:' + z.c + '"></span></td>'
+      + '<td><input type="text" value="' + z.name + '" ' + disabledStr + ' oninput="zones[' + i + '].name=this.value;draw();"></td>'
+      + '<td><input type="number" value="' + z.l + '" ' + disabledStr + ' oninput="zones[' + i + '].l=+this.value;draw();"></td>'
+      + '<td><input type="number" value="' + z.w + '" ' + disabledStr + ' oninput="zones[' + i + '].w=+this.value;draw();"></td>'
+      + '<td>' + (z.l * z.w) + ' m²</td>'
+      + '<td>相對框內 (' + z.ox + ',' + z.oy + ')</td>'
+      + '<td><button class="btn" ' + disabledStr + ' onclick="delZ(' + i + ')">✕</button></td>';
     tb.appendChild(tr);
   });
 }
-function renderObjTable(){
-  var tb=document.getElementById('otbody'); if(!tb) return; tb.innerHTML='';
-  objects.forEach(function(o,i){
-    var tr=document.createElement('tr'); if(selType==='obj'&&i===selIdx) tr.className='hl';
-    tr.innerHTML='<td>'+o.emoji+'</td><td>'+o.label+'</td><td>'+o.w+'</td><td>'+o.h+'</td>'
-      +'<td>圖上絕對 ('+o.ox+','+o.oy+')</td>'
-      +'<td><button class="btn" onclick="delO('+i+')">✕</button></td>';
+function renderObjTable() {
+  var tb = document.getElementById('otbody'); if (!tb) return; tb.innerHTML = '';
+  objects.forEach(function(o, i) {
+    var tr = document.createElement('tr'); if (selType === 'obj' && i === selIdx) tr.className = 'hl';
+    tr.innerHTML = '<td>' + o.emoji + '</td><td>' + o.label + '</td><td>' + o.w + '</td><td>' + o.h + '</td>'
+      + '<td>圖上絕對 (' + o.ox + ',' + o.oy + ')</td>'
+      + '<td><button class="btn" onclick="delO(' + i + ')">✕</button></td>';
     tb.appendChild(tr);
   });
 }
 
-function resetAll(){ zones=[]; objects=[]; selIdx=-1; draw(); }
+function saveProject() {
+  var projectData = {
+    frameX: frameX, frameY: frameY,
+    bgScale: bgScale, bgOffsetX: bgOffsetX, bgOffsetY: bgOffsetY,
+    zones: zones, objects: objects
+  };
+  var blob = new Blob([JSON.stringify(projectData, null, 2)], {type : 'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '場布規劃專案_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+
+function loadProject(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (data.frameX !== undefined) frameX = data.frameX;
+      if (data.frameY !== undefined) frameY = data.frameY;
+      if (data.bgScale !== undefined) bgScale = data.bgScale;
+      if (data.bgOffsetX !== undefined) bgOffsetX = data.bgOffsetX;
+      if (data.bgOffsetY !== undefined) bgOffsetY = data.bgOffsetY;
+      if (data.zones !== undefined) zones = data.zones;
+      if (data.objects !== undefined) objects = data.objects;
+      selIdx = -1; draw(); alert('專案讀取成功！');
+    } catch(err) { alert('檔案格式錯誤，無法讀取專案。'); }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; 
+}
+
+function resetAll() { zones = []; objects = []; selIdx = -1; resetBgTransform(); draw(); }
+
+window.addEventListener('resize', function() {
+  initCanvasSize();
+  draw();
+});
+
+// 穩健啟動
+initCanvasSize();
 draw();
 </script>
 </body>
