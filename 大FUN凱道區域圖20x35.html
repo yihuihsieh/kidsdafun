@@ -149,7 +149,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
         </tr></thead><tbody id="otbody"></tbody></table>
       </div>
     </div>
-    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。（可用滾輪或控制鈕縮放、平移底圖）<br>2. 在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色粗線框**到目標布置範圍。<br>3. 切換至「⬡ 區域場布(定區域)」模式來點擊「＋ 新增區域」或進行區域位置、大小調整。<br>4. 切換至「🔍 精細場布」模式，即可新增與擺設下方小物件設施。</p>
+    <p class="note">💡 **操作流程說明**：<br>1. 先點選「📂 載入底圖」，上傳您的場勘地圖圖片。（可用滾輪或控制鈕縮放、平移底圖）<br>2. 在「📐 移動 20x35 框架」模式下，用滑鼠**拖曳紅色粗線框**到目標布置範圍。<br>3. 切換至「⬡ 區域場布(定區域)」模式來點擊「＋ 新增區域」或進行區域位置、大小調整。（可拖曳色塊右下角修改尺寸）<br>4. 切換至「🔍 精細場布」模式，即可新增與擺設下方小物件設施。</p>
   </div>
 </div>
 
@@ -157,7 +157,7 @@ td input[type=number]:focus{border-color:#888780;outline:none}
 <div class="card" style="margin-top:12px"><div class="manual">
   <h2>操作手冊 — 大底圖隨意對焦移動版</h2>
   <p>1. 📐 <b>移動框架模式</b>：在此模式下，只能移動紅色粗線的 20x35米 工作框架，避免誤觸其他物件。</p>
-  <p>2. ⬡ <b>區域場布(定區域)模式</b>：框架鎖定。此模式專門用來新增活動色塊、拖移區域位置，以及透過表格修改尺寸。</p>
+  <p>2. ⬡ <b>區域場布(定區域)模式</b>：框架鎖定。此模式專門用來新增活動色塊、拖移區域位置，以及用滑鼠按住色塊<b>右下角灰色手把</b>來直接拖拉修改尺寸。</p>
   <p>3. 🔍 <b>精細場布模式</b>：工作框架與區域皆鎖定。您可以自由在框架內擺放各尺寸帳篷設施，不用擔心手滑移到背景區域。</p>
   <p>4. 🌐 <b>底圖縮放與平移</b>：載入底圖後，除了控制面板外，亦可在畫布上直接使用<b>滑鼠滾輪</b>快速放大縮小底圖。</p>
 </div></div>
@@ -208,7 +208,6 @@ function initCanvasSize() {
   sc = (cssW - MAR.left - MAR.right) / screenW;
   var cssH = screenH * sc + MAR.top + MAR.bottom;
   
-  // 完全固定 1:1 解析度像素，杜絕 Ctx 狀態衝突
   cv.width = cssW;
   cv.height = cssH;
   cv.style.width = cssW + 'px';
@@ -403,6 +402,7 @@ function drawZones() {
     var sel = (selType === 'zone' && i === selIdx);
     var absX = frameX + z.ox;
     var absY = frameY + z.oy;
+    
     var rx = cx(absX), ry = cy(absY + z.w), rw = z.l * sc, rh = z.w * sc;
     
     ctx.globalAlpha = !isZoneOrLayout ? 0.06 : (sel ? 0.45 : 0.25);
@@ -410,10 +410,39 @@ function drawZones() {
     ctx.strokeStyle = z.c; ctx.lineWidth = sel ? 2.5 : 1.0;
     ctx.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rh - 1);
     
+    if (viewMode === 'zone' && sel) {
+      ctx.fillStyle = '#555555';
+      ctx.fillRect(rx + rw - 8, ry + rh - 8, 8, 8);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(rx + rw - 8, ry + rh - 8, 8, 8);
+    }
+    
+    // 文字文字換行與資訊組合繪製
     var fs = 10;
-    ctx.fillStyle = z.c; ctx.font = 'bold ' + fs + 'px sans-serif'; ctx.textAlign = 'center';
-    var lines = wrapL(z.name, rw, fs), tyStart = ry + fs + 4;
-    lines.forEach(function(ln, li) { ctx.fillText(ln, rx + rw / 2, tyStart + li * (fs + 2), rw - 4); });
+    ctx.fillStyle = z.c; 
+    ctx.textAlign = 'center';
+    
+    // 把名稱、尺寸、面積依序加入文字佇列中
+    var txtArray = [];
+    var nameLines = wrapL(z.name, rw - 4, fs);
+    nameLines.forEach(function(ln) { txtArray.push(ln); });
+    
+    // 如果區塊夠大，就把尺寸和面積也塞進去文字行列中
+    if (rw > 40 && rh > 30) {
+      txtArray.push(z.l + '×' + z.w + 'm');
+      txtArray.push((z.l * z.w) + 'm²');
+    }
+    
+    // 計算整體文字堆疊的高度，使其在色塊垂直居中
+    var totalHeight = txtArray.length * (fs + 2);
+    var tyStart = ry + (rh - totalHeight) / 2 + fs;
+    
+    txtArray.forEach(function(ln, li) {
+      // 區名用粗體，尺寸和面積用稍微細一點或同等粗體（這裡統一用清晰的 sans-serif）
+      ctx.font = (li < nameLines.length) ? 'bold ' + fs + 'px sans-serif' : '9px sans-serif';
+      ctx.fillText(ln, rx + rw / 2, tyStart + li * (fs + 2), rw - 4);
+    });
   });
 }
 
@@ -431,7 +460,6 @@ function drawObjects() {
 function getPos(e) {
   var r = cv.getBoundingClientRect();
   var src = e.touches ? e.touches[0] : e; 
-  // 1:1 純粹對應，絕不發生滑鼠與畫布漂移
   var x = (src.clientX - r.left) * (cv.width / r.width);
   var y = (src.clientY - r.top) * (cv.height / r.height);
   return {x: x, y: y};
@@ -445,6 +473,7 @@ cv.addEventListener('mouseup', onUp); cv.addEventListener('touchend', onUp);
 
 function onDown(e) {
   e.preventDefault(); var p = getPos(e), r = toReal(p.x, p.y);
+  
   if (viewMode === 'layout') {
     if (inR(r.rx, r.ry, frameX, frameY, frameW, frameH)) {
       drag = { type: 'frame', offX: r.rx - frameX, offY: r.ry - frameY };
@@ -456,8 +485,19 @@ function onDown(e) {
     }
     return;
   }
+  
   if (viewMode === 'zone') {
     if (showZonesEnabled) {
+      if (selIdx >= 0 && selType === 'zone') {
+        var currZ = zones[selIdx];
+        var handleAbsX = frameX + currZ.ox + currZ.l;
+        var handleAbsY = frameY + currZ.oy; 
+        if (inR(r.rx, r.ry, handleAbsX - 1.5, handleAbsY, 1.5, 1.5)) {
+          drag = { type: 'zone-resize', idx: selIdx, startL: currZ.l, startW: currZ.w, startRx: r.rx, startRy: r.ry };
+          return;
+        }
+      }
+      
       for (var j = zones.length - 1; j >= 0; j--) {
         var z = zones[j];
         if (inR(r.rx, r.ry, frameX + z.ox, frameY + z.oy, z.l, z.w)) {
@@ -470,6 +510,7 @@ function onDown(e) {
     selIdx = -1; drag = null; draw();
     return;
   }
+  
   if (viewMode === 'detail') {
     for (var i = objects.length - 1; i >= 0; i--) {
       if (inR(r.rx, r.ry, objects[i].ox, objects[i].oy, objects[i].w, objects[i].h)) {
@@ -483,7 +524,22 @@ function onDown(e) {
 
 function onMove(e) {
   e.preventDefault(); var p = getPos(e), r = toReal(p.x, p.y);
+  
+  if (viewMode === 'zone' && selIdx >= 0 && selType === 'zone' && !drag) {
+    var currZ = zones[selIdx];
+    var handleAbsX = frameX + currZ.ox + currZ.l;
+    var handleAbsY = frameY + currZ.oy;
+    if (inR(r.rx, r.ry, handleAbsX - 1.5, handleAbsY, 1.5, 1.5)) {
+      cv.style.cursor = 'se-resize';
+    } else {
+      cv.style.cursor = 'default';
+    }
+  } else if (!drag) {
+    cv.style.cursor = 'default';
+  }
+
   if (!drag) return;
+  
   if (drag.type === 'frame' && viewMode === 'layout') {
     frameX = Math.max(0, Math.min(screenW - frameW, Math.round(r.rx - drag.offX)));
     frameY = Math.max(0, Math.min(screenH - frameH, Math.round(r.ry - drag.offY)));
@@ -495,6 +551,14 @@ function onMove(e) {
     z.ox = Math.max(0, Math.min(frameW - z.l, Math.round(targetAbsX - frameX)));
     z.oy = Math.max(0, Math.min(frameH - z.w, Math.round(targetAbsY - frameY)));
   }
+  else if (drag.type === 'zone-resize' && viewMode === 'zone') {
+    var z = zones[drag.idx];
+    var deltaL = r.rx - drag.startRx;
+    var deltaW = drag.startRy - r.ry; 
+    
+    z.l = Math.max(1, Math.min(frameW - z.ox, Math.round(drag.startL + deltaL)));
+    z.w = Math.max(1, Math.min(frameH - z.oy, Math.round(drag.startW + deltaW)));
+  }
   else if (drag.type === 'obj' && viewMode === 'detail') {
     var o = objects[drag.idx];
     o.ox = Math.max(0, Math.min(screenW - o.w, Math.round(r.rx - drag.offX)));
@@ -502,6 +566,7 @@ function onMove(e) {
   }
   draw();
 }
+
 function onUp() { drag = null; }
 
 function addZone() {
@@ -525,10 +590,10 @@ function updateInfo() {
     return;
   }
   if (viewMode === 'zone') {
-    if (selIdx < 0) box.innerHTML = '⬡ <b>區域場布模式</b>：可點擊「＋ 新增區域」或在畫布上拖移各區色塊。';
+    if (selIdx < 0) box.innerHTML = '⬡ <b>區域場布模式</b>：可點擊新增區域。點選色塊後可拖移，或<b>按住其右下角灰色手把</b>拖拉改變大小。';
     else {
       var z = zones[selIdx];
-      box.innerHTML = '活動區：<strong>' + z.name + '</strong> | 框內相對位置:(' + z.ox + ',' + z.oy + ') | 面積：' + (z.l * z.w) + 'm²';
+      box.innerHTML = '活動區：<strong>' + z.name + '</strong> | 尺寸：' + z.l + 'x' + z.w + 'm | 面積：' + (z.l * z.w) + 'm²';
     }
     return;
   }
@@ -607,7 +672,6 @@ window.addEventListener('resize', function() {
   draw();
 });
 
-// 穩健啟動
 initCanvasSize();
 draw();
 </script>
