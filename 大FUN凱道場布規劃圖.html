@@ -597,7 +597,7 @@ function drawObjects(){
 }
 
 function drawLabels(){
-  var pX=cx(190), pY=cy(130), pW=(303-190)*sc, pH=(130-44)*sc;
+  var pX=cx(190), pY=cy(130), pW=(333-190)*sc, pH=(130-44)*sc;
   ctx.fillStyle='rgba(60,130,60,0.13)'; ctx.fillRect(pX,pY,pW,pH);
   ctx.strokeStyle='rgba(60,130,60,0.40)'; ctx.lineWidth=1; ctx.setLineDash([5,3]);
   ctx.strokeRect(pX,pY,pW,pH); ctx.setLineDash([]);
@@ -615,7 +615,7 @@ function drawLabels(){
   ctx.fillStyle='#555555'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
   ctx.fillText('二二八紀念碑',bX+bW/2,bY+bH/2+4);
 
-  var jX=cx(222), jY=cy(-4), jW=(303-222)*sc, jH=(-4-(-80))*sc;
+  var jX=cx(222), jY=cy(-4), jW=(333-222)*sc, jH=(-4-(-80))*sc;
   ctx.fillStyle='rgba(76,175,80,0.10)'; ctx.fillRect(jX,jY,jW,jH);
   ctx.strokeStyle='rgba(76,175,80,0.35)'; ctx.lineWidth=1; ctx.setLineDash([5,3]); ctx.strokeRect(jX,jY,jW,jH); ctx.setLineDash([]);
   ctx.fillStyle='#388e3c'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
