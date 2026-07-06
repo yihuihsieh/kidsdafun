@@ -3,33 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大FUN凱道場布規劃工具</title>
+    <title>2026大FUN凱道工作區</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --action-color: #e74c3c;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
         }
-        h1 {
-            color: #2c3e50;
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
-        .highlight {
-            color: #e74c3c;
+
+        /* 網頁大標題 */
+        .main-title {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .main-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        /* 區塊樣式 */
+        .section-block {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        /* 需填寫文件區塊給予特別顏色警示 */
+        .section-block.urgent {
+            border-left-color: var(--action-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 連結列表佈局 */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        /* 連結按鈕樣式 */
+        .link-card {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .link-card i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            width: 24px;
+            text-align: center;
+        }
+
+        /* 填寫列表的圖標改為紅色警戒 */
+        .urgent .link-card i {
+            color: var(--action-color);
+        }
+
+        /* 滑鼠懸停效果 */
+        .link-card:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .link-card:hover i {
+            color: #ffffff;
+        }
+
+        /* 備註小字 */
+        .hint {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: normal;
+        }
+        .link-card:hover .hint {
+            color: #cbd5e1;
+        }
+
+        /* RWD 手機版微調 */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .section-block {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- 網頁標題 -->
-    <h1>大FUN凱道場布規劃工具</h1>
-     
-    <!-- 超連結 -->
-    <p>
-        <a href="大FUN凱道場布規劃圖.html" target="_blank">STEAM 大FUN凱道整體場布規劃圖</a> 
-    </p>
-    <p>
-        <a href="大FUN凱道區域圖20x35.html" target="_blank">STEAM 大FUN凱道區域場布規劃圖20x35</a> 
-    </p>
+    <div class="container">
+        <h1 class="main-title">2026 大FUN 凱道工作區</h1>
+         
+        <section class="section-block urgent">
+            <h2><i class="fa-solid fa-pen-to-square"></i> 需填寫文件列表</h2>
+            <div class="links-grid">
+                <a href="https://docs.google.com/spreadsheets/d/1X4FcdDVKj5W4VqW72eSr8eovDnohef9WSk513H5n9fs/edit?usp=sharing" target="_blank" class="link-card">
+                    <i class="fa-solid fa-users"></i>
+                    <div>
+                        STEAM 各區聯絡人
+                        <span class="hint">(每區請填兩位)</span>
+                    </div>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1VYHwoXXNC04pdh9G7oq75Y3NbjAgb0-dAkKrIn3zmlI/edit?usp=sharing" target="_blank" class="link-card">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <div>STEAM 硬體需求表</div>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1XU8bduU_s_Ne4RqG8ExFXCHaOQjItucC6286rAXZ-Vs/edit?usp=sharing" target="_blank" class="link-card">
+                    <i class="fa-solid fa-truck"></i>
+                    <div>STEAM 車輛管制表</div>
+                </a>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2><i class="fa-solid fa-folder-open"></i> 參考文件</h2>
+            <div class="links-grid">
+                <a href="https://docs.google.com/document/d/1GjXgH3gfoygjdGAm40kAM7leA4tWCPc5kbsSZvJMOeU/edit?usp=drive_link" target="_blank" class="link-card">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <div>STEAM 每週籌備會議紀錄</div>
+                </a>
+                <a href="https://docs.google.com/presentation/d/1rCPNAjeVcGKqtdjotE8KzssQV1h62mSw-30zDh4wIKg/edit?usp=sharing" target="_blank" class="link-card">
+                    <i class="fa-regular fa-file-powerpoint"></i>
+                    <div>STEAM 進撤場相關規劃</div>
+                </a>
+                <a href="https://docs.google.com/presentation/d/161v_0OCNaGQ4GocSp9pOgRCGr3eJzxE2/edit?usp=sharing&ouid=117012342224914109026&rtpof=true&sd=true" target="_blank" class="link-card">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <div>STEAM 平面圖與規劃說明</div>
+                </a>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2><i class="fa-solid fa-compass-drafting"></i> 場布規劃工具</h2>
+            <div class="links-grid">
+                <a href="大FUN凱道場布規劃圖.html" target="_blank" class="link-card">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <div>STEAM 2026大FUN凱道整體場布規劃圖</div>
+                </a>
+                <a href="大FUN凱道區域圖20x35.html" target="_blank" class="link-card">
+                    <i class="fa-solid fa-chart-area"></i>
+                    <div>STEAM 2026大FUN凱道區域場布規劃圖 (20x35)</div>
+                </a>
+            </div>
+        </section>
+    </div>
+
 </body>
 </html>
