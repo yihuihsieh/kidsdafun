@@ -1,6 +1,4 @@
-from weasyprint import HTML
-
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -99,7 +97,7 @@ html_content = """<!DOCTYPE html>
 
    .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 將門檻調低 */
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
     }
 
@@ -222,7 +220,8 @@ html_content = """<!DOCTYPE html>
                 <li><a href="#" target="_blank">PM 備忘錄</a></li>
                 <!-- 預留連結項目 -->
             </ul>
-            
+          </div>
+        
          <!-- 服務區 (涵專屬) -->
         <div class="card">
             <h2>🧋 服務區 <span class="badge badge-special">涵 專屬</span></h2>
