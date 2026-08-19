@@ -69,6 +69,16 @@ html_content = """<!DOCTYPE html>
         opacity: 0.9;
     }
 
+    .main-list-box {
+        background: linear-gradient(135deg, #e1edfa 0%, #f0f4fa 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 35px;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
     .main-btn {
         display: inline-block;
         background-color: var(--accent-color);
@@ -193,11 +203,8 @@ html_content = """<!DOCTYPE html>
         <a href="https://yihuihsieh.github.io/kidsdafun/" class="main-btn" target="_blank">進入 2026大FUN凱道大會工作區 🚀</a>
     </div>
 
-    <!-- 區域與文件分流網格 -->
-    <div class="grid-container">
-
-        <!-- 文件列表 -->
-        <div class="card">
+     <!-- 文件列表 -->
+    <div class="main-list-box">
             <h2>📄 文件列表</h2>
             <ul class="link-list">
                 <li><a href="https://docs.google.com/spreadsheets/d/1LYfyeb3kFfn-2_4dTmHmU6hxRMT8BrlzJJJzY8wCWnw/edit?usp=drive_link" target="_blank">工時表</a></li>
@@ -205,7 +212,11 @@ html_content = """<!DOCTYPE html>
                 <li><a href="https://docs.google.com/spreadsheets/d/1NrIwrld1oJxM3tHZpH7yqLp0_E7PmBzYWkEDBNqdQgY/edit?gid=0#gid=0" target="_blank">富邦物資清單</a></li>
                 <li><a href="https://docs.google.com/spreadsheets/d/1iWQfqmWG40XjCfKRCRjFUm2PBhnsHL2E8XKCcYVhTYY/edit?usp=sharing" target="_blank">流程表</a></li>
             </ul>
-        </div>
+     </div>
+
+    <!-- 區域與文件分流網格 -->
+    <div class="grid-container">
+        
         <!-- PM 區 (玫專屬) -->
         <div class="card">
             <h2>🏸 PM 區 <span class="badge badge-special">玫 專屬</span></h2>
@@ -213,6 +224,15 @@ html_content = """<!DOCTYPE html>
                 <li><a href="#" target="_blank">PM 備忘錄</a></li>
                 <!-- 預留連結項目 -->
             </ul>
+            
+         <!-- 服務區 (涵專屬) -->
+        <div class="card">
+            <h2>🧋 服務區 <span class="badge badge-special">涵 專屬</span></h2>
+            <ul class="link-list">
+                <li><a href="https://docs.google.com/document/d/1C5DtwWBhp0W-JLcyEEwCeVxA71PtW-nw/edit?usp=sharing&ouid=117096964560768923237&rtpof=true&sd=true" target="_blank">服務台資訊</a></li>
+                <!-- 預留連結項目 -->
+            </ul>
+            
         </div>
         <!-- 行政區 (暉專屬) -->
         <div class="card">
