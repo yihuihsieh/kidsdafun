@@ -97,10 +97,10 @@ html_content = """<!DOCTYPE html>
         transform: translateY(-2px);
     }
 
-    .grid-container {
+   .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 25px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 將門檻調低 */
+        gap: 20px;
     }
 
     .card {
@@ -205,13 +205,13 @@ html_content = """<!DOCTYPE html>
 
      <!-- 文件列表 -->
     <div class="main-list-box">
-            <h2>📄 文件列表</h2>
-                <a href="https://docs.google.com/spreadsheets/d/1LYfyeb3kFfn-2_4dTmHmU6hxRMT8BrlzJJJzY8wCWnw/edit?usp=drive_link" class="main-btn" target="_blank">工時表</a>
-                <a href="https://docs.google.com/spreadsheets/d/1uC5BsToX284P3v5GFrLfsBvkqXgUQ0npdg3iM4Ayx1g/edit?usp=sharing" class="main-btn" target="_blank">2026凱道超越遊戲出貨紀錄</a>
-                <a href="https://docs.google.com/spreadsheets/d/1NrIwrld1oJxM3tHZpH7yqLp0_E7PmBzYWkEDBNqdQgY/edit?gid=0#gid=0" class="main-btn" target="_blank">富邦物資清單</a>
-                <a href="https://docs.google.com/spreadsheets/d/1iWQfqmWG40XjCfKRCRjFUm2PBhnsHL2E8XKCcYVhTYY/edit?usp=sharing" class="main-btn" target="_blank">流程表</a>
+        <h2>📄 文件列表</h2>
+        <a href="https://docs.google.com/spreadsheets/d/1LYfyeb3kFfn-2_4dTmHmU6hxRMT8BrlzJJJzY8wCWnw/edit?usp=drive_link" class="main-btn" target="_blank">工時表</a>
+        <a href="https://docs.google.com/spreadsheets/d/1uC5BsToX284P3v5GFrLfsBvkqXgUQ0npdg3iM4Ayx1g/edit?usp=sharing" class="main-btn" target="_blank">2026凱道超越遊戲出貨紀錄</a>
+        <a href="https://docs.google.com/spreadsheets/d/1NrIwrld1oJxM3tHZpH7yqLp0_E7PmBzYWkEDBNqdQgY/edit?gid=0#gid=0" class="main-btn" target="_blank">富邦物資清單</a>
+        <a href="https://docs.google.com/spreadsheets/d/1iWQfqmWG40XjCfKRCRjFUm2PBhnsHL2E8XKCcYVhTYY/edit?usp=sharing" class="main-btn" target="_blank">流程表</a>
      </div>
-
+    
     <!-- 區域與文件分流網格 -->
     <div class="grid-container">
         
