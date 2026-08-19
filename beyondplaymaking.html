@@ -1,0 +1,263 @@
+from weasyprint import HTML
+
+html_content = """<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>2026 大FUN凱道超越遊戲內部工作區</title>
+<style>
+    :root {
+        --primary-color: #1a365d;
+        --secondary-color: #2b6cb0;
+        --accent-color: #d69e2e;
+        --bg-color: #f7fafc;
+        --card-bg: #ffffff;
+        --text-color: #2d3748;
+        --border-color: #e2e8f0;
+    }
+    
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 30px 20px;
+    }
+    
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid var(--secondary-color);
+    }
+    
+    h1 {
+        color: var(--primary-color);
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+    }
+    
+    .subtitle {
+        color: #718096;
+        font-size: 1rem;
+    }
+
+    .main-link-box {
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 35px;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .main-link-box h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        opacity: 0.9;
+    }
+
+    .main-btn {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px 28px;
+        font-weight: bold;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .main-btn:hover {
+        background-color: #b7791f;
+        transform: translateY(-2px);
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 22px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        background-color: #e2e8f0;
+        color: #4a5568;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-weight: normal;
+    }
+
+    .badge-special {
+        background-color: #feebc8;
+        color: #744210;
+    }
+
+    ul.link-list {
+        list-style: none;
+    }
+
+    ul.link-list li {
+        margin-bottom: 10px;
+    }
+
+    ul.link-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    ul.link-list a {
+        display: block;
+        padding: 8px 12px;
+        color: var(--secondary-color);
+        text-decoration: none;
+        border-radius: 6px;
+        background-color: #f8fafc;
+        border: 1px solid #edf2f7;
+        transition: all 0.2s;
+    }
+
+    ul.link-list a:hover {
+        background-color: #ebf8ff;
+        color: #2b6cb0;
+        border-color: #bee3f8;
+        padding-left: 16px;
+    }
+
+    .placeholder-note {
+        font-size: 0.85rem;
+        color: #a0aec0;
+        font-style: italic;
+        margin-top: 5px;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 50px;
+        padding-top: 20px;
+        color: #a0aec0;
+        font-size: 0.9rem;
+        border-top: 1px solid var(--border-color);
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>2026 大FUN凱道超越遊戲内部工作區</h1>
+        <p class="subtitle">活動統籌與各區分工快捷連結 portal</p>
+    </header>
+
+    <!-- 主工作區連結 -->
+    <div class="main-link-box">
+        <h2>核心大會總工作區</h2>
+        <a href="#" class="main-btn" target="_blank">進入 2026大FUN凱道大會工作區 🚀</a>
+    </div>
+
+    <!-- 區域與文件分流網格 -->
+    <div class="grid-container">
+
+        <!-- 文件列表 -->
+        <div class="card">
+            <h2>📄 文件列表</h2>
+            <ul class="link-list">
+                <li><a href="#" target="_blank">工時表</a></li>
+                <li><a href="#" target="_blank">2026凱道超越遊戲出貨紀錄</a></li>
+                <li><a href="#" target="_blank">富邦物資清單</a></li>
+                <li><a href="#" target="_blank">流程表</a></li>
+            </ul>
+        </div>
+
+        <!-- 行政區 (暉專屬) -->
+        <div class="card">
+            <h2>行政區 <span class="badge badge-special">暉 專屬</span></h2>
+            <ul class="link-list">
+                <li><a href="#" target="_blank">大型活動申請文件列表</a></li>
+                <li><a href="#" target="_blank">聯絡窗口與進度</a></li>
+                <li><a href="#" target="_blank">廠商付款清單</a></li>
+                <li><a href="#" target="_blank">各局處意見回饋備忘</a></li>
+                <li><a href="#" target="_blank">場地尺寸與場佈圖 (Google Slide)</a></li>
+            </ul>
+        </div>
+
+        <!-- 運動區 -->
+        <div class="card">
+            <h2>🏀 運動區</h2>
+            <ul class="link-list">
+                <li><a href="https://docs.google.com/presentation/d/1xsqazbD-kOJaE3nAGz8lQzfgYpjyi-Oe/edit?usp=drive_link&ouid=117096964560768923237&rtpof=true&sd=true" target="_blank">運動區場佈圖(PPT)</a></li>
+
+            </ul>
+        </div>
+
+        <!-- 遊戲區 -->
+        <div class="card">
+            <h2>🫧 遊戲區</h2>
+            <ul class="link-list">
+                <li><a href="#" target="_blank">遊戲區工作文件與流程</a></li>
+                <!-- 預留連結項目 -->
+            </ul>
+        </div>
+
+        <!-- 兒本交通區 -->
+        <div class="card">
+            <h2>🚌 兒本交通區</h2>
+            <ul class="link-list">
+                <li><a href="#" target="_blank">兒本交通區規劃與紀錄</a></li>
+                <!-- 預留連結項目 -->
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 大FUN凱道超越遊戲團隊內部專用網頁</p>
+    </footer>
+</div>
+
+</body>
+</html>
+"""
+
+with open("2026_凱道超越遊戲內部工作區.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("HTML generated successfully.")
