@@ -242,7 +242,7 @@
       <g transform="translate(817.8, 561.9)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(817.8, 547.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <!-- [右移4m: X: 884.5] -->
-      <g transform="translate(884.5, 456.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/><text x="6.7" y="7.1" font-size="6" fill="#000000" font-weight="normal" text-anchor="middle" dominant-baseline="central">媒體帳</text></g>
+      <g transform="translate(884.5, 456.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/><text x="6.7" y="7.1" font-size="5" fill="#000000" font-weight="lighter" text-anchor="middle" dominant-baseline="central">媒體帳</text></g>
     </g>
 
     <!-- [鋼構桁架廣播塔 (5座)] -->
