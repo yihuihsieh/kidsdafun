@@ -125,21 +125,19 @@
 
     <!-- [宮廷帳 6x6m] -->
     <g stroke="#007500" stroke-width="0.8" fill="#f8fafc">
-      <!-- 45度旋轉群 -->
+      <!-- 小老闆二手市集 45度旋轉群 -->
       <g transform="translate(137.8, 304.8)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
       <g transform="translate(111.1, 333.3)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
       <g transform="translate(164.4, 333.3)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
       <g transform="translate(137.8, 361.9)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
       <g transform="translate(177.8, 371.4)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
 
-      <!-- 凱道西段宮廷帳 -->
-      <g transform="translate(204.4, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(257.8, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-
-      <!-- 小舞台區宮廷帳 -->
+      <!-- 攝影棚宮廷帳 3頂-->
       <g transform="translate(17.8, 352.4)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(17.8, 323.8)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(53.3, 381.0)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+
+      <!-- 台電+電器維修宮廷帳 3頂-->
       <g transform="translate(266.7, 314.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(266.7, 285.7)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(266.7, 247.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
@@ -162,18 +160,26 @@
       <g transform="translate(213.3, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(213.3, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
 
+      <!-- 凱道西段宮廷帳 -->
+      <g transform="translate(204.4, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+      <g transform="translate(257.8, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+
+
       <!-- 凱道東段北側上排宮廷帳陣列 (8 頂) -->
+      <!-- 運動動一動區 (4頂) -->
       <g transform="translate(422.2, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(448.9, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(591.1, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(617.8, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-
+      
+      <!-- 兒本交通區 (4頂) -->
       <g transform="translate(751.1, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(777.8, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(804.4, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(831.1, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
 
       <!-- 凱道東段南側路緣宮廷帳 (4頂) -->
+      <!-- 運動動一動區 (4頂) -->
       <g transform="translate(404.4, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(431.1, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(564.4, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
@@ -196,9 +202,11 @@
       <g transform="translate(773.3, 547.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
     </g>
 
+
     <!-- [標準帳篷 3x3m] -->
     <g stroke="#475569" stroke-width="0.6" fill="#ffffff">
-      <!-- 飲食區頂部排帳 (11 頂) -->
+
+      <!-- 北廣場飲食區頂部排帳 (12 頂) -->
       <g transform="translate(284.4, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(271.1, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(257.8, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
@@ -212,7 +220,24 @@
       <g transform="translate(164.4, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(137.8, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
 
+      <!-- 北廣場小舞台南側 3x3m 帳篷 (2頂) -->
+      <g transform="translate(22.2, 276.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+      <g transform="translate(35.6, 276.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+
+      <!-- 北廣場攝影棚 3x3m 帳篷 (1頂) -->
+      <g transform="translate(84.4, 381.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+
+      <!-- 北廣場清潔帳+清潔休息帳 (4頂) -->
+      <g transform="translate(244.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+      <g transform="translate(257.8, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+      <g transform="translate(271.1, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+      <g transform="translate(284.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+
+      <!-- 凱道西段南側 泡泡老闆帳 (1頂) -->
+      <g transform="translate(142.2, 581.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+
       <!-- 凱道西段南側 y=0 帳篷群 (5頂) -->
+      <!-- 自由遊戲基地 戲水區 (5頂) -->
       <g transform="translate(217.8, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(231.1, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(266.7, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
@@ -220,6 +245,7 @@
       <g transform="translate(293.3, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
 
       <!-- 凱道西段北側 y=36 帳篷群 (7頂) -->
+      <!-- 自由遊戲基地 彩繪區 (7頂) -->
       <g transform="translate(191.1, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(217.8, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(231.1, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
@@ -228,24 +254,45 @@
       <g transform="translate(280.0, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(293.3, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
 
-      <!-- 小舞台南側 3x3m 帳篷 (2頂) -->
-      <g transform="translate(22.2, 276.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(35.6, 276.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(142.2, 581.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(84.4, 381.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 二二八公園南緣邊界帳篷群 (4頂) -->
-      <g transform="translate(244.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(257.8, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(271.1, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(284.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 東段末端帳篷群 (3頂，含右移 4m 之帳篷) -->
+      <!-- 氣候變遷小學堂 3x3 2頂 -->
       <g transform="translate(817.8, 561.9)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(817.8, 547.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <!-- [右移4m: X: 884.5] -->
-      <g transform="translate(884.5, 456.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/><text x="6.7" y="7.1" font-size="5" fill="#000000" font-weight="lighter" text-anchor="middle" dominant-baseline="central">媒體帳</text></g>
+      <!-- 媒體帳 -->
+      <g transform="translate(884.5, 456.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/><text x="6.7" y="7.1" font-size="5" fill="#000000" font-weight="normal" stroke="none" text-anchor="middle" dominant-baseline="central">媒體帳</text></g>
     </g>
+
+    <!-- [需要圍布標註] -->
+    <g stroke="#f54927" stroke-width="1" fill="none">
+      <!-- 兒本交通區 6x6 1頂單面 -->
+      <g transform="translate(751.1, 428.6)"><rect width="26.7" height="28.6"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠人行道那面需要圍布</text></g>
+
+      <!-- 北廣場飲食區工作帳 3x3 2頂-->
+      <g transform="translate(271.1, 19.0)"><rect width="26.6" height="14.3"/></g>
+      <text x="278" y="40" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">工作帳，四面需要圍布</text>
+
+      <!-- 小舞台化妝帳 3x3 1頂-->
+      <g transform="translate(22.2, 276.2)"><rect width="13.3" height="14.3"/></g>
+      <text x="22.2" y="296.0" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">化妝帳，四面需要圍布</text>
+
+      <!-- 北廣場清潔帳 3x3 2頂-->
+      <g transform="translate(271.1, 386.0)"><rect width="26.6" height="14.3"/></g>
+      <text x="278" y="384" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">清潔帳，四面需要圍布</text>
+
+      <!-- 彩繪區 工作帳 3x3 1+3頂-->
+      <g transform="translate(191.1, 428.6)"><rect width="13.3" height="14.3"/></g>
+      <text x="191.1" y="426.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">缺口向下圍成ㄇ字型</text>
+      <g transform="translate(266.7, 428.6)"><rect width="39.9" height="14.3"/></g>
+      <text x="284.7" y="426.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">缺口向下圍成ㄇ字型</text>
+
+      <!-- 戲水區 更衣帳 3x3 3頂-->
+      <g transform="translate(266.7, 604.8)"><rect width="13.3" height="14.3"/></g>
+      <g transform="translate(280.0, 604.8)"><rect width="13.3" height="14.3"/></g>
+      <g transform="translate(293.3, 604.8)"><rect width="13.3" height="14.3"/></g>
+      <text x="280" y="624.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">更衣帳一頂分兩間，共三頂分六間</text>
+      <text x="280" y="630.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">都要全圍，一頂有兩個開口</text>
+
+    </g>
+
 
     <!-- [鋼構桁架廣播塔 (5座)] -->
     <g fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2">
@@ -285,7 +332,7 @@
       <g transform="translate(351.1, 728.6)"><rect width="13.3" height="38.1"/><text x="6.7" y="20" font-size="8" fill="#0891b2" text-anchor="middle">🚻</text></g>
 
       <!-- 洗手區 (175, 123) -->
-      <g transform="translate(297.8, 19.0)"><rect width="13.3" height="14.3" fill="#cffafe"/><text x="6.7" y="7.1" font-size="5.5" fill="#0e7490" font-weight="normal" text-anchor="middle" dominant-baseline="central">洗手區</text></g>
+      <g transform="translate(297.8, 19.0)"><rect width="13.3" height="14.3" fill="#cffafe"/><text x="6.7" y="7.1" font-size="5.5" fill="#0e7490" font-weight="normal" stroke="none" text-anchor="middle" dominant-baseline="central">洗手區</text></g>
     </g>
 
     <!-- [發電機 (3座 2x2m)] -->
