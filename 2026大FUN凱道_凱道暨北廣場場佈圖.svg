@@ -304,10 +304,10 @@
     </g>
 
     <!-- [服務台 (3座，含右移 4m)] -->
-    <g transform="translate(520.0, 428.6)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i</text></g>
-    <g transform="translate(302.2, 171.4)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i</text></g>
+    <g transform="translate(520.0, 428.6)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i2</text></g>
+    <g transform="translate(302.2, 171.4)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i3</text></g>
     <!-- [右移4m: X: 884.5] -->
-    <g transform="translate(884.5, 470.8)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i</text></g>
+    <g transform="translate(884.5, 470.8)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i1</text></g>
 
     <!-- [救護站 (2座)] -->
     <g transform="translate(533.3, 428.6)"><rect width="13.3" height="14.3" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/><path d="M 6.7 3 L 6.7 11 M 3 7.1 L 10.3 7.1" stroke="#dc2626" stroke-width="1.5"/></g>
