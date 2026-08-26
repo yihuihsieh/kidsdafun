@@ -228,6 +228,9 @@
       <!-- 北廣場攝影棚 3x3m 帳篷 (1頂) -->
       <g transform="translate(84.4, 381.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
 
+      <!-- 北廣場小老闆二手市集 3x3m 帳篷 (1頂) -->
+      <g transform="translate(195.4, 291.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+
       <!-- 北廣場清潔帳+清潔休息帳 (4頂) -->
       <g transform="translate(244.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
       <g transform="translate(257.8, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
