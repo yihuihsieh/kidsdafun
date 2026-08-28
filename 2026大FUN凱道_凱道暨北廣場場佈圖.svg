@@ -266,10 +266,23 @@
     </g>
 
     <!-- [需要圍布標註] -->
-    <g stroke="#f54927" stroke-width="1" fill="none">
-      <!-- 兒本交通區 6x6 1頂單面 -->
-      <g transform="translate(751.1, 428.6)"><rect width="26.7" height="28.6"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠人行道那面需要圍布</text></g>
+    <g stroke="#f54927" stroke-width="2" fill="none">
+      <!-- 宮廷帳 6x6 圍布 -->
+      <!-- 北廣場 台電+電器維修宮廷帳 3頂單面-->
+      <g transform="translate(266.7, 314.3)"><line x1="0" y1="0" x2="0" y2="28.6"/></g>
+      <g transform="translate(266.7, 285.7)"><line x1="0" y1="0" x2="0" y2="28.6"/></g>
+      <g transform="translate(266.7, 247.6)"><line x1="0" y1="0" x2="0" y2="28.6"/></g>
+      <text x="266.7" y="247.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠市場S那面需要圍布</text>
 
+      <!-- 兒本交通區 6x6 1頂單面 -->
+      <g transform="translate(751.1, 428.6)"><line x1="0" y1="0" x2="26.7" y2="0"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠人行道那面需要圍布</text></g>
+
+      <!-- 氣候變遷小學堂 6x6 4頂單面 -->
+      <g transform="translate(728.9, 547.6)"><line x1="0" y1="0" x2="0" y2="57.2"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠外側那面需要圍布</text></g>
+      <g transform="translate(799.8, 547.6)"><line x1="0" y1="0" x2="0" y2="57.2"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠外側那面需要圍布</text></g>
+
+
+      <!-- 標準帳 3x3 圍布 -->
       <!-- 北廣場飲食區工作帳 3x3 2頂-->
       <g transform="translate(271.1, 19.0)"><rect width="26.6" height="14.3"/></g>
       <text x="278" y="40" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">工作帳，四面需要圍布</text>
@@ -283,15 +296,15 @@
       <text x="278" y="384" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">清潔帳，四面需要圍布</text>
 
       <!-- 彩繪區 工作帳 3x3 1+3頂-->
-      <g transform="translate(191.1, 428.6)"><rect width="13.3" height="14.3"/></g>
+      <g transform="translate(191.1, 428.6)"><line x1="0" y1="0" x2="13.3" y2="0"/><line x1="0" y1="0" x2="" y2="14.3"/><line x1="13.3" y1="0" x2="13.3" y2="14.3"/></g>
       <text x="191.1" y="426.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">缺口向下圍成ㄇ字型</text>
-      <g transform="translate(266.7, 428.6)"><rect width="39.9" height="14.3"/></g>
+      <g transform="translate(266.7, 428.6)"><line x1="0" y1="0" x2="39.9" y2="0"/><line x1="0" y1="0" x2="" y2="14.3"/><line x1="39.9" y1="0" x2="39.9" y2="14.3"/></g>
       <text x="284.7" y="426.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">缺口向下圍成ㄇ字型</text>
 
       <!-- 戲水區 更衣帳 3x3 3頂-->
-      <g transform="translate(266.7, 604.8)"><rect width="13.3" height="14.3"/></g>
-      <g transform="translate(280.0, 604.8)"><rect width="13.3" height="14.3"/></g>
-      <g transform="translate(293.3, 604.8)"><rect width="13.3" height="14.3"/></g>
+      <g transform="translate(266.7, 604.8)"><rect width="13.3" height="14.3"/><line x1="6.7" y1="0" x2="6.7" y2="14.3"/></g>
+      <g transform="translate(280.0, 604.8)"><rect width="13.3" height="14.3"/><line x1="6.7" y1="0" x2="6.7" y2="14.3"/></g>
+      <g transform="translate(293.3, 604.8)"><rect width="13.3" height="14.3"/><line x1="6.7" y1="0" x2="6.7" y2="14.3"/></g>
       <text x="280" y="624.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">更衣帳一頂分兩間，共三頂分六間</text>
       <text x="280" y="630.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">都要全圍，一頂有兩個開口</text>
     </g>
