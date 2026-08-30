@@ -1,494 +1,1266 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 800" width="100%" height="100%" style="background:#ffffff; font-family:'Noto Sans TC', 'Microsoft JhengHei', sans-serif;">
-  <defs>
-    <!-- 1m 施工模矩細網格 (4.444 x 4.762) -->
-    <pattern id="arch-grid-1m" width="4.4444" height="4.7619" patternUnits="userSpaceOnUse">
-      <path d="M 4.4444 0 L 0 0 0 4.7619" fill="none" stroke="#e4e4e7" stroke-width="0.35"/>
-    </pattern>
-    <!-- 10m 主結構網格 (44.444 x 47.619) -->
-    <pattern id="arch-grid-10m" width="44.4444" height="47.619" patternUnits="userSpaceOnUse">
-      <rect width="44.4444" height="47.619" fill="url(#arch-grid-1m)"/>
-      <path d="M 44.4444 0 L 0 0 0 4.7619" fill="none" stroke="#cbd5e1" stroke-width="0.8"/>
-    </pattern>
-    <!-- 淨空緩衝區斜線 (CAD 斜紋) -->
-    <pattern id="cad-hatch" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="0" y2="8" stroke="#f87171" stroke-width="0.8" />
-    </pattern>
-    <!-- 尺寸標註箭頭 -->
-    <marker id="dim-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 2 L 8 5 L 0 8 z" fill="#475569"/>
-    </marker>
+<html lang="zh-TW"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 大FUN凱道 — 場布規劃圖 (升級版)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;background:#f4f3ef;color:#2c2c2a}
+.nav{background:#1a1a18;color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.nav-title{font-size:15px;font-weight:700;letter-spacing:0.5px}
+.nav-sub{font-size:11px;color:#9a9890;margin-top:2px}
+.nav-tabs{display:flex;gap:6px}
+.tab-btn{padding:5px 16px;border:1px solid rgba(255,255,255,0.22);border-radius:20px;background:transparent;color:#c2c0b6;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.tab-btn:hover{background:rgba(255,255,255,0.10)}
+.tab-btn.active{background:#fff;color:#1a1a18;font-weight:600;border-color:#fff}
+.panel{display:none;padding:14px 18px;max-width:1400px;margin:0 auto}
+.panel.active{display:block}
+.card{background:#fff;border-radius:12px;border:1px solid #e0dfd6;padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;color:#444441;margin-bottom:10px}
+.map-wrap{border-radius:8px;overflow:hidden;background:#faf9f5;touch-action:none;user-select:none}
+canvas{display:block;width:100%;height:auto}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.infobox{font-size:12px;color:#6b6960;background:#f5f5f0;padding:6px 10px;border-radius:6px;flex:1;min-width:160px;line-height:1.5}
+.infobox strong{color:#2c2c2a;font-weight:600}
+.view-toggle{display:flex;gap:0;border:1px solid #d3d1c7;border-radius:6px;overflow:hidden}
+.vt-btn{padding:5px 14px;border:none;background:#fff;font-size:12px;cursor:pointer;color:#6b6960;font-family:inherit;white-space:nowrap;transition:all .12s;border-right:1px solid #d3d1c7}
+.vt-btn:last-child{border-right:none}
+.vt-btn:hover{background:#f5f5f0}
+.vt-btn.active{background:#1565c0;color:#fff;font-weight:600}
+.btn{padding:5px 13px;border:1px solid #d3d1c7;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;color:#2c2c2a;font-family:inherit;white-space:nowrap}
+.btn:hover{background:#f5f5f0}
+.btn-opt{color:#2e7d32;border-color:#a5d6a7;font-weight:600}
+.btn-add{color:#1565c0;border-color:#90caf9}
+.btn-exp{color:#6a1b9a;border-color:#ce93d8;font-weight:600}
+.btn-pdf{color:#b71c1c;border-color:#ef9a9a;font-weight:600}
+.palette{display:flex;flex-wrap:wrap;gap:6px}
+.pal-item{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #e0dfd6;border-radius:6px;cursor:pointer;font-size:12px;background:#fff;user-select:none;white-space:nowrap}
+.pal-item:hover{background:#f0f0ea;border-color:#b4b2a9}
+.pal-icon{font-size:15px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f5f5f0;color:#6b6960;font-weight:600;padding:5px 8px;text-align:left;border-bottom:1px solid #e0dfd6;white-space:nowrap}
+td{padding:4px 8px;border-bottom:1px solid #f0f0ea;vertical-align:middle}
+td input[type=text]{width:100%;border:none;background:transparent;font-size:12px;color:#2c2c2a;outline:none}
+td input[type=text]:focus{background:#fff;box-shadow:0 0 0 1px #888780;border-radius:4px;padding:2px 4px}
+td input[type=number]{width:50px;border:1px solid #e0dfd6;border-radius:4px;padding:2px 4px;font-size:12px;background:#f9f8f4;color:#2c2c2a;text-align:center;font-family:inherit}
+td input[type=number]:focus{border-color:#888780;outline:none}
+.sw{width:16px;height:16px;border-radius:3px;cursor:pointer;border:1px solid #e0dfd6;display:inline-block;vertical-align:middle}
+.note{font-size:11px;color:#9a9890;margin-top:6px;line-height:1.6}
+.hl td{background:#e8f0fe}
+.nogo-badge{display:inline-block;background:#fce4ec;color:#c62828;font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;margin-left:4px}
+.export-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#export-status{font-size:12px;color:#2e7d32;margin-top:6px;min-height:18px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:#6b6960}
+.leg-item{display:flex;align-items:center;gap:4px}
+.leg-box{width:14px;height:14px;border-radius:2px;flex-shrink:0}
+.manual{line-height:1.8;max-width:860px}
+.manual h2{font-size:16px;font-weight:600;margin:22px 0 8px;color:#1a1a18;border-left:4px solid #1565c0;padding-left:10px}
+.manual p,.manual li{font-size:13px;color:#444;margin-bottom:6px}
+.tip{background:#e8f5e9;border-left:3px solid #43a047;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#1b5e20;margin:8px 0}
+.warn{background:#fff8e1;border-left:3px solid #f9a825;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#e65100;margin:8px 0}
+.manual table{border-collapse:collapse;width:100%;margin:10px 0}
+.manual table th,.manual table td{border:1px solid #e0dfd6;padding:6px 10px;font-size:12px;text-align:left}
+.manual table th{background:#f5f5f0;font-weight:600}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600}
+.bg{background:#e8f5e9;color:#2e7d32}.bb{background:#e3f2fd;color:#1565c0}
+.bp{background:#f3e5f5;color:#6a1b9a}.br{background:#fce4ec;color:#b71c1c}
+</style>
+<link type="text/css" rel="stylesheet" href="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/css/mcafee_fonts.css"><link type="text/css" rel="stylesheet" href="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/css/mcafee_fonts.css"><link type="text/css" rel="stylesheet" href="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/css/mcafee_fonts.css"></head>
+<body>
 
-    <!-- 第一步：在 defs 裡面宣告垃圾桶的範本，並縮放好大小 -->
-    <svg id="trash-icon" width="8" height="8" viewBox="0 0 448 512" fill="#73bf00" stroke="#ffffff" stroke-width="1.6">
-      <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
-    </svg>
-  </defs>
+<div class="nav">
+  <div>
+    <div class="nav-title">2026 大FUN凱道 — 場布規劃圖 (升級版)</div>
+    <div class="nav-sub">凱達格蘭大道 · 兒童未來市倡議行動</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showPanel('map',this)">🗺 場布圖</button>
+    <button class="tab-btn" onclick="showPanel('manual',this)">📖 操作手冊</button>
+  </div>
+</div>
 
-  <!-- 1. 建築基地與道路用地線 -->
-  <g id="cad-base">
-    <!-- 總統府北廣場 -->
-    <polygon points="17.8,14.3 315.6,14.3 315.6,409.5 17.8,409.5" fill="#f8fafc" stroke="#64748b" stroke-width="1.2"/>
-    <text x="100" y="170" font-size="18" fill="#64748b" font-weight="bold">總統府北廣場</text>
+<div id="panel-map" class="panel active">
+  <div class="card" style="margin-top:12px">
+    <div class="toolbar">
+      <div class="view-toggle">
+        <button class="vt-btn" id="vt-layout" onclick="setView('layout')">📐 配置圖（10m格）</button>
+        <button class="vt-btn active" id="vt-detail" onclick="setView('detail')">🔍 細部圖（1m格）</button>
+      </div>
+      <button class="btn" id="btn-toggle-zone" onclick="toggleZoneVisibility()" style="color: rgb(0, 102, 204); border-color: rgb(144, 202, 249); font-weight: 600;">👁 隱藏活動區域</button>
+      <button class="btn" id="btn-toggle-firex" onclick="toggleFirexVisibility()" style="color: rgb(102, 102, 102); border-color: rgb(204, 204, 204); font-weight: 600;">🧯 顯示滅火器</button>
+      <div class="infobox" id="infobox"><strong>滅火器</strong> (139,34)&nbsp;|&nbsp;1×1m（固定尺寸）</div>
+      <button class="btn btn-opt" onclick="optimize()">✦ 優化對齊</button>
+      <button class="btn btn-add" onclick="addZone()">＋ 新增區域</button>
+      <button class="btn" style="color:#e65100;border-color:#ffcc80;font-weight:600" onclick="saveAsDefault()">★ 設為預設</button>
+      <button class="btn" onclick="resetAll()">↺ 重設</button>
+    </div>
+    <div class="map-wrap"><canvas id="cv" width="1799" height="1204" style="width: 1199px; height: 802.342px; cursor: default;"></canvas></div>
+    <div class="legend" id="legend-bar"><div class="leg-item"><div class="leg-box" style="background:#e0d0e8;opacity:0.6"></div>⑥ 總統府</div><div class="leg-item"><div class="leg-box" style="background:#d4eac6;opacity:0.6"></div>⑤ 總統府北廣場</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>④b 凱道西緩衝區 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#fff3d0;opacity:0.6"></div>④ 凱道西段</div><div class="leg-item"><div class="leg-box" style="background:#e0dbd5;opacity:0.6"></div>③ 懷寧街</div><div class="leg-item"><div class="leg-box" style="background:#fff3d0;opacity:0.6"></div>② 凱道東段</div><div class="leg-item"><div class="leg-box" style="background:#e8e6e0;opacity:0.6"></div>① 公園路緩衝區 <span class="nogo-badge">淨空</span></div><div class="leg-item"><div class="leg-box" style="background:#8BC34A;opacity:0.3"></div>帳篷帶（南側）</div><div class="leg-item" style="color:#aaa"><small>格線：1m × 1m（細）/ 10m × 10m（粗）</small></div></div>
+  </div>
 
-    <!-- 凱道西緩衝區 (淨空) -->
-    <polygon points="0.0,428.6 111.1,428.6 111.1,619.0 0.0,619.0" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
-    <polygon points="0.0,428.6 111.1,428.6 111.1,619.0 0.0,619.0" fill="url(#cad-hatch)"/>
-    <text x="66.7" y="523.8" font-size="8" fill="#991b1b" font-weight="bold" text-anchor="middle">凱道西緩衝區 (淨空)</text>
+  <div class="card" id="obj-panel" style="display: block;">
+    <div class="card-title">小物件（點擊新增到地圖，再拖移到目標位置）</div>
+    <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:4px">⛺ 帳篷類（計入帳篷統計）</div>
+    <div class="palette" style="margin-bottom:8px">
+      <div class="pal-item" onclick="addObj('tent')"><span class="pal-icon">❎</span>帳篷 3×3m</div>
+      <div class="pal-item" onclick="addObj('ali_tent')"><span class="pal-icon">⛱️</span>阿里山帳 4×4m</div>
+      <div class="pal-item" onclick="addObj('royal')"><span class="pal-icon">🏰</span>宮廷帳 6×6m (可旋轉)</div>
+      <div class="pal-item" onclick="addObj('linking')"><span class="pal-icon">🥅</span>接龍帳 9×3m (可旋轉)</div>
+      <div class="pal-item" onclick="addObj('king10')"><span class="pal-icon">🎪</span>10米帝王帳 10×10m</div>
+      <div class="pal-item" onclick="addObj('king15')"><span class="pal-icon">🏠</span>15米帝王帳 15×15m</div>
+      <div class="pal-item" onclick="addObj('kingside')"><span class="pal-icon">🛖</span>帝王邊帳 10×5m</div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:4px">🔧 設施與新增功能類</div>
+    <div class="palette">
+      <div class="pal-item" style="background:#e3f2fd; border-color:#90caf9" onclick="addObj('vehicle')"><span class="pal-icon">🚐</span>車輛 5×3m (可旋轉)</div>
+      <div class="pal-item" style="background:#f3e5f5; border-color:#ce93d8" onclick="addObj('custom_rect')"><span class="pal-icon">c</span>客製化結構 (可縮放/改名)</div>
+      <div class="pal-item" onclick="addObj('broadcast')"><span class="pal-icon">📢</span>廣播塔 6×6m</div>
+      <div class="pal-item" onclick="addObj('toilet1')"><span class="pal-icon">🚾</span>流動廁所 3×8m</div>
+      <div class="pal-item" onclick="addObj('toilet2')"><span class="pal-icon">♿</span>無障礙廁所 2×2m</div>
+      <div class="pal-item" onclick="addObj('nursing')"><span class="pal-icon">🧸</span>哺乳車 3×4m</div>
+      <div class="pal-item" onclick="addObj('water')"><span class="pal-icon">🚛</span>水車 8×3m</div>
+      <div class="pal-item" onclick="addObj('toilet')"><span class="pal-icon">🚿</span>洗手區 3×3m</div>
+      <div class="pal-item" onclick="addObj('food')"><span class="pal-icon">🚐</span>餐車 4×3m</div>
+      <div class="pal-item" onclick="addObj('stage')"><span class="pal-icon">🎤</span>舞台 12×8m</div>
+      <div class="pal-item" onclick="addObj('info')"><span class="pal-icon">ℹ️</span>服務台 3×3m</div>
+      <div class="pal-item" onclick="addObj('medic')"><span class="pal-icon">🏥</span>救護站 3×3m</div>
+      <div class="pal-item" onclick="addObj('power')"><span class="pal-icon">⚡</span>發電機 2×2m</div>
+      <div class="pal-item" onclick="addObj('trash')"><span class="pal-icon">🚮</span>垃圾桶 1×1m</div>
+      <div class="pal-item" onclick="addObj('firex')"><span class="pal-icon">🧯</span>滅火器 1×1m</div>
+    </div>
+  </div>
 
-    <!-- 凱道西段 -->
-    <polygon points="137.9,428.6 315.6,428.6 315.6,619.0 137.9,619.0" fill="#fcfbf7" stroke="#64748b" stroke-width="1.2"/>
-
-    <!-- 懷寧街 -->
-    <polygon points="315.6,0.0 364.4,0.0 364.4,800.0 315.6,800.0" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="6,4" stroke-width="1"/>
-    <text x="340.0" y="500.0" font-size="13" fill="#475569" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 340 500)" letter-spacing="3">懷寧街</text>
-
-    <!-- 凱道東段 -->
-    <polygon points="364.4,428.6 866.7,428.6 866.7,619.0 364.4,619.0" fill="#fcfbf7" stroke="#64748b" stroke-width="1.2"/>
-
-    <!-- 公園路緩衝區 (淨空) -->
-    <polygon points="911.1,428.6 1000.0,428.6 1000.0,619.0 911.1,619.0" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
-    <polygon points="911.1,428.6 1000.0,428.6 1000.0,619.0 911.1,619.0" fill="url(#cad-hatch)"/>
-    <text x="948.3" y="523.8" font-size="8" fill="#991b1b" font-weight="bold" text-anchor="middle">公園路緩衝區 (淨空)</text>
-
-    <!-- 最右側：公園路 (純中文標示) -->
-    <rect x="1000.0" y="0.0" width="80.0" height="800.0" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="1"/>
-    <text x="1036.0" y="520.0" font-size="18" fill="#1d4ed8" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 1036 520)" letter-spacing="8">公園路</text>
-
-    <!-- 最左側：重慶南路 (純中文標示) -->
-    <rect x="-80.0" y="0.0" width="80.0" height="800.0" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="1"/>
-    <text x="-40.0" y="520.0" font-size="18" fill="#1d4ed8" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 -40 520)" letter-spacing="8">重慶南路</text>
-
-    <!-- 二二八紀念公園 -->
-    <polygon points="364.4,0.0 1000.0,0.0 1000.0,409.5 413.3,409.5 364.4,357.1" fill="#f0fdf4" stroke="#86efac" stroke-dasharray="4,4" stroke-width="1"/>
-    <text x="682.2" y="344.8" font-size="14" fill="#166534" font-weight="bold" text-anchor="middle">二二八和平紀念公園</text>
-
-    <!-- 介壽公園 -->
-    <polygon points="506.7,638.1 1000.0,638.1 1000.0,800.0 506.7,800.0" fill="#f0fdf4" stroke="#86efac" stroke-dasharray="4,4" stroke-width="1"/>
-    <text x="753.3" y="720.0" font-size="14" fill="#166534" font-weight="bold" text-anchor="middle">介壽公園</text>
-
-    <!-- 白色恐怖紀念碑 -->
-    <polygon points="408.4,638.1 506.7,638.1 506.7,800 364.4,800 364.4,678.1" fill="#d0d0d0" stroke="#9d9d9d" stroke-dasharray="4,4" stroke-width="1"/>
-    <text x="432.0" y="720.0" font-size="14" fill="#9d9d9d" font-weight="bold" text-anchor="middle">白色恐怖紀念碑</text>
-  </g>
-
-  <!-- 2. 中央生活街道與帳篷帶界線 -->
-  <g id="cad-corridors">
-    <rect x="137.9" y="500.0" width="177.6" height="47.6" fill="#ffffff" stroke="#94a3b8" stroke-dasharray="5,3" stroke-width="0.8"/>
-    <line x1="133.3" y1="523.8" x2="315.6" y2="523.8" stroke="#f59e0b" stroke-dasharray="8,6" stroke-width="1.2"/>
+  <div class="card">
+    <div class="card-title">活動區域列表</div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th style="width:20px"></th>
+        <th style="min-width:110px">區域名稱</th>
+        <th style="width:54px">長 m</th>
+        <th style="width:54px">寬 m</th>
+        <th style="width:64px">面積 m²</th>
+        <th style="width:90px" id="th-tent">帳篷數（實際）</th>
+        <th style="width:92px">段別/位置</th>
+        <th style="width:26px"></th>
+      </tr></thead><tbody id="tbody"><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(15)"></span></td><td><input type="text" value="運動動一動" oninput="updZ(15,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(15,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(15,'w',+this.value)"></td><td style="color:#6b6960">1400</td><td><span style="font-weight:700;color:#378ADD">8</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~155)</span></td><td style="font-size:11px">②凱道東段<br>(126,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(15)">✕</button></td></tr><tr><td><span class="sw" style="background:#BA7517" onclick="pickC(18)"></span></td><td><input type="text" value="地板滾球" oninput="updZ(18,'name',this.value)"></td><td><input type="number" value="31" min="1" max="200" step="1" oninput="updZS(18,'l',+this.value)"></td><td><input type="number" value="6" min="1" max="110" step="1" oninput="updZS(18,'w',+this.value)"></td><td style="color:#6b6960">186</td><td><span style="font-weight:700;color:#BA7517">4</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~20)</span></td><td style="font-size:11px">②凱道東段<br>(126,28)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(18)">✕</button></td></tr><tr><td><span class="sw" style="background:#534AB7" onclick="pickC(20)"></span></td><td><input type="text" value="籃球" oninput="updZ(20,'name',this.value)"></td><td><input type="number" value="10" min="1" max="200" step="1" oninput="updZS(20,'l',+this.value)"></td><td><input type="number" value="9" min="1" max="110" step="1" oninput="updZS(20,'w',+this.value)"></td><td style="color:#6b6960">90</td><td><span style="font-weight:700;color:#534AB7">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~10)</span></td><td style="font-size:11px">②凱道東段<br>(129,6)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(20)">✕</button></td></tr><tr><td><span class="sw" style="background:#0F6E56" onclick="pickC(21)"></span></td><td><input type="text" value="籃球自由區" oninput="updZ(21,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(21,'l',+this.value)"></td><td><input type="number" value="9" min="1" max="110" step="1" oninput="updZS(21,'w',+this.value)"></td><td style="color:#6b6960">54</td><td><span style="font-weight:700;color:#0F6E56">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~6)</span></td><td style="font-size:11px">②凱道東段<br>(121,6)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(21)">✕</button></td></tr><tr><td><span class="sw" style="background:#AB47BC" onclick="pickC(3)"></span></td><td><input type="text" value="緩衝區" oninput="updZ(3,'name',this.value)"></td><td><input type="number" value="8" min="1" max="200" step="1" oninput="updZS(3,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(3,'w',+this.value)"></td><td style="color:#6b6960">320</td><td><span style="font-weight:700;color:#AB47BC">2</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~35)</span></td><td style="font-size:11px">②凱道東段<br>(104,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(3)">✕</button></td></tr><tr><td><span class="sw" style="background:#1D9E75" onclick="pickC(4)"></span></td><td><input type="text" value="運動動一動" oninput="updZ(4,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(4,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(4,'w',+this.value)"></td><td style="color:#6b6960">1400</td><td><span style="font-weight:700;color:#1D9E75">9</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~155)</span></td><td style="font-size:11px">②凱道東段<br>(83,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(4)">✕</button></td></tr><tr><td><span class="sw" style="background:#639922" onclick="pickC(19)"></span></td><td><input type="text" value="布袋球" oninput="updZ(19,'name',this.value)"></td><td><input type="number" value="25" min="1" max="200" step="1" oninput="updZS(19,'l',+this.value)"></td><td><input type="number" value="8" min="1" max="110" step="1" oninput="updZS(19,'w',+this.value)"></td><td style="color:#6b6960">200</td><td><span style="font-weight:700;color:#639922">4</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~22)</span></td><td style="font-size:11px">②凱道東段<br>(80,26)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(19)">✕</button></td></tr><tr><td><span class="sw" style="background:#AB47BC" onclick="pickC(23)"></span></td><td><input type="text" value="拳擊自由區" oninput="updZ(23,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(23,'l',+this.value)"></td><td><input type="number" value="7" min="1" max="110" step="1" oninput="updZS(23,'w',+this.value)"></td><td style="color:#6b6960">140</td><td><span style="font-weight:700;color:#AB47BC">1</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~15)</span></td><td style="font-size:11px">②凱道東段<br>(79,7)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(23)">✕</button></td></tr><tr><td><span class="sw" style="background:#993C1D" onclick="pickC(22)"></span></td><td><input type="text" value="拳擊擂台" oninput="updZ(22,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(22,'l',+this.value)"></td><td><input type="number" value="6" min="1" max="110" step="1" oninput="updZS(22,'w',+this.value)"></td><td style="color:#6b6960">36</td><td><span style="font-weight:700;color:#993C1D">1</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~4)</span></td><td style="font-size:11px">②凱道東段<br>(79,7)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(22)">✕</button></td></tr><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(1)"></span></td><td><input type="text" value="兒本交通" oninput="updZ(1,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(1,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(1,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:700;color:#378ADD">4</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~77)</span></td><td style="font-size:11px">②凱道東段<br>(48,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(1)">✕</button></td></tr><tr><td><span class="sw" style="background:#0F6E56" onclick="pickC(2)"></span></td><td><input type="text" value="氣候變遷學堂" oninput="updZ(2,'name',this.value)"></td><td><input type="number" value="35" min="1" max="200" step="1" oninput="updZS(2,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(2,'w',+this.value)"></td><td style="color:#6b6960">700</td><td><span style="font-weight:700;color:#0F6E56">6</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~77)</span></td><td style="font-size:11px">②凱道東段<br>(48,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(2)">✕</button></td></tr><tr><td><span class="sw" style="background:#378ADD" onclick="pickC(16)"></span></td><td><input type="text" value="彩繪區" oninput="updZ(16,'name',this.value)"></td><td><input type="number" value="40" min="1" max="200" step="1" oninput="updZS(16,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(16,'w',+this.value)"></td><td style="color:#6b6960">800</td><td><span style="font-weight:700;color:#378ADD">9</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~88)</span></td><td style="font-size:11px">④凱道西段<br>(174,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(16)">✕</button></td></tr><tr><td><span class="sw" style="background:#D4537E" onclick="pickC(17)"></span></td><td><input type="text" value="戲水區" oninput="updZ(17,'name',this.value)"></td><td><input type="number" value="40" min="1" max="200" step="1" oninput="updZS(17,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(17,'w',+this.value)"></td><td style="color:#6b6960">800</td><td><span style="font-weight:700;color:#D4537E">6</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~88)</span></td><td style="font-size:11px">④凱道西段<br>(174,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(17)">✕</button></td></tr><tr><td><span class="sw" style="background:#8BC34A" onclick="pickC(0)"></span></td><td><input type="text" value="戶外影像互動區" oninput="updZ(0,'name',this.value)"></td><td><input type="number" value="18" min="1" max="200" step="1" oninput="updZS(0,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(0,'w',+this.value)"></td><td style="color:#6b6960">360</td><td><span style="font-weight:700;color:#8BC34A">4</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~40)</span></td><td style="font-size:11px">⑤北廣場<br>(212,44)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(0)">✕</button></td></tr><tr><td><span class="sw" style="background:#EF9F27" onclick="pickC(5)"></span></td><td><input type="text" value="飲食休息區" oninput="updZ(5,'name',this.value)"></td><td><input type="number" value="67" min="1" max="200" step="1" oninput="updZS(5,'l',+this.value)"></td><td><input type="number" value="36" min="1" max="110" step="1" oninput="updZS(5,'w',+this.value)"></td><td style="color:#6b6960">2412</td><td><span style="font-weight:700;color:#EF9F27">30</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~268)</span></td><td style="font-size:11px">⑤北廣場<br>(188,91)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(5)">✕</button></td></tr><tr><td><span class="sw" style="background:#D4537E" onclick="pickC(7)"></span></td><td><input type="text" value="小舞台" oninput="updZ(7,'name',this.value)"></td><td><input type="number" value="18" min="1" max="200" step="1" oninput="updZS(7,'l',+this.value)"></td><td><input type="number" value="24" min="1" max="110" step="1" oninput="updZS(7,'w',+this.value)"></td><td style="color:#6b6960">432</td><td><span style="font-weight:700;color:#D4537E">5</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~48)</span></td><td style="font-size:11px">⑤北廣場<br>(212,65)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(7)">✕</button></td></tr><tr><td><span class="sw" style="background:#185FA5" onclick="pickC(24)"></span></td><td><input type="text" value="小老闆二手市集" oninput="updZ(24,'name',this.value)"></td><td><input type="number" value="24" min="1" max="200" step="1" oninput="updZS(24,'l',+this.value)"></td><td><input type="number" value="26" min="1" max="110" step="1" oninput="updZS(24,'w',+this.value)"></td><td style="color:#6b6960">624</td><td><span style="font-weight:700;color:#185FA5">6</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~69)</span></td><td style="font-size:11px">⑤北廣場<br>(189,44)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(24)">✕</button></td></tr><tr><td><span class="sw" style="background:#534AB7" onclick="pickC(6)"></span></td><td><input type="text" value="客庄菜市場" oninput="updZ(6,'name',this.value)"></td><td><input type="number" value="9" min="1" max="200" step="1" oninput="updZS(6,'l',+this.value)"></td><td><input type="number" value="27" min="1" max="110" step="1" oninput="updZS(6,'w',+this.value)"></td><td style="color:#6b6960">243</td><td><span style="font-weight:700;color:#534AB7">9</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~27)</span></td><td style="font-size:11px">⑤北廣場<br>(170,51)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(6)">✕</button></td></tr><tr><td><span class="sw" style="background:#E24B4A" onclick="pickC(25)"></span></td><td><input type="text" value="永續(循環署+台電)" oninput="updZ(25,'name',this.value)"></td><td><input type="number" value="9" min="1" max="200" step="1" oninput="updZS(25,'l',+this.value)"></td><td><input type="number" value="27" min="1" max="110" step="1" oninput="updZS(25,'w',+this.value)"></td><td style="color:#6b6960">243</td><td><span style="font-weight:700;color:#E24B4A">3</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~27)</span></td><td style="font-size:11px">⑤北廣場<br>(161,51)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(25)">✕</button></td></tr><tr><td><span class="sw" style="background:#1565C0" onclick="pickC(10)"></span></td><td><input type="text" value="氣候變遷高峰會議/兒童電影院(大禮堂)" oninput="updZ(10,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(10,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(10,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:700;color:#1565C0">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~44)</span></td><td style="font-size:11px">⑥總統府<br>(323,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(10)">✕</button></td></tr><tr><td><span class="sw" style="background:#00838F" onclick="pickC(9)"></span></td><td><input type="text" value="Kids Meet(新聞中心)" oninput="updZ(9,'name',this.value)"></td><td><input type="number" value="14" min="1" max="200" step="1" oninput="updZS(9,'l',+this.value)"></td><td><input type="number" value="14" min="1" max="110" step="1" oninput="updZS(9,'w',+this.value)"></td><td style="color:#6b6960">196</td><td><span style="font-weight:700;color:#00838F">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~21)</span></td><td style="font-size:11px">⑥總統府<br>(320,20)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(9)">✕</button></td></tr><tr><td><span class="sw" style="background:#7F77DD" onclick="pickC(11)"></span></td><td><input type="text" value="兒童活動(敞廳)" oninput="updZ(11,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(11,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(11,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:700;color:#7F77DD">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~44)</span></td><td style="font-size:11px">⑥總統府<br>(303,34)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(11)">✕</button></td></tr><tr><td><span class="sw" style="background:#85B7EB" onclick="pickC(8)"></span></td><td><input type="text" value="說故事區(南苑)" oninput="updZ(8,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(8,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(8,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:700;color:#85B7EB">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~44)</span></td><td style="font-size:11px">⑥總統府<br>(293,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(8)">✕</button></td></tr><tr><td><span class="sw" style="background:#1D9E75" onclick="pickC(14)"></span></td><td><input type="text" value="防災教育體驗區(北苑)" oninput="updZ(14,'name',this.value)"></td><td><input type="number" value="20" min="1" max="200" step="1" oninput="updZS(14,'l',+this.value)"></td><td><input type="number" value="20" min="1" max="110" step="1" oninput="updZS(14,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:700;color:#1D9E75">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~44)</span></td><td style="font-size:11px">⑥總統府<br>(293,60)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(14)">✕</button></td></tr><tr><td><span class="sw" style="background:#7F77DD" onclick="pickC(13)"></span></td><td><input type="text" value="主視覺背板" oninput="updZ(13,'name',this.value)"></td><td><input type="number" value="6" min="1" max="200" step="1" oninput="updZS(13,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(13,'w',+this.value)"></td><td style="color:#6b6960">240</td><td><span style="font-weight:700;color:#7F77DD">0</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~26)</span></td><td style="font-size:11px">—<br>(197,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(13)">✕</button></td></tr><tr><td><span class="sw" style="background:#E24B4A" onclick="pickC(12)"></span></td><td><input type="text" value="入口意象/城門" oninput="updZ(12,'name',this.value)"></td><td><input type="number" value="10" min="1" max="200" step="1" oninput="updZS(12,'l',+this.value)"></td><td><input type="number" value="40" min="1" max="110" step="1" oninput="updZS(12,'w',+this.value)"></td><td style="color:#6b6960">400</td><td><span style="font-weight:700;color:#E24B4A">2</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~44)</span></td><td style="font-size:11px">—<br>(25,0)</td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ(12)">✕</button></td></tr><tr style="background: rgb(245, 245, 240); font-weight: 600; border-top: 2px solid rgb(211, 209, 199);"><td></td><td style="font-weight:700">合計</td><td></td><td></td><td style="color:#333">13576 m²</td><td><span style="color:#1565c0">113</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~1498)</span></td><td style="font-size:10px;color:#9a9890">實際統計</td><td></td></tr></tbody></table>
+    </div>
     
-    <rect x="364.4" y="500.0" width="502.2" height="47.6" fill="#ffffff" stroke="#94a3b8" stroke-dasharray="5,3" stroke-width="0.8"/>
-    <line x1="364.4" y1="523.8" x2="866.7" y2="523.8" stroke="#f59e0b" stroke-dasharray="8,6" stroke-width="1.2"/>
-    <text x="615.6" y="520.0" font-size="10" fill="#d97706" font-weight="bold" text-anchor="middle" letter-spacing="1">中央生活街道 / 緊急救災通廊 (淨寬 10m)</text>
+    <div id="otbl-section" style="display: block;">
+      <div class="card-title" style="margin-top:14px">小物件列表</div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th style="width:26px"></th>
+          <th style="min-width:110px">物件名稱</th>
+          <th style="width:60px">W / 長 m</th>
+          <th style="width:60px">H / 寬 m</th>
+          <th style="width:95px">狀態 / 位置</th>
+          <th style="width:26px"></th>
+        </tr></thead><tbody id="otbody"><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(173,94)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(0)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(133,34)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(1)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(190,-6)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(2)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(297,0)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(3)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">📢</td><td>廣播塔</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(231,34)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(4)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">ℹ️</td><td>服務台</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(225,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(5)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏥</td><td>救護站</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(228,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(6)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">ℹ️</td><td>服務台</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(176,91)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(7)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏥</td><td>救護站</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(173,91)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(8)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(171,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(9)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(168,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(10)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(163,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(11)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(157,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(12)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(160,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(13)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(174,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(14)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(139,7)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(15)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(151,36)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(16)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(17)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(17)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(18)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(18)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(157,0)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(19)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(160,0)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(20)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(168,0)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(21)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(171,0)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(22)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(174,0)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(23)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(24)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(24)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(25)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(25)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(26)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(26)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(27)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(27)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(292,9)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(28)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(292,12)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(29)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(172,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(30)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(169,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(31)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(166,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(32)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(163,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(33)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(160,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(34)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(157,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(35)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(154,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(36)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🎪</td><td>10米帝王帳</td><td style="color:#6b6960;text-align:center">10</td><td style="color:#6b6960;text-align:center">10</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(118,72)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(37)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚛</td><td>水車</td><td style="color:#6b6960;text-align:center">8</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(38)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(38)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚐</td><td>餐車</td><td style="color:#6b6960;text-align:center">4</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(133,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(39)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(40)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(40)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(41)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(41)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(42)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(42)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(43)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(43)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(44)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(44)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(113,68)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(45)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(113,85)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(46)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(127,44)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(47)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">⚡</td><td>發電機</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(176,110)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(48)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">⚡</td><td>發電機</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(198,-3)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(49)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧸</td><td>哺乳車</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">4</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(175,113)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(50)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(51)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(51)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(151,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(52)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🛖</td><td>帝王邊帳</td><td style="color:#6b6960;text-align:center">5</td><td style="color:#6b6960;text-align:center">10</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(113,72)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(53)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(148,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(54)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">ℹ️</td><td>服務台</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(307,27)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(55)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">♿</td><td>無障礙廁所</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(188,55)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(56)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚾</td><td>流動廁所</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">8</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(187,63)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(57)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">♿</td><td>無障礙廁所</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(188,75)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(58)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">♿</td><td>無障礙廁所</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(188,-21)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(59)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">♿</td><td>無障礙廁所</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(188,-18)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(60)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚾</td><td>流動廁所</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">8</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(187,-31)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(61)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🎪</td><td>10米帝王帳</td><td style="color:#6b6960;text-align:center">10</td><td style="color:#6b6960;text-align:center">10</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(249,5)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(62)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(63)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(63)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(64)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(64)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(65)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(65)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(66)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(66)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(67)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(67)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(68)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(68)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(69)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(69)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(163,45)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(70)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(172,45)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(71)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(169,45)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(72)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(166,45)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(73)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(74)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(74)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">⚡</td><td>發電機</td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">2</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(192,40)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(75)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(160,46)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(76)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(176,119)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(77)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(269,1)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(78)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(275,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(79)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(231,1)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(80)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(222,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(81)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(165,1)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(82)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚮</td><td>垃圾桶</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(167,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(83)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(115,99)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(84)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(116,83)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(85)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(114,66)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(86)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(128,48)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(87)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(168,54)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(88)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(196,-2)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(89)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(177,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(90)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(142,7)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(91)">✕</button></td></tr><tr class="hl"><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(139,34)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(92)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(216,37)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(93)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(234,1)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(94)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(271,13)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(95)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(296,1)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(96)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(301,35)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(97)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(227,35)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(98)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(177,89)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(99)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(146,121)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(100)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(154,121)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(101)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(161,121)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(102)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🧯</td><td>滅火器</td><td style="color:#6b6960;text-align:center">1</td><td style="color:#6b6960;text-align:center">1</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(169,121)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(103)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(142,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(104)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(145,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(105)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(106)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(106)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(307,30)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(107)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚐</td><td>車輛</td><td style="color:#6b6960;text-align:center">5</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(108)">🔄 135°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(108)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">c</td><td><input type="text" style="font-weight:600" value="籃球架truss" oninput="changeObjLabel(109,this.value)"></td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">9</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(196,6)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(109)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(110)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(110)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(111)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(111)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(112)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(112)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(113)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(113)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(114)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(114)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(115)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(115)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(116)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(116)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(117)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(117)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(118)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(118)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(119)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(119)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(120)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(120)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(121)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(121)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(122)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(122)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(123)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(123)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(124)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(124)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(125)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(125)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">c</td><td><input type="text" style="font-weight:600" value="媒體採訪背板" oninput="changeObjLabel(126,this.value)"></td><td style="color:#6b6960;text-align:center">2</td><td style="color:#6b6960;text-align:center">4</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(307,33)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(126)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(139,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(127)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">c</td><td><input type="text" style="font-weight:600" value="城門" oninput="changeObjLabel(128,this.value)"></td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">16</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(307,12)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(128)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(129)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(129)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(130)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(130)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(131)">🔄 45°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(131)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(132)">🔄 45°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(132)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(133)">🔄 45°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(133)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(134)">🔄 45°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(134)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(135)">🔄 45°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(135)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🚿</td><td>洗手區</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(175,123)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(136)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(137)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(137)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(138)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(138)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(139)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(139)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(140)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(140)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(141)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(141)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(142)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(142)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(143)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(143)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(144)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(144)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🥅</td><td>接龍帳</td><td style="color:#6b6960;text-align:center">9</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(145)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(145)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(146)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(146)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(147)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(147)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(148)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(148)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(149)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(149)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(150)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(150)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(151)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(151)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(152)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(152)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(153)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(153)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">🏰</td><td>宮廷帳</td><td style="color:#6b6960;text-align:center">6</td><td style="color:#6b6960;text-align:center">6</td><td style="text-align:center"><button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj(154)">🔄 0°</button></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(154)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(113,82)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(155)">✕</button></td></tr><tr><td style="font-size:15px;text-align:center">❎</td><td>帳篷3×3</td><td style="color:#6b6960;text-align:center">3</td><td style="color:#6b6960;text-align:center">3</td><td style="text-align:center"><span style="font-size:11px;color:#9a9890">(152,66)</span></td><td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO(156)">✕</button></td></tr></tbody></table>
+      </div>
+    </div>
+    <p class="note">座標系：原點(0,0)=公園路緩衝區東端起點。X→西遞增。配置圖格線=10m，細部圖格線=1m。<br>📐 配置圖：可拖移區域、調整大小。🔍 細部圖：區域固定不可移動，僅可拖移小物件；小物件尺寸為固定規格（客製化結構除外，可拉動大小）。<br>⛺ 帳篷數：尚未放置帳篷物件時顯示「估算」（面積÷9m²）；放置後自動切換為「實際統計）。</p>
+  </div>
 
-    <rect x="364.4" y="547.6" width="502.2" height="71.4" fill="rgba(139,195,74,0.06)" stroke="#84cc16" stroke-width="0.5" stroke-dasharray="4,4"/>
-    <text x="840" y="615" font-size="9" fill="#65a30d" text-anchor="end" font-weight="bold">帳篷帶（南側 15m）</text>
-  </g>
+  <div class="card">
+    <div class="card-title">匯出文件</div>
+    <div class="export-row">
+      <button class="btn btn-exp" onclick="exportWord()">📄 匯出 Word</button>
+      <button class="btn btn-pdf" onclick="exportPDF()">📑 列印 / PDF</button>
+      <button class="btn" onclick="saveProject()">💾 儲存規劃 JSON</button>
+      <button class="btn" onclick="document.getElementById('load-project').click()">📂 載入規劃 JSON</button>
+      <input id="load-project" type="file" accept=".json,application/json" style="display:none" onchange="loadProject(event)">
+    </div>
+    <div id="export-status" style="color: rgb(46, 125, 50);"></div>
+  </div>
+</div>
 
-  <!-- 3. CAD 模矩網格層 -->
-  <rect x="0" y="0" width="1000" height="800" fill="url(#arch-grid-10m)" pointer-events="none"/>
+<div id="panel-manual" class="panel">
+<div class="card" style="margin-top:12px"><div class="manual">
+  <h2>操作手冊 — 2026 大FUN凱道場布規劃工具</h2>
+  <h2>一、格線說明</h2>
+  <table>
+    <tbody><tr><th>視圖</th><th>格線尺寸</th><th>用途</th></tr>
+    <tr><td><span class="badge bb">📐 配置圖</span></td><td>10m × 10m</td><td>整體區域配置，快速規劃</td></tr>
+    <tr><td><span class="badge bg">🔍 細部圖</span></td><td>1m × 1m</td><td>精細設施配置，帳篷/廁所精確定位</td></tr>
+  </tbody></table>
+  <div class="tip">💡 細部圖 1m 格線可精確放置小物件，每格即代表真實場地 1 公尺。</div>
+  <h2>二、場地段別</h2>
+  <table>
+    <tbody><tr><th>段別</th><th>名稱</th><th>長×寬</th><th>尾點</th><th>備註</th></tr>
+    <tr><td>①</td><td>公園路緩衝區</td><td>30×40m</td><td>0m</td><td><span class="badge br">淨空</span></td></tr>
+    <tr><td>②</td><td>凱道東段</td><td>113×40m</td><td>30→143m</td><td></td></tr>
+    <tr><td>③</td><td>懷寧街</td><td>11×210m</td><td>南北貫穿</td><td>修訂範圍</td></tr>
+    <tr><td>④</td><td>凱道西段</td><td>41×40m</td><td>154→195m</td><td></td></tr>
+    <tr><td>④b</td><td>凱道西緩衝區</td><td>30×40m</td><td>195→225m</td><td><span class="badge br">淨空</span></td></tr>
+    <tr><td>⑤</td><td>總統府北廣場</td><td>67×83m</td><td>④b+④北側</td><td>修訂尺寸</td></tr>
+    <tr><td>⑥</td><td>總統府</td><td>80×80m</td><td>253m</td><td>建築物</td></tr>
+  </tbody></table>
+</div></div>
+</div>
 
-  <!-- 4. 實體建築物件 / 帳篷設施 -->
-  <g id="architectural-objects">
+<script>
+var TENT=9, HANDLE_M=2.5, LS_W=10, DPR=window.devicePixelRatio||1;
 
-    <!-- [主視覺背板區域] -->
-    <rect x="111.1" y="428.6" width="26.7" height="190.4" fill="rgba(127, 119, 221, 0.12)" stroke="#7f77dd" stroke-width="1.5" stroke-dasharray="5,3"/>
-    <text x="124.4" y="523.8" font-size="10" fill="#534ab7" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 124.4 523.8)">主視覺背板區 (6×40m)</text>
+var SEGS=[
+  {id:'⑥', name:'總統府',      x:0,   y:0,  w:80, h:80, c:'#e0d0e8', type:'building', noGo:false},
+  {id:'⑤', name:'總統府北廣場',x:112, y:44, w:67, h:83, c:'#d4eac6', type:'plaza',    noGo:false},
+  {id:'④b',name:'凱道西緩衝區',x:108, y:0,  w:30, h:40, c:'#e8e6e0', type:'buffer',   noGo:true},
+  {id:'④', name:'凱道西段',    x:138, y:0,  w:41, h:40, c:'#fff3d0', type:'road',     noGo:false},
+  {id:'③', name:'懷寧街',      x:179, y:-80,w:11, h:210,c:'#e0dbd5', type:'crossing', noGo:false},
+  {id:'②', name:'凱道東段',    x:190, y:0,  w:113,h:40, c:'#fff3d0', type:'road',     noGo:false},
+  {id:'①', name:'公園路緩衝區',x:303, y:0,  w:30, h:40, c:'#e8e6e0', type:'buffer',   noGo:true},
+];
 
-    <!-- [帝王帳 / 邊帳] -->
-    <!-- 小舞台 -->
-    <text x="54.4" y="218.6" font-size="10" fill="#78350f" font-weight="bold" text-anchor="middle" dominant-baseline="central">小舞台</text>
+var CW=333, CH=210; 
+var MAR={top:62, right:75, bottom:58, left:42};
+var COLORS=['#7F77DD','#1D9E75','#D85A30','#378ADD','#D4537E','#BA7517','#639922','#534AB7','#0F6E56','#993C1D','#AB47BC','#185FA5','#E24B4A'];
 
-    <g transform="translate(44.4, 228.6)">
-      <rect width="44.4" height="47.6" fill="#fef3c7" stroke="#78350f" stroke-width="1.5"/>
-      <line x1="0" y1="0" x2="44.4" y2="47.6" stroke="#b45309" stroke-width="0.8"/><line x1="0" y1="47.6" x2="44.4" y2="0" stroke="#b45309" stroke-width="0.8"/>
-    </g>
-    <g transform="translate(22.2, 228.6)">
-      <rect width="22.2" height="47.6" fill="#fef3c7" stroke="#78350f" stroke-width="1.2"/>
-      <line x1="0" y1="0" x2="22.2" y2="47.6" stroke="#b45309" stroke-width="0.6"/><line x1="0" y1="47.6" x2="22.2" y2="0" stroke="#b45309" stroke-width="0.6"/>
-    </g>
-    <g transform="translate(22.2, 233.1)">
-      <rect width="16" height="38.6" fill="none" stroke="#2828ff" stroke-width="1"/> <text x="8" y="18" font-size="5" fill="#2828ff" font-weight="normal" text-anchor="middle" dominant-baseline="central">小舞台</text></g>
+var OBJ_DEF={
+  tent:     {label:'帳篷3×3',   emoji:'❎',  w:3,  h:3,  c:'#8d6e63', isTent:true},
+  ali_tent: {label:'阿里山帳',  emoji:'⛱️', w:4,  h:4,  c:'#00897b', isTent:true},
+  royal:    {label:'宮廷帳',    emoji:'🏰', w:6,  h:6,  c:'#5d4037', isTent:true, rotatable:true},
+  linking:  {label:'接龍帳',    emoji:'🥅', w:9,  h:3,  c:'#5d4037', isTent:true, rotatable:true},
+  king10:   {label:'10米帝王帳',emoji:'🎪',  w:10, h:10, c:'#6d4c41', isTent:true},
+  king15:   {label:'15米帝王帳',emoji:'🏠',  w:15, h:15, c:'#4e342e', isTent:true},
+  kingside: {label:'帝王邊帳',  emoji:'🛖',  w:5, h:10, c:'#4e342e', isTent:true},
 
-    <g transform="translate(626.7, 547.6)">
-      <rect width="44.4" height="47.6" fill="#fef3c7" stroke="#78350f" stroke-width="1.5"/>
-      <line x1="0" y1="0" x2="44.4" y2="47.6" stroke="#b45309" stroke-width="0.8"/><line x1="0" y1="47.6" x2="44.4" y2="0" stroke="#b45309" stroke-width="0.8"/>
-    </g>
+  vehicle:  {label:'車輛',      emoji:'🚐',  w:5,  h:3,  c:'#1565c0', isTent:false, rotatable:true},
+  custom_rect:{label:'客製化結構',emoji:'c', w:5,  h:5,  c:'#6a1b9a', isTent:false, resizable:true},
 
-    <!-- [接龍帳 9x3m 各組] -->
-    <g fill="#f1f5f9" stroke="#334155" stroke-width="0.8">
-      <rect x="226.7" y="361.9" width="40.0" height="14.3"/>
-      <rect x="226.7" y="347.6" width="40.0" height="14.3"/>
-      <rect x="226.7" y="333.3" width="40.0" height="14.3"/>
-      <rect x="226.7" y="319.0" width="40.0" height="14.3"/>
-      <rect x="226.7" y="304.8" width="40.0" height="14.3"/>
-      <rect x="226.7" y="290.5" width="40.0" height="14.3"/>
-      <rect x="226.7" y="276.2" width="40.0" height="14.3"/>
-      <rect x="226.7" y="261.9" width="40.0" height="14.3"/>
-      <rect x="226.7" y="247.6" width="40.0" height="14.3"/>
-    </g>
+  broadcast:{label:'廣播塔',    emoji:'📢',  w:6,  h:6,  c:'#546e7a', isTent:false},
+  toilet1:  {label:'流動廁所',  emoji:'🚾',  w:3,  h:8,  c:'#00acc1', isTent:false},
+  toilet2:  {label:'無障礙廁所',  emoji:'♿',  w:2,  h:2,  c:'#00acc1', isTent:false},
+  nursing:  {label:'哺乳車',    emoji:'🧸',  w:3,  h:4,  c:'#f06292', isTent:false},
+  water:    {label:'水車',      emoji:'🚛',  w:8,  h:3,  c:'#29b6f6', isTent:false, rotatable:true},
+  toilet:   {label:'洗手區',    emoji:'🚿',w:3,h:3,c:'#26c6da', isTent:false},
+  food:     {label:'餐車',      emoji:'🚐',w:4,h:3,c:'#ffa726', isTent:false},
+  stage:    {label:'舞台',      emoji:'🎤',w:12,h:8,c:'#ab47bc', isTent:false},
+  info:     {label:'服務台',    emoji:'ℹ️',w:3,h:3,c:'#66bb6a', isTent:true},
+  medic:    {label:'救護站',    emoji:'🏥',w:3,h:3,c:'#ef5350', isTent:true},
+  power:    {label:'發電機',    emoji:'⚡',w:2,h:2,c:'#fdd835', isTent:false},
+  trash:    {label:'垃圾桶',    emoji:'🚮',w:1,h:1,c:'#fdd835', isTent:false},
+  firex:    {label:'滅火器',    emoji:'🧯',w:1,h:1,c:'#fdd835', isTent:false},
+};
 
-    <!-- [宮廷帳 6x6m] -->
-    <g stroke="#007500" stroke-width="0.8" fill="#f8fafc">
-      <!-- 小老闆二手市集 45度旋轉群 -->
-      <g transform="translate(137.8, 304.8)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
-      <g transform="translate(111.1, 333.3)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
-      <g transform="translate(164.4, 333.3)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
-      <g transform="translate(137.8, 361.9)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
-      <g transform="translate(177.8, 371.4)"><g transform="rotate(45 13.3 14.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="28.6" x2="26.7" y2="0" stroke="#94a3b8" stroke-width="0.5"/></g></g>
+/*%%DEFAULT_ZONES_START%%*/
+var DEFAULT_ZONES=[
+  {name:"戶外影像互動區", ox:112, oy:44, l:18, w:20, c:"#8BC34A"},
+  {name:"兒本交通", ox:268, oy:20, l:35, w:20, c:"#378ADD"},
+  {name:"氣候變遷學堂", ox:268, oy:0, l:35, w:20, c:"#0F6E56"},
+  {name:"緩衝區", ox:225, oy:0, l:8, w:40, c:"#AB47BC"},
+  {name:"運動動一動", ox:233, oy:0, l:35, w:40, c:"#1D9E75"},
+  {name:"飲食休息區", ox:112, oy:91, l:67, w:36, c:"#EF9F27"},
+  {name:"客庄菜市場", ox:159, oy:51, l:9, w:27, c:"#534AB7"},
+  {name:"小舞台", ox:112, oy:65, l:18, w:24, c:"#D4537E"},
+  {name:"說故事區(南苑)", ox:30, oy:0, l:20, w:20, c:"#85B7EB"},
+  {name:"Kids Meet(新聞中心)", ox:6, oy:20, l:14, w:14, c:"#00838F"},
+  {name:"氣候變遷高峰會議/兒童電影院(大禮堂)", ox:0, oy:34, l:20, w:20, c:"#1565C0"},
+  {name:"兒童活動(敞廳)", ox:20, oy:34, l:20, w:20, c:"#7F77DD"},
+  {name:"入口意象/城門", ox:303, oy:0, l:10, w:40, c:"#E24B4A"},
+  {name:"主視覺背板", ox:133, oy:0, l:6, w:40, c:"#7F77DD"},
+  {name:"防災教育體驗區(北苑)", ox:30, oy:60, l:20, w:20, c:"#1D9E75"},
+  {name:"運動動一動", ox:190, oy:0, l:35, w:40, c:"#378ADD"},
+  {name:"彩繪區", ox:139, oy:20, l:40, w:20, c:"#378ADD"},
+  {name:"戲水區", ox:139, oy:0, l:40, w:20, c:"#D4537E"},
+  {name:"地板滾球", ox:192, oy:28, l:31, w:6, c:"#BA7517"},
+  {name:"布袋球", ox:241, oy:26, l:25, w:8, c:"#639922"},
+  {name:"籃球", ox:199, oy:6, l:10, w:9, c:"#534AB7"},
+  {name:"籃球自由區", ox:209, oy:6, l:6, w:9, c:"#0F6E56"},
+  {name:"拳擊擂台", ox:251, oy:7, l:6, w:6, c:"#993C1D"},
+  {name:"拳擊自由區", ox:244, oy:7, l:20, w:7, c:"#AB47BC"},
+  {name:"小老闆二手市集", ox:132, oy:44, l:24, w:26, c:"#185FA5"},
+  {name:"永續(循環署+台電)", ox:168, oy:51, l:9, w:27, c:"#E24B4A"}
+];
+/*%%DEFAULT_ZONES_END%%*/
 
-      <!-- 攝影棚宮廷帳 3頂-->
-      <g transform="translate(17.8, 352.4)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(17.8, 323.8)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(53.3, 381.0)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+/*%%DEFAULT_OBJECTS_START%%*/
+var DEFAULT_OBJECTS=[
+  {type:"broadcast", ox:173, oy:94, w:6, h:6, label:"廣播塔", angle:0},
+  {type:"broadcast", ox:133, oy:34, w:6, h:6, label:"廣播塔", angle:0},
+  {type:"broadcast", ox:190, oy:-6, w:6, h:6, label:"廣播塔", angle:0},
+  {type:"broadcast", ox:297, oy:0, w:6, h:6, label:"廣播塔", angle:0},
+  {type:"broadcast", ox:231, oy:34, w:6, h:6, label:"廣播塔", angle:0},
+  {type:"info", ox:225, oy:37, w:3, h:3, label:"服務台", angle:0},
+  {type:"medic", ox:228, oy:37, w:3, h:3, label:"救護站", angle:0},
+  {type:"info", ox:176, oy:91, w:3, h:3, label:"服務台", angle:0},
+  {type:"medic", ox:173, oy:91, w:3, h:3, label:"救護站", angle:0},
+  {type:"tent", ox:171, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:168, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:163, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:157, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:160, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:174, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:139, oy:7, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:151, oy:36, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"royal", ox:154, oy:27, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:166, oy:27, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:157, oy:0, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:160, oy:0, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:168, oy:0, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:171, oy:0, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:174, oy:0, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"royal", ox:272, oy:9, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:272, oy:3, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:282, oy:9, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:282, oy:3, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:292, oy:9, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:292, oy:12, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:172, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:169, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:166, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:163, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:160, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:157, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:154, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"king10", ox:118, oy:72, w:10, h:10, label:"10米帝王帳", angle:0},
+  {type:"water", ox:147, oy:0, w:8, h:3, label:"水車", angle:0},
+  {type:"food", ox:133, oy:123, w:4, h:3, label:"餐車", angle:0},
+  {type:"royal", ox:112, oy:56, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:112, oy:50, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:283, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:295, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:289, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:113, oy:68, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:113, oy:85, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:127, oy:44, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"power", ox:176, oy:110, w:2, h:2, label:"發電機", angle:0},
+  {type:"power", ox:198, oy:-3, w:2, h:2, label:"發電機", angle:0},
+  {type:"nursing", ox:175, oy:113, w:3, h:4, label:"哺乳車", angle:0},
+  {type:"royal", ox:120, oy:44, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:151, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"kingside", ox:113, oy:72, w:5, h:10, label:"帝王邊帳", angle:0},
+  {type:"tent", ox:148, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"info", ox:307, oy:27, w:3, h:3, label:"服務台", angle:0},
+  {type:"toilet2", ox:188, oy:55, w:2, h:2, label:"無障礙廁所", angle:0},
+  {type:"toilet1", ox:187, oy:63, w:3, h:8, label:"流動廁所", angle:0},
+  {type:"toilet2", ox:188, oy:75, w:2, h:2, label:"無障礙廁所", angle:0},
+  {type:"toilet2", ox:188, oy:-21, w:2, h:2, label:"無障礙廁所", angle:0},
+  {type:"toilet2", ox:188, oy:-18, w:2, h:2, label:"無障礙廁所", angle:0},
+  {type:"toilet1", ox:187, oy:-31, w:3, h:8, label:"流動廁所", angle:0},
+  {type:"king10", ox:249, oy:5, w:10, h:10, label:"10米帝王帳", angle:0},
+  {type:"royal", ox:203, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:209, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:247, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:241, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:199, oy:0, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:241, oy:0, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:235, oy:0, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:163, oy:45, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:172, oy:45, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:169, oy:45, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:166, oy:45, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"royal", ox:205, oy:0, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"power", ox:192, oy:40, w:2, h:2, label:"發電機", angle:0},
+  {type:"trash", ox:160, oy:46, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:176, oy:119, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:269, oy:1, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:275, oy:37, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:231, oy:1, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:222, oy:37, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:165, oy:1, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"trash", ox:167, oy:37, w:1, h:1, label:"垃圾桶", angle:0},
+  {type:"firex", ox:115, oy:99, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:116, oy:83, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:114, oy:66, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:128, oy:48, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:168, oy:54, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:196, oy:-2, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:177, oy:37, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:142, oy:7, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:139, oy:34, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:216, oy:37, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:234, oy:1, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:271, oy:13, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:296, oy:1, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:301, oy:35, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:227, oy:35, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:177, oy:89, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:146, oy:121, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:154, oy:121, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:161, oy:121, w:1, h:1, label:"滅火器", angle:0},
+  {type:"firex", ox:169, oy:121, w:1, h:1, label:"滅火器", angle:0},
+  {type:"tent", ox:142, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:145, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"royal", ox:277, oy:34, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:307, oy:30, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"vehicle", ox:297, oy:27, w:5, h:3, label:"車輛", angle:135},
+  {type:"custom_rect", ox:196, oy:6, w:3, h:9, label:"籃球架truss", angle:0},
+  {type:"royal", ox:114, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:114, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:120, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:120, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:126, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:138, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:138, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:132, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:132, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:126, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:150, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:150, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:144, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:144, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:156, oy:108, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:156, oy:102, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"custom_rect", ox:307, oy:33, w:2, h:4, label:"媒體採訪背板", angle:0},
+  {type:"tent", ox:139, oy:123, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"custom_rect", ox:307, oy:12, w:6, h:16, label:"城門", angle:0},
+  {type:"royal", ox:168, oy:72, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:168, oy:64, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:139, oy:60, w:6, h:6, label:"宮廷帳", angle:45},
+  {type:"royal", ox:133, oy:54, w:6, h:6, label:"宮廷帳", angle:45},
+  {type:"royal", ox:145, oy:54, w:6, h:6, label:"宮廷帳", angle:45},
+  {type:"royal", ox:139, oy:48, w:6, h:6, label:"宮廷帳", angle:45},
+  {type:"royal", ox:148, oy:46, w:6, h:6, label:"宮廷帳", angle:45},
+  {type:"toilet", ox:175, oy:123, w:3, h:3, label:"洗手區", angle:0},
+  {type:"linking", ox:159, oy:51, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:54, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:57, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:60, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:63, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:66, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:69, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:72, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"linking", ox:159, oy:75, w:9, h:3, label:"接龍帳", angle:0},
+  {type:"royal", ox:210, oy:28, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:216, oy:28, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:198, oy:28, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:192, oy:28, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:254, oy:27, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:260, oy:27, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:247, oy:27, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:241, oy:27, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"royal", ox:168, oy:58, w:6, h:6, label:"宮廷帳", angle:0},
+  {type:"tent", ox:113, oy:82, w:3, h:3, label:"帳篷3×3", angle:0},
+  {type:"tent", ox:152, oy:66, w:3, h:3, label:"帳篷3×3", angle:0}
+];
+/*%%DEFAULT_OBJECTS_END%%*/
 
-      <!-- 台電+電器維修宮廷帳 3頂-->
-      <g transform="translate(266.7, 314.3)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(266.7, 285.7)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(266.7, 247.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+var zones, objects, selIdx=-1, selType='zone', drag=null, sc=1, viewMode='detail';
+var showZonesEnabled = true;
+var showFirexEnabled = true;
+var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 
-      <!-- 飲食休息區雙排 16 頂宮廷帳矩陣 -->
-      <g transform="translate(26.7, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(26.7, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(53.3, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(53.3, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(80.0, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(80.0, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(106.7, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(106.7, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(133.3, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(133.3, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(160.0, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(160.0, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(186.7, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(186.7, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(213.3, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(213.3, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+function initData() {
+  zones = DEFAULT_ZONES.map(function(z){return Object.assign({},z);});
+  objects = DEFAULT_OBJECTS.map(function(o){
+    var def = OBJ_DEF[o.type] || {label:'未知物件', emoji:'❓', w:3, h:3, c:'#999', isTent:false};
+    var obj = Object.assign({ angle: 0 }, def, o);
+    if(o.w) obj.w = o.w;
+    if(o.h) obj.h = o.h;
+    if(o.label) obj.label = o.label;
+    return obj;
+  }).filter(function(o) { return !isNaN(o.ox) && !isNaN(o.oy); });
+  
+  selIdx = -1;
+  selType = 'zone';
+  renderTable(); 
+  renderObjTable(); 
+  updateInfo(); 
+  requestAnimationFrame(draw);
+}
 
-      <!-- 凱道西段宮廷帳 -->
-      <g transform="translate(204.4, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(257.8, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+function showPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav .tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='map') requestAnimationFrame(draw);
+}
 
+function setView(mode){
+  viewMode=mode;
+  document.getElementById('vt-layout').classList.toggle('active',mode==='layout');
+  document.getElementById('vt-detail').classList.toggle('active',mode==='detail');
+  document.getElementById('obj-panel').style.display=mode==='detail'?'block':'none';
+  document.getElementById('otbl-section').style.display=mode==='detail'?'block':'none';
+  updateInfo(); draw();
+}
 
-      <!-- 凱道東段北側上排宮廷帳陣列 (8 頂) -->
-      <!-- 運動動一動區 (4頂) -->
-      <g transform="translate(422.2, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(448.9, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(591.1, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(617.8, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+function toggleZoneVisibility(){
+  showZonesEnabled = !showZonesEnabled;
+  var btn = document.getElementById('btn-toggle-zone');
+  if(showZonesEnabled){
+    btn.textContent = '👁 隱藏活動區域';
+    btn.style.color = '#0066cc';
+    btn.style.borderColor = '#90caf9';
+  } else {
+    btn.textContent = '👁 顯示活動區域';
+    btn.style.color = '#666';
+    btn.style.borderColor = '#ccc';
+    if(selType === 'zone') selIdx = -1;
+  }
+  updateInfo(); draw();
+}
+
+function toggleFirexVisibility(){
+  showFirexEnabled = !showFirexEnabled;
+  var btn = document.getElementById('btn-toggle-firex');
+  if(showFirexEnabled){
+    btn.textContent = '🧯 隱藏滅火器';
+    btn.style.color = '#b71c1c';
+    btn.style.borderColor = '#ef9a9a';
+  } else {
+    btn.textContent = '🧯 顯示滅火器';
+    btn.style.color = '#666';
+    btn.style.borderColor = '#ccc';
+    if(selType === 'obj' && selIdx >= 0 && objects[selIdx] && objects[selIdx].type === 'firex'){
+      selIdx = -1;
+    }
+  }
+  updateInfo(); draw();
+}
+
+function inObjR(rx, ry, o) {
+  if (!o.angle) {
+    return rx >= o.ox && rx <= o.ox + o.w && ry >= o.oy && ry <= o.oy + o.h;
+  }
+  var cx0 = o.ox + o.w / 2;
+  var cy0 = o.oy + o.h / 2;
+  var rad = -o.angle * Math.PI / 180;
+  var dx = rx - cx0;
+  var dy = ry - cy0;
+  var nx = dx * Math.cos(rad) - dy * Math.sin(rad) + cx0;
+  var ny = dx * Math.sin(rad) + dy * Math.cos(rad) + cy0;
+  return nx >= o.ox && nx <= o.ox + o.w && ny >= o.oy && ny <= o.oy + o.h;
+}
+
+function hitTest(px,py){
+  var r=toReal(px,py);
+  if(viewMode==='detail'){
+    for(var i=objects.length-1;i>=0;i--){
+      var o=objects[i]; 
+      if(!showFirexEnabled && o.type === 'firex') continue;
+      if(inObjR(r.rx,r.ry,o)) return{type:'obj',idx:i};
+    }
+    if(showZonesEnabled){
+      for(var j=zones.length-1;j>=0;j--){var z=zones[j]; if(inR(r.rx,r.ry,z.ox,z.oy,z.l,z.w)) return{type:'zone',idx:j};}
+    }
+    return null;
+  }
+  if(showZonesEnabled){
+    for(var j2=zones.length-1;j2>=0;j2--){var z2=zones[j2]; if(inR(r.rx,r.ry,z2.ox,z2.oy,z2.l,z2.w)) return{type:'zone',idx:j2};}
+  }
+  return null;
+}
+
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1;
+  var cssW=cv.parentElement.clientWidth||900;
+  sc=(cssW-MAR.left-MAR.right)/CW;
+  var cssH=CH*sc+MAR.top+MAR.bottom;
+  cv.width=Math.round(cssW*DPR); cv.height=Math.round(cssH*DPR);
+  cv.style.width=cssW+'px'; cv.style.height=cssH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  return{cssW:cssW};
+}
+function cx(m){return MAR.left+m*sc;}
+function cy(m){return MAR.top+(CH-(m+80))*sc;}
+
+function draw(){
+  var g=setupCanvas();
+  ctx.clearRect(0,0,g.cssW,CH*sc+MAR.top+MAR.bottom);
+  drawSegments(); drawGrid();
+  if(viewMode==='detail') drawLifeStreet();
+  drawNoGoHatch(); 
+  if(showZonesEnabled) drawZones();
+  if(viewMode==='detail') drawObjects();
+  drawLabels(); drawDimensions(); renderLegend();
+}
+
+function drawSegments(){
+  SEGS.forEach(function(s){
+    ctx.globalAlpha=0.45; ctx.fillStyle=s.c;
+    ctx.fillRect(cx(s.x),cy(s.y+s.h),s.w*sc,s.h*sc);
+    ctx.globalAlpha=1; ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=0.8;
+    ctx.strokeRect(cx(s.x)+0.5,cy(s.y+s.h)+0.5,s.w*sc-1,s.h*sc-1);
+    var midX=cx(s.x+s.w/2), midY=cy(s.y+s.h/2);
+    ctx.fillStyle='rgba(0,0,0,0.18)';
+    ctx.font='bold '+Math.min(26,Math.max(12,s.w*sc*0.15))+'px sans-serif';
+    ctx.textAlign='center'; ctx.fillText(s.id,midX,midY+4);
+    ctx.fillStyle='rgba(0,0,0,0.30)';
+    ctx.font=Math.min(12,Math.max(8,s.w*sc*0.06))+'px sans-serif';
+    ctx.fillText(s.name,midX,midY+18);
+  });
+}
+
+function drawGrid(){
+  var step = (viewMode==='detail') ? 1 : 10;
+  for(var x=0; x<=CW; x+=step){
+    var is10 = (x % 10 === 0);
+    ctx.strokeStyle = is10 ? 'rgba(0,0,0,0.13)' : 'rgba(0,0,0,0.04)';
+    ctx.lineWidth   = is10 ? 0.7 : 0.3;
+    ctx.beginPath(); ctx.moveTo(cx(x),cy(-80)); ctx.lineTo(cx(x),cy(130)); ctx.stroke();
+  }
+  for(var y=-80; y<=130; y+=step){
+    var is10y = (y % 10 === 0);
+    ctx.strokeStyle = is10y ? 'rgba(0,0,0,0.13)' : 'rgba(0,0,0,0.04)';
+    ctx.lineWidth   = is10y ? 0.7 : 0.3;
+    ctx.beginPath(); ctx.moveTo(cx(0),cy(y)); ctx.lineTo(cx(CW),cy(y)); ctx.stroke();
+  }
+  for(var yl=-80; yl<=130; yl+=10){
+    ctx.fillStyle='#b0ada4'; ctx.font='10px sans-serif'; ctx.textAlign='right';
+    ctx.fillText(yl+'m', cx(0)-5, cy(yl)+4);
+  }
+  var milestones=[
+    {ix:303, disp:'30m',  col:'#2a4ab0'},
+    {ix:190, disp:'143m', col:'#2a4ab0'},
+    {ix:179, disp:'154m', col:'#888'},
+    {ix:138, disp:'195m', col:'#888'},
+    {ix:108, disp:'225m', col:'#888'},
+    {ix:80,  disp:'253m', col:'#7a5a9a'},
+  ];
+  var baseY=cy(0)+16;
+  milestones.forEach(function(m){
+    var px=cx(m.ix);
+    ctx.strokeStyle=m.col; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,cy(0)); ctx.lineTo(px,cy(0)+6); ctx.stroke();
+    ctx.fillStyle=m.col; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(m.disp,px,baseY);
+  });
+  ctx.fillStyle='#9a9890'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  var gridNote = (viewMode==='detail') ? '← 西 各段尾點距起點(0,0)距離 東 → ｜格線：1m×1m'
+                                        : '← 西 各段尾點距起點(0,0)距離 東 → ｜格線：10m×10m';
+  ctx.fillText(gridNote, cx(CW/2), cy(-80)+30);
+}
+
+function drawNoGoHatch(){
+  SEGS.forEach(function(s){
+    if(!s.noGo) return;
+    var rx=cx(s.x), ry=cy(s.y+s.h), rw=s.w*sc, rh=s.h*sc;
+    ctx.save(); ctx.beginPath(); ctx.rect(rx,ry,rw,rh); ctx.clip();
+    ctx.strokeStyle='rgba(180,50,50,0.18)'; ctx.lineWidth=1;
+    for(var i=-rh;i<rw+rh;i+=8){ctx.beginPath(); ctx.moveTo(rx+i,ry); ctx.lineTo(rx+i+rh,ry+rh); ctx.stroke();}
+    ctx.restore();
+  });
+}
+
+function drawLifeStreet(){
+  var roadSegs=SEGS.filter(function(s){return s.type==='road'&&!s.noGo;});
+  var lsBottom=(40-LS_W)/2, lsTop=lsBottom+LS_W;
+  roadSegs.forEach(function(s){
+    var rx=cx(s.x), rw=s.w*sc, ry=cy(lsTop), rh=LS_W*sc;
+    ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.fillRect(rx,ry,rw,rh);
+    ctx.strokeStyle='rgba(100,100,90,0.35)'; ctx.lineWidth=1.2; ctx.setLineDash([6,4]);
+    var midY=cy(lsBottom+LS_W/2);
+    ctx.beginPath(); ctx.moveTo(rx,midY); ctx.lineTo(rx+rw,midY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('生活街道 '+LS_W+'m',cx(s.x+s.w/2),midY+3);
+    var tentY=cy(lsBottom), tentH=lsBottom*sc;
+    ctx.fillStyle='rgba(139,195,74,0.08)'; ctx.fillRect(rx,tentY,rw,tentH);
+    ctx.fillStyle='rgba(139,195,74,0.35)'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('⛺ 帳篷帶（南側）',cx(s.x+s.w/2),tentY+tentH/2+3);
+    var nTopY=cy(s.y+s.h), nH=(s.h-lsTop)*sc;
+    ctx.fillStyle='rgba(200,50,50,0.05)'; ctx.fillRect(rx,nTopY,rw,nH);
+    ctx.fillStyle='rgba(200,50,50,0.20)'; ctx.font='9px sans-serif';
+    ctx.fillText('⛺ 帳篷帶（北側）',cx(s.x+s.w/2),nTopY+nH/2+3);
+  });
+}
+
+function wrapL(s,wpx,fs){
+  var cw=fs*0.58, max=Math.max(2,Math.floor(wpx/cw));
+  if(s.length<=max) return[s];
+  return[s.slice(0,max),s.slice(max,max*2)].filter(function(x){return x;});
+}
+
+function drawZones(){
+  var isDetail = (viewMode === 'detail');
+  for(var i=0;i<zones.length;i++){
+    for(var j=i+1;j<zones.length;j++){
+      var a=zones[i], b=zones[j];
+      var lx=Math.max(a.ox,b.ox), ly=Math.max(a.oy,b.oy);
+      var rx2=Math.min(a.ox+a.l,b.ox+b.l), ry2=Math.min(a.oy+a.w,b.oy+b.w);
+      if(rx2>lx&&ry2>ly){
+        ctx.fillStyle='rgba(220,60,60,0.35)'; 
+        ctx.fillRect(cx(lx),cy(ry2),(rx2-lx)*sc,(ry2-ly)*sc);
+      }
+    }
+  }
+  zones.forEach(function(z,i){
+    var sel=(selType==='zone'&&i===selIdx);
+    var rx=cx(z.ox), ry=cy(z.oy+z.w), rw=z.l*sc, rh=z.w*sc;
+    
+    if (isDetail) {
+      ctx.globalAlpha = sel ? 0.15 : 0.06;
+    } else {
+      ctx.globalAlpha = sel ? 0.35 : 0.20;
+    }
+    ctx.fillStyle=z.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    
+    ctx.save();
+    if (isDetail) ctx.globalAlpha = 0.4;
+    ctx.strokeStyle=z.c; ctx.lineWidth=sel?2.5:1.5; ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
+    ctx.restore();
+    
+    if(sel){
+      ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=0.8; ctx.setLineDash([4,3]);
+      ctx.strokeRect(rx+3,ry+3,rw-6,rh-6); ctx.setLineDash([]); ctx.restore();
+      ctx.fillStyle=z.c; ctx.fillRect(rx+rw-HANDLE_M*sc,ry+rh-HANDLE_M*sc,HANDLE_M*sc,HANDLE_M*sc);
+    }
+    
+    var fs=rw>90?12:rw>55?11:rw>30?10:8;
+    ctx.fillStyle=z.c; ctx.font='bold '+fs+'px sans-serif'; ctx.textAlign='center';
+    var lines=wrapL(z.name,rw,fs), tyStart=ry+fs+4;
+    lines.forEach(function(ln,li){ctx.fillText(ln,rx+rw/2,tyStart+li*(fs+2),rw-4);});
+    
+    if(!isDetail) {
+      if(rh>fs*2+20){
+        ctx.globalAlpha=0.7; ctx.font=(fs-1)+'px sans-serif';
+        var dy=tyStart+lines.length*(fs+2)+2;
+        ctx.fillText(z.l+'×'+z.w+'m',rx+rw/2,dy,rw-4);
+        if(rh>fs*2+34){ctx.font='10px sans-serif'; ctx.fillText((z.l*z.w)+'m²',rx+rw/2,dy+12,rw-4);}
+        ctx.globalAlpha=1;
+      }
+    }
+    
+    if(sel){
+      ctx.fillStyle='#333'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('('+Math.round(CW-z.ox-z.l/2)+','+Math.round(z.oy)+')',rx+rw/2,ry-5);
+    }
+  });
+}
+
+function drawObjects(){
+  objects.forEach(function(o,i){
+    if(!showFirexEnabled && o.type === 'firex') return;
+    var sel=(selType==='obj'&&i===selIdx);
+    var rx=cx(o.ox), ry=cy(o.oy+o.h), rw=o.w*sc, rh=o.h*sc;
+    
+    ctx.save();
+    
+    if(o.rotatable && o.angle) {
+      var midX = cx(o.ox + o.w/2);
+      var midY = cy(o.oy + o.h/2);
+      ctx.translate(midX, midY);
+      ctx.rotate((o.angle * Math.PI) / 180);
+      rx = -rw/2;
+      ry = -rh/2;
+    }
+
+    ctx.globalAlpha=sel?0.35:0.22; ctx.fillStyle=o.c; ctx.fillRect(rx,ry,rw,rh); ctx.globalAlpha=1;
+    ctx.strokeStyle=o.c; ctx.lineWidth=sel?2:1.2; ctx.strokeRect(rx+0.5,ry+0.5,rw-1,rh-1);
+    
+    if(sel){
+      ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=0.8; ctx.setLineDash([3,2]);
+      ctx.strokeRect(rx+2,ry+2,rw-4,rh-4); ctx.setLineDash([]); ctx.restore();
       
-      <!-- 兒本交通區 (4頂) -->
-      <g transform="translate(751.1, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(777.8, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(804.4, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(831.1, 428.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+      if(o.resizable){
+        ctx.fillStyle=o.c; var hs=HANDLE_M*sc*0.7; ctx.fillRect(rx+rw-hs,ry+rh-hs,hs,hs);
+      }
+    }
+    
+    var efs=Math.max(10,Math.min(20,Math.min(rw,rh)*0.5));
+    ctx.font=efs+'px serif'; ctx.textAlign='center'; 
+    ctx.fillText(o.emoji, rx+rw/2, ry+rh/2+efs*0.2);
+    
+    if(rh>efs+10&&rw>28){
+      ctx.font='9px sans-serif'; ctx.fillStyle=o.c; 
+      ctx.fillText(o.label, rx+rw/2, ry+rh-3, rw-4);
+    }
+    
+    ctx.restore();
 
-      <!-- 凱道東段南側路緣宮廷帳 (4頂) -->
-      <!-- 運動動一動區 (4頂) -->
-      <g transform="translate(404.4, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(431.1, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(564.4, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(591.1, 590.5)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+    if(sel){
+      ctx.fillStyle='#333'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; 
+      var angleS = o.angle ? ' ['+o.angle+'°]' : '';
+      ctx.fillText('('+Math.round(o.ox)+','+Math.round(o.oy)+')'+angleS, cx(o.ox+o.w/2), cy(o.oy+o.h)-5);
+    }
+  });
+}
 
-      <!-- 凱道東段南側帳篷帶內排宮廷帳 (8頂) -->
-      <g transform="translate(373.3, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(400.0, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(453.3, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(480.0, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(591.1, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(617.8, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(648.9, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(675.6, 457.1)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
+function drawLabels(){
+  ctx.save();
+  ctx.fillStyle='rgba(60,130,60,0.13)';
+  ctx.strokeStyle='rgba(60,130,60,0.40)';
+  ctx.lineWidth=1;
+  ctx.setLineDash([5,3]);
 
-      <!-- 氣候變遷學堂 6x6m 宮廷帳 (4 頂) -->
-      <g transform="translate(728.9, 576.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(728.9, 547.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(773.3, 576.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-      <g transform="translate(773.3, 547.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
-    </g>
+  ctx.beginPath();
+  ctx.moveTo(cx(190), cy(55));
+  ctx.lineTo(cx(190), cy(130));
+  ctx.lineTo(cx(333), cy(130));
+  ctx.lineTo(cx(333), cy(44));
+  ctx.lineTo(cx(201), cy(44));
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.fillStyle='#2e7d32'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('二二八紀念公園', cx(190 + (333-190)/2), cy(44 + (130-44)/2) + 4);
+
+  ctx.save();
+  ctx.fillStyle='rgba(120,120,120,0.08)';
+  ctx.strokeStyle='rgba(120,120,120,0.45)';
+  ctx.lineWidth=1;
+  ctx.setLineDash([4,3]);
+
+  ctx.beginPath();
+  ctx.moveTo(cx(190), cy(-15));
+  ctx.lineTo(cx(190), cy(-36));
+  ctx.lineTo(cx(222), cy(-36));
+  ctx.lineTo(cx(222), cy(-4));
+  ctx.lineTo(cx(201), cy(-4));
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.clip();
+  ctx.strokeStyle='rgba(120,120,120,0.15)';
+  var bX=cx(190), bW=(222-190)*sc, bY=cy(-4), bH=(-4-(-36))*sc;
+  for(var i=-bH; i<bW+bH; i+=6){ ctx.beginPath(); ctx.moveTo(bX+i,bY); ctx.lineTo(bX+i+bH,bY+bH); ctx.stroke(); }
+  ctx.restore();
+
+  ctx.fillStyle='#555555'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('二二八紀念碑', cx(190 + (222-190)/2), cy(-36 + (-4-(-36))/2) + 4);
+
+  var jX=cx(222), jY=cy(-4), jW=(333-222)*sc, jH=(-4-(-80))*sc;
+  ctx.fillStyle='rgba(76,175,80,0.10)'; ctx.fillRect(jX,jY,jW,jH);
+  ctx.strokeStyle='rgba(76,175,80,0.35)'; ctx.lineWidth=1; ctx.setLineDash([5,3]); ctx.strokeRect(jX,jY,jW,jH); ctx.setLineDash([]);
+  ctx.fillStyle='#388e3c'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('介壽公園',jX+jW/2,jY+jH/2+4);
+
+  var prX=cx(CW)+5, prW=MAR.right-10, prY=cy(40), prH=40*sc;
+  ctx.fillStyle='rgba(80,120,220,0.06)'; ctx.fillRect(prX,prY,prW,prH);
+  ctx.strokeStyle='rgba(80,120,220,0.20)'; ctx.lineWidth=0.8; ctx.setLineDash([4,3]);
+  ctx.strokeRect(prX,prY,prW,prH); ctx.setLineDash([]);
+  ctx.save(); ctx.translate(prX+prW/2,cy(20)); ctx.rotate(Math.PI/2);
+  ctx.fillStyle='#2a4ab0'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('公園路',0,4); ctx.restore();
+}
+
+function drawDimensions(){
+  var ay=cy(40)-10;
+  function dimArrow(x1,x2,label,col){
+    ctx.strokeStyle=col; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.moveTo(x1,ay); ctx.lineTo(x2,ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x1+4,ay-3); ctx.lineTo(x1,ay); ctx.lineTo(x1+4,ay+3); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2-4,ay-3); ctx.lineTo(x2,ay); ctx.lineTo(x2-4,ay+3); ctx.stroke();
+    ctx.fillStyle=col; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(label,(x1+x2)/2,ay-4);
+  }
+  dimArrow(cx(138),cx(179),'④凱道西 41m','rgba(150,100,30,0.7)');
+  dimArrow(cx(190),cx(303),'② 凱道東 113m','rgba(35,65,155,0.7)');
+  dimArrow(cx(108),cx(138),'④b 30m','rgba(150,60,60,0.5)');
+  
+  var vx=cx(102);
+  ctx.strokeStyle='rgba(60,130,60,0.4)'; ctx.lineWidth=0.8;
+  ctx.beginPath(); ctx.moveTo(vx,cy(44)); ctx.lineTo(vx,cy(127)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(vx-3,cy(44)+4); ctx.lineTo(vx,cy(44)); ctx.lineTo(vx+3,cy(44)+4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(vx-3,cy(127)-4); ctx.lineTo(vx,cy(127)); ctx.lineTo(vx+3,cy(127)-4); ctx.stroke();
+  ctx.save(); ctx.translate(vx-8,cy(85.5)); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#5a8a3a'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('⑤ 83m',0,0); ctx.restore();
+  
+  var vx2=cx(CW)+3;
+  ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=0.8;
+  ctx.beginPath(); ctx.moveTo(vx2,cy(0)); ctx.lineTo(vx2,cy(40)); ctx.stroke();
+  ctx.save(); ctx.translate(vx2+10,cy(20)); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#9a9890'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('40m',0,0); ctx.restore();
+  ctx.fillStyle='#1a1a18'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('← 西 凱達格蘭大道 東 →',cx(CW/2),MAR.top-38);
+  ctx.font='10px sans-serif'; ctx.fillStyle='#888';
+  ctx.fillText('凱道總長：②113+③11+④41+④b30 = 225m（含緩衝）',cx(CW/2),MAR.top-22);
+}
+
+function renderLegend(){
+  var el=document.getElementById('legend-bar');
+  var items=SEGS.map(function(s){
+    var extra=s.noGo?' <span class="nogo-badge">淨空</span>':'';
+    return '<div class="leg-item"><div class="leg-box" style="background:'+s.c+';opacity:0.6"></div>'+s.id+' '+s.name+extra+'</div>';
+  });
+  if(viewMode==='detail'){
+    items.push('<div class="leg-item"><div class="leg-box" style="background:#8BC34A;opacity:0.3"></div>帳篷帶（南側）</div>');
+    items.push('<div class="leg-item" style="color:#aaa"><small>格線：1m × 1m（細）/ 10m × 10m（粗）</small></div>');
+  } else {
+    items.push('<div class="leg-item" style="color:#aaa"><small>格線：10m × 10m</small></div>');
+  }
+  el.innerHTML=items.join('');
+}
+
+function getSegLabel(z){
+  var midX=z.ox+z.l/2, midY=z.oy+z.w/2;
+  if(midX>=0&&midX<80)    return '⑥總統府';
+  if(midY>=44)             return '⑤北廣場';
+  if(midX>=138&&midX<179) return '④凱道西段';
+  if(midX>=190&&midX<303) return '②凱道東段';
+  return '—';
+}
+function getSegOrder(z){
+  var midX=z.ox+z.l/2, midY=z.oy+z.w/2;
+  if(midX>=0&&midX<80)    return 6;
+  if(midY>=44)             return 5;
+  if(midX>=138&&midX<179) return 4;
+  if(midX>=190&&midX<303) return 2;
+  return 9;
+}
+function getZoneBounds(z){
+  var midX=z.ox+z.l/2, midY=z.oy+z.w/2;
+  if(midY>=44)             return{xMin:112,xMax:179,yMin:44,yMax:127};
+  if(midX>=0&&midX<80)     return{xMin:0,xMax:80,yMin:0,yMax:80};
+  if(midX>=138&&midX<179)  return{xMin:138,xMax:179,yMin:0,yMax:40};
+  return{xMin:190,xMax:303,yMin:0,yMax:40};
+}
+
+function overlaps(a,b){return a.ox<b.ox+b.l&&a.ox+a.l>b.ox&&a.oy<b.oy+b.w&&a.oy+a.w>b.oy;}
+function countOverlaps(){var n=0; for(var i=0;i<zones.length;i++) for(var j=i+1;j<zones.length;j++) if(overlaps(zones[i],zones[j])) n++; return n;}
+
+function optimize(){
+  var from=zones.map(function(z){return{ox:z.ox,oy:z.oy};});
+  zones.forEach(function(z){z.ox=Math.round(z.ox); z.oy=Math.round(z.oy); var b=getZoneBounds(z); z.ox=Math.max(b.xMin,Math.min(b.xMax-z.l,z.ox)); z.oy=Math.max(b.yMin,Math.min(b.yMax-z.w,z.oy));});
+  for(var it=0;it<300;it++){var mv=false; for(var i=0;i<zones.length;i++){for(var j=i+1;j<zones.length;j++){var a=zones[i],b=zones[j]; if(!overlaps(a,b)) continue; mv=true; var ox2=Math.min(a.ox+a.l,b.ox+b.l)-Math.max(a.ox,b.ox); var oy2=Math.min(a.oy+a.w,b.oy+b.w)-Math.max(a.oy,b.oy); var ba=getZoneBounds(a),bb=getZoneBounds(b); if(ox2<=oy2){var hx=Math.ceil(ox2/2); if(a.ox<=b.ox){a.ox=Math.max(ba.xMin,a.ox-hx);b.ox=Math.min(bb.xMax-b.l,a.ox+a.l);}else{b.ox=Math.max(bb.xMin,b.ox-hx);a.ox=Math.min(ba.xMax-a.l,b.ox+b.l);}}else{var hy=Math.ceil(oy2/2); if(a.oy<=b.oy){a.oy=Math.max(ba.yMin,a.oy-hy);b.oy=Math.min(bb.yMax-b.w,a.oy+a.w);}else{b.oy=Math.max(bb.yMin,b.oy-hy);a.oy=Math.min(ba.yMax-a.w,b.oy+b.w);}}}} if(!mv) break;}
+  var SD=3; zones.forEach(function(z){var xE=[],yE=[],b=getZoneBounds(z); xE.push(b.xMin,b.xMax); yE.push(b.yMin,b.yMax); zones.forEach(function(o){if(o!==z){xE.push(o.ox,o.ox+o.l);yE.push(o.oy,o.oy+o.w);}}); xE.forEach(function(e){if(Math.abs(z.ox-e)<SD&&e+z.l<=b.xMax)z.ox=e;}); xE.forEach(function(e){if(Math.abs(z.ox+z.l-e)<SD&&e-z.l>=b.xMin)z.ox=e-z.l;}); yE.forEach(function(e){if(Math.abs(z.oy-e)<SD&&e+z.w<=b.yMax)z.oy=e;}); yE.forEach(function(e){if(Math.abs(z.oy+z.w-e)<SD&&e-z.w>=b.yMin)z.oy=e-z.w;}); z.ox=Math.max(b.xMin,Math.min(b.xMax-z.l,Math.round(z.ox))); z.oy=Math.max(b.yMin,Math.min(b.yMax-z.w,Math.round(z.oy)));});
+  var to=zones.map(function(z){return{ox:z.ox,oy:z.oy};}); zones.forEach(function(z,i){z.ox=from[i].ox;z.oy=from[i].oy;}); var F=30,st=0;
+  function ease(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+  (function tick(){var t=ease(Math.min(st/F,1)); zones.forEach(function(z,i){z.ox=from[i].ox+(to[i].ox-from[i].ox)*t;z.oy=from[i].oy+(to[i].oy-from[i].oy)*t;}); draw(); st++; if(st<=F) requestAnimationFrame(tick); else{zones.forEach(function(z,i){z.ox=to[i].ox;z.oy=to[i].oy;}); renderTable(); updateInfo(); draw();}})();
+}
+
+function getPos(e){var r=cv.getBoundingClientRect(),src=e.touches?e.touches[0]:e; return{x:src.clientX-r.left,y:src.clientY-r.top};}
+function toReal(px,py){return{rx:(px-MAR.left)/sc,ry:CH-80-(py-MAR.top)/sc};}
+function inR(rx,ry,ox,oy,w,h){return rx>=ox&&rx<=ox+w&&ry>=oy&&ry<=oy+h;}
+function isHnd(rx,ry,ox,oy,w,h,hm){return rx>=ox+w-hm&&rx<=ox+w&&ry>=oy&&ry<=oy+hm;}
+
+cv.addEventListener('mousedown',onDown); cv.addEventListener('touchstart',onDown,{passive:false});
+cv.addEventListener('mousemove',onMove); cv.addEventListener('touchmove',onMove,{passive:false});
+cv.addEventListener('mouseup',onUp); cv.addEventListener('touchend',onUp); document.addEventListener('mouseup',onUp);
+
+function onDown(e){
+  e.preventDefault(); var p=getPos(e),r=toReal(p.x,p.y),hit=hitTest(p.x,p.y);
+  if(hit){
+    selType=hit.type; selIdx=hit.idx;
+    var item=hit.type==='zone'?zones[hit.idx]:objects[hit.idx];
+    var w=hit.type==='zone'?item.l:item.w, wh=hit.type==='zone'?item.h:item.h;
+    if(hit.type==='zone') wh = item.w;
+    var hm=HANDLE_M*(hit.type==='obj'?0.7:1);
+    var mode;
+    if(viewMode==='detail'&&hit.type==='zone'){
+      mode='locked';
+    } else if(viewMode==='detail'&&hit.type==='obj'){
+      if(item.resizable && isHnd(r.rx,r.ry,item.ox,item.oy,w,wh,hm)){
+        mode='resize';
+      } else {
+        mode='move';
+      }
+    } else {
+      mode=isHnd(r.rx,r.ry,item.ox,item.oy,w,wh,hm)?'resize':'move';
+    }
+    if(mode==='locked'){drag=null; cv.style.cursor='not-allowed';}
+    else{drag={type:hit.type,idx:hit.idx,mode:mode,offX:r.rx-item.ox,offY:r.ry-item.oy,startRx:r.rx,startRy:r.ry,startL:w,startW:wh}; cv.style.cursor=mode==='resize'?'nwse-resize':'grabbing';}
+  } else {selIdx=-1; drag=null;}
+  updateInfo(); renderTable(); renderObjTable(); draw();
+}
+
+function onMove(e){
+  e.preventDefault(); var p=getPos(e),r=toReal(p.x,p.y);
+  if(drag){
+    if(drag.type==='zone'&&viewMode!=='detail'){
+      var z=zones[drag.idx];
+      if(drag.mode==='move'){z.ox=Math.max(0,Math.min(CW-z.l,Math.round(r.rx-drag.offX)));z.oy=Math.max(-80,Math.min(CH-80-z.w,Math.round(r.ry-drag.offY)));}
+      else{z.l=Math.max(1,Math.min(Math.round(drag.startL+(r.rx-drag.startRx)),CW-z.ox));z.w=Math.max(1,Math.min(Math.round(drag.startW-(r.ry-drag.startRy)),CH-80-z.oy));}
+    }
+    else if(drag.type==='obj'){
+      var o=objects[drag.idx];
+      if(drag.mode==='move'){
+        o.ox=Math.max(0,Math.min(CW-o.w,Math.round(r.rx-drag.offX)));
+        o.oy=Math.max(-80,Math.min(CH-80-o.h,Math.round(r.ry-drag.offY)));
+      } else if(drag.mode==='resize' && o.resizable){
+        o.w=Math.max(1,Math.min(Math.round(drag.startL+(r.rx-drag.startRx)),CW-o.ox));
+        o.h=Math.max(1,Math.min(Math.round(drag.startW-(r.ry-drag.startRy)),CH-80-o.oy));
+      }
+    }
+    updateInfo(); renderTable(); renderObjTable(); draw();
+  } else {
+    var h2=hitTest(p.x,p.y);
+    if(h2){
+      if(viewMode==='detail' && h2.type==='zone') cv.style.cursor='not-allowed';
+      else cv.style.cursor='grab';
+    } else {
+      if(viewMode==='detail' && showZonesEnabled){
+        var rr=toReal(p.x,p.y);
+        var onZone=zones.some(function(z){return inR(rr.rx,rr.ry,z.ox,z.oy,z.l,z.w);});
+        cv.style.cursor=onZone?'not-allowed':'default';
+      } else {
+        cv.style.cursor='default';
+      }
+    }
+  }
+}
+function onUp(){drag=null; cv.style.cursor='default';}
+
+function addObj(type){
+  var d=OBJ_DEF[type]; 
+  objects.push({
+    type:type,label:d.label,emoji:d.emoji,w:d.w,h:d.h,c:d.c,
+    ox:185,oy:Math.max(-80,38-d.h),
+    angle: 0, rotatable: d.rotatable||false, resizable: d.resizable||false, isTent: d.isTent||false
+  }); 
+  selType='obj'; selIdx=objects.length-1; renderObjTable(); updateInfo(); draw();
+}
+function addZone(){zones.push({name:'新區域',ox:185,oy:10,l:15,w:15,c:COLORS[zones.length%COLORS.length]}); selType='zone'; selIdx=zones.length-1; renderTable(); updateInfo(); draw();}
+
+function saveAsDefault(){
+  var html=document.documentElement.outerHTML;
+  var zonesStr='var DEFAULT_ZONES=[\n'
+    +zones.map(function(z){
+      return '  {name:'+JSON.stringify(z.name)
+        +', ox:'+Math.round(z.ox)+', oy:'+Math.round(z.oy)
+        +', l:'+z.l+', w:'+z.w+', c:'+JSON.stringify(z.c)+'}';
+    }).join(',\n')
+    +'\n];';
+  var objStr='var DEFAULT_OBJECTS=[\n'
+    +objects.map(function(o){
+      return '  {type:'+JSON.stringify(o.type)
+        +', ox:'+Math.round(o.ox)+', oy:'+Math.round(o.oy)
+        +', w:'+o.w+', h:'+o.h+', label:'+JSON.stringify(o.label)+', angle:'+o.angle+'}';
+    }).join(',\n')
+    +'\n];';
+  html=html.replace(
+    /\/\*%%DEFAULT_ZONES_START%%\*\/[\s\S]*?\/\*%%DEFAULT_ZONES_END%%\*\//,
+    '/*%%DEFAULT_ZONES_START%%*/\n'+zonesStr+'\n/*%%DEFAULT_ZONES_END%%*/'
+  );
+  html=html.replace(
+    /\/\*%%DEFAULT_OBJECTS_START%%\*\/[\s\S]*?\/\*%%DEFAULT_OBJECTS_END%%\*\//,
+    '/*%%DEFAULT_OBJECTS_START%%*/\n'+objStr+'\n/*%%DEFAULT_OBJECTS_END%%*/'
+  );
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  var d=new Date().toLocaleDateString('zh-TW').replace(/\//g,'-');
+  a.href=url; a.download='大FUN凱道場佈規劃圖_2026_'+d+'.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  var st=document.getElementById('export-status');
+  st.textContent='★ 已下載含新預設的 HTML 檔案，之後開啟該檔案即為目前配置';
+  st.style.color='#e65100';
+  setTimeout(function(){st.textContent=''; st.style.color='#2e7d32';},5000);
+}
+
+function resetAll(){
+  initData();
+}
+
+function countTentsInZone(z){
+  var count=0;
+  objects.forEach(function(o){
+    var def = OBJ_DEF[o.type];
+    if(!def||!def.isTent) return;
+    var cx2=o.ox+o.w/2, cy2=o.oy+o.h/2;
+    if(cx2>=z.ox&&cx2<=z.ox+z.l&&cy2>=z.oy&&cy2<=z.oy+z.w) count++;
+  });
+  return count;
+}
+function hasTentObjects(){return objects.some(function(o){return o.isTent;});}
+function tentCell(z){
+  var real=countTentsInZone(z);
+  if(hasTentObjects()){
+    return '<span style="font-weight:700;color:'+z.c+'">'+real+'</span>'
+      +'<span style="color:#bbb;font-size:10px;margin-left:3px">(估~'+Math.floor(z.l*z.w/TENT)+')</span>';
+  }
+  return '<span style="font-weight:600;color:'+z.c+'">~'+Math.floor(z.l*z.w/TENT)+'</span>'
+    +'<span style="color:#bbb;font-size:10px;margin-left:2px">估算</span>';
+}
+
+function updateInfo(){
+  var box=document.getElementById('infobox'),ov=countOverlaps();
+  if(!box) return;
+  if(selIdx<0){
+    var totalTents=hasTentObjects()?zones.reduce(function(a,z){return a+countTentsInZone(z);},0):zones.reduce(function(a,z){return a+Math.floor(z.l*z.w/TENT);},0);
+    var tl=hasTentObjects()?'實際':'估算';
+    box.innerHTML=ov>0?'<strong style="color:#c62828">'+ov+' 組重疊</strong> 點「✦ 優化對齊」修正'
+      :'<span style="color:#2e7d32">✓ 無重疊</span> 帳篷總計 <strong>'+totalTents+'</strong> 頂（'+tl+'）'+(viewMode==='detail'?' 細部圖：區域固定，僅可移動小物件':' 點選區域可拖移');
+    return;
+  }
+  if(selType==='zone'&&zones[selIdx]){
+    var z=zones[selIdx],ar=z.l*z.w,tc=hasTentObjects()?countTentsInZone(z):Math.floor(ar/TENT),tl2=hasTentObjects()?'實際':'估算';
+    box.innerHTML='<strong>'+z.name+'</strong> ('+Math.round(CW-z.ox-z.l/2)+','+Math.round(z.oy)+')'
+      +'&nbsp;|&nbsp;'+z.l+'×'+z.w+'m = '+ar+'m²'
+      +'&nbsp;|&nbsp;帳篷 <strong style="color:'+z.c+'">'+tc+'</strong> 頂（'+tl2+'）'
+      +'&nbsp;|&nbsp;'+getSegLabel(z)
+      +(viewMode==='detail'?'&nbsp;|&nbsp;<span style="color:#e65100">細部圖中區域不可移動</span>':'');
+  }
+  else if(selType==='obj'&&objects[selIdx]){
+    var o=objects[selIdx];
+    var rotS = o.rotatable ? '&nbsp;|&nbsp;角度: <strong>' + o.angle + '°</strong> (點選下方按鈕切換)' : '';
+    var sizeS = o.resizable ? ' (可於地圖拉動尺寸)' : '（固定尺寸）';
+    box.innerHTML='<strong>'+o.label+'</strong> ('+Math.round(o.ox)+','+Math.round(o.oy)+')'+'&nbsp;|&nbsp;'+o.w+'×'+o.h+'m' + sizeS + rotS;
+  }
+}
+
+function renderTable(){
+  var th=document.getElementById('th-tent');
+  if(th) th.textContent=hasTentObjects()?'帳篷數（實際）':'帳篷數（估算）';
+  var tb=document.getElementById('tbody'); if(!tb) return; tb.innerHTML='';
+  var indices=zones.map(function(_,i){return i;});
+  indices.sort(function(a,b){var oa=getSegOrder(zones[a]),ob=getSegOrder(zones[b]); return oa!==ob?oa-ob:zones[a].ox-zones[b].ox;});
+  var totalArea=0,totalReal=0,totalEst=0;
+  indices.forEach(function(i){
+    var z=zones[i],sel=(selType==='zone'&&i===selIdx),ar=z.l*z.w;
+    totalArea+=ar; totalReal+=countTentsInZone(z); totalEst+=Math.floor(ar/TENT);
+    var tr=document.createElement('tr'); if(sel)tr.className='hl';
+    tr.innerHTML='<td><span class="sw" style="background:'+z.c+'" onclick="pickC('+i+')"></span></td>'
+      +'<td><input type="text" value="'+z.name.replace(/"/g,'&quot;')+'" oninput="updZ('+i+',\'name\',this.value)"></td>'
+      +'<td><input type="number" value="'+z.l+'" min="1" max="200" step="1" oninput="updZS('+i+',\'l\',+this.value)"></td>'
+      +'<td><input type="number" value="'+z.w+'" min="1" max="110" step="1" oninput="updZS('+i+',\'w\',+this.value)"></td>'
+      +'<td style="color:#6b6960">'+ar+'</td>'
+      +'<td>'+tentCell(z)+'</td>'
+      +'<td style="font-size:11px">'+getSegLabel(z)+'<br>('+Math.round(CW-z.ox-z.l/2)+','+Math.round(z.oy)+')</td>'
+      +'<td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delZ('+i+')">✕</button></td>';
+    tb.appendChild(tr);
+  });
+  var sumTr=document.createElement('tr');
+  sumTr.style.cssText='background:#f5f5f0;font-weight:600;border-top:2px solid #d3d1c7';
+  var sumH=hasTentObjects()?'<span style="color:#1565c0">'+totalReal+'</span><span style="color:#bbb;font-size:10px;margin-left:3px">(估~'+totalEst+')</span>'
+    :'<span style="color:#1565c0">~'+totalEst+'</span><span style="color:#bbb;font-size:10px;margin-left:2px">估算</span>';
+  sumTr.innerHTML='<td></td><td style="font-weight:700">合計</td><td></td><td></td>'
+    +'<td style="color:#333">'+totalArea+' m²</td><td>'+sumH+'</td>'
+    +'<td style="font-size:10px;color:#9a9890">'+(hasTentObjects()?'實際統計':'面積÷9m²')+'</td><td></td>';
+  tb.appendChild(sumTr);
+}
+
+function rotateObj(i) {
+  var o = objects[i];
+  if (!o.rotatable) return;
+  if (o.type === 'royal') {
+    o.angle = (o.angle === 45) ? 0 : 45;
+  } else if (o.type === 'linking') {
+    o.angle = (o.angle === 90) ? 0 : 90;
+  } else {
+    o.angle = (o.angle + 45) % 180;
+  }
+  updateInfo();
+  renderObjTable();
+  draw();
+}
+
+function changeObjLabel(i, val) {
+  objects[i].label = val;
+  updateInfo();
+  draw();
+}
+
+function renderObjTable(){
+  var tb=document.getElementById('otbody'); if(!tb) return; tb.innerHTML='';
+  objects.forEach(function(o,i){
+    var sel=(selType==='obj'&&i===selIdx),tr=document.createElement('tr'); if(sel)tr.className='hl';
+    
+    var nameTd = o.resizable 
+      ? '<input type="text" style="font-weight:600" value="'+o.label.replace(/"/g,'&quot;')+'" oninput="changeObjLabel('+i+',this.value)">'
+      : o.label;
+      
+    var statusTd = '';
+    if(o.rotatable) {
+      statusTd = '<button class="btn" style="padding:2px 5px; background:#e3f2fd" onclick="rotateObj('+i+')">🔄 '+o.angle+'°</button>';
+    } else {
+      statusTd = '<span style="font-size:11px;color:#9a9890">('+Math.round(o.ox)+','+Math.round(o.oy)+')</span>';
+    }
+
+    tr.innerHTML='<td style="font-size:15px;text-align:center">'+o.emoji+'</td><td>'+nameTd+'</td>'
+      +'<td style="color:#6b6960;text-align:center">'+o.w+'</td>'
+      +'<td style="color:#6b6960;text-align:center">'+o.h+'</td>'
+      +'<td style="text-align:center">'+statusTd+'</td>'
+      +'<td><button class="btn" style="padding:2px 6px;font-size:11px" onclick="delO('+i+')">✕</button></td>';
+    tb.appendChild(tr);
+  });
+}
+
+function updZ(i,k,v){zones[i][k]=v; updateInfo(); draw();}
+function updZS(i,k,v){var z=zones[i]; z[k]=Math.max(1,v); if(k==='l')z.ox=Math.min(z.ox,CW-z.l); if(k==='w')z.oy=Math.min(z.oy,CH-80-z.w); renderTable(); updateInfo(); draw();}
+function delZ(i){zones.splice(i,1); if(selType==='zone'&&selIdx===i)selIdx=-1; else if(selType==='zone'&&selIdx>i)selIdx--; renderTable(); updateInfo(); draw();}
+function delO(i){objects.splice(i,1); if(selType==='obj'&&selIdx===i)selIdx=-1; else if(selType==='obj'&&selIdx>i)selIdx--; renderObjTable(); updateInfo(); draw();}
+
+var _pt=-1;
+function pickC(i){_pt=i; var el=document.getElementById('_cp'); if(!el){el=document.createElement('input');el.type='color';el.id='_cp';el.style.cssText='position:absolute;opacity:0;width:0;height:0';document.body.appendChild(el);el.addEventListener('input',function(e){if(_pt>=0){zones[_pt].c=e.target.value;renderTable();draw();}});} el.value=zones[_pt].c; el.click();}
+function capturePNG(){selIdx=-1; draw(); return cv.toDataURL('image/png');}
+
+function zoneTableRows(fw){
+  var hdr=hasTentObjects()?'帳篷數（實際）':'帳篷數（估算）';
+  var s='<table'+(fw?' border="1" style="border-collapse:collapse;width:100%"':'')+'><thead><tr><th>#</th><th>區域名稱</th><th>長(m)</th><th>寬(m)</th><th>面積(m²)</th><th>'+hdr+'</th><th>段別</th></tr></thead><tbody>';
+  var totalArea=0,totalTents=0;
+  zones.forEach(function(z,i){
+    var ar=z.l*z.w,tc=hasTentObjects()?countTentsInZone(z):Math.floor(ar/TENT);
+    totalArea+=ar; totalTents+=tc;
+    s+='<tr><td>'+(i+1)+'</td><td>'+z.name+'</td><td>'+z.l+'</td><td>'+z.w+'</td><td>'+ar+'</td><td>'+tc+'</td><td>'+getSegLabel(z)+'</td></tr>';
+  });
+  s+='<tr style="font-weight:bold;background:#f5f5f0"><td></td><td>合計</td><td></td><td></td><td>'+totalArea+'</td><td>'+totalTents+'</td><td></td></tr>';
+  return s+'</tbody></table>';
+}
+
+function exportPDF(){var img=capturePNG(),d=new Date().toLocaleDateString('zh-TW'),ml=viewMode==='layout'?'配置圖':'細部圖'; var w=window.open('','_blank'); if(!w){document.getElementById('export-status').textContent='⚠ 請允許瀏覽器彈出視窗';return;} w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:serif;margin:12mm}img{width:100%;max-width:1000px}table{width:100%;border-collapse:collapse;font-size:9pt}td,th{border:1px solid #ccc;padding:3pt 5pt}th{background:#f0f0ea}@media print{body{margin:8mm}}</style></head><body><h1>2026 大FUN凱道 — '+ml+'</h1><p>'+d+'</p><img src="'+img+'"><h2>區域清單</h2>'+zoneTableRows(false)+'</body></html>'); w.document.close(); setTimeout(function(){w.print();},700); document.getElementById('export-status').textContent='✓ 已開啟列印視窗';}
+function exportWord(){var img=capturePNG(),d=new Date().toLocaleDateString('zh-TW'),ml=viewMode==='layout'?'配置圖':'細部圖'; var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>body{font-family:"微軟正黑體",sans-serif;margin:2cm}img{width:16cm}table{width:100%;border-collapse:collapse;font-size:10pt}td,th{border:1px solid #ccc;padding:3pt 6pt}th{background:#f0f0ea}</style></head><body><h1>2026 大FUN凱道 — '+ml+'</h1><p>'+d+'</p><p><img src="'+img+'"></p><h2>區域清單</h2>'+zoneTableRows(true)+'</body></html>'; var blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'}); var url=URL.createObjectURL(blob),a=document.createElement('a'); a.href=url; a.download='凱道場布規劃_'+ml+'_'+d.replace(/\//g,'-')+'.doc'; document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url); document.getElementById('export-status').textContent='✓ Word 檔已下載';}
+
+function saveProject(){
+  var data = {
+    version: 2,
+    savedAt: new Date().toISOString(),
+    viewMode: viewMode,
+    zones: zones,
+    objects: objects
+  };
+  var json = JSON.stringify(data, null, 2);
+  var blob = new Blob([json], {type: 'application/json;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '凱道場布規劃_可編輯資料_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  document.getElementById('export-status').textContent = '✓ 已儲存可編輯規劃 JSON';
+}
+
+function loadProject(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var data = JSON.parse(e.target.result);
+      if(!Array.isArray(data.zones)){
+        throw new Error('JSON 格式錯誤：找不到 zones');
+      }
+      zones = data.zones;
+      
+      objects = Array.isArray(data.objects) ? data.objects.map(function(o){
+        var def = OBJ_DEF[o.type] || {label:'未知物件', emoji:'❓', w:3, h:3, c:'#999', isTent:false};
+        return Object.assign({angle: 0}, def, o);
+      }) : [];
+      
+      if(data.viewMode === 'layout' || data.viewMode === 'detail'){
+        setView(data.viewMode);
+      }
+      selIdx = -1;
+      selType = 'zone';
+      renderTable();
+      renderObjTable();
+      updateInfo();
+      draw();
+      document.getElementById('export-status').textContent = '✓ 已載入可編輯規劃 JSON';
+    } catch(err) {
+      document.getElementById('export-status').textContent = '⚠ 載入失敗：' + err.message;
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+initData();
+window.addEventListener('resize',function(){if(document.getElementById('panel-map').classList.contains('active'))draw();});
+</script>
 
 
-    <!-- [標準帳篷 3x3m] -->
-    <g stroke="#475569" stroke-width="0.6" fill="#ffffff">
-
-      <!-- 北廣場飲食區頂部排帳 (12 頂) -->
-      <g transform="translate(284.4, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(271.1, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(257.8, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(244.4, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(231.1, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(217.8, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(204.4, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(191.1, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(177.8, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(151.1, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(164.4, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(137.8, 19.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 北廣場小舞台南側 3x3m 帳篷 (2頂) -->
-      <g transform="translate(22.2, 276.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(22.2, 214.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(22.2, 200.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 北廣場攝影棚 3x3m 帳篷 (1頂) -->
-      <g transform="translate(84.4, 381.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 北廣場小老闆二手市集 3x3m 帳篷 (1頂) -->
-      <g transform="translate(195.4, 291.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 北廣場清潔帳+清潔休息帳 (4頂) -->
-      <g transform="translate(244.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(257.8, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(271.1, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(284.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 凱道西段南側 泡泡老闆帳 (1頂) -->
-      <g transform="translate(138.0, 571.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 凱道西段南側 y=0 帳篷群 (5頂) -->
-      <!-- 自由遊戲基地 戲水區 (5頂) -->
-      <g transform="translate(217.8, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(231.1, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(266.7, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(280.0, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(293.3, 604.8)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 凱道西段北側 y=36 帳篷群 (7頂) -->
-      <!-- 自由遊戲基地 彩繪區 (7頂) -->
-      <g transform="translate(191.1, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(217.8, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(231.1, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(244.4, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(266.7, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(280.0, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(293.3, 428.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-
-      <!-- 氣候變遷小學堂 3x3 2頂 -->
-      <g transform="translate(817.8, 561.9)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <g transform="translate(817.8, 547.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
-      <!-- 媒體帳 -->
-      <g transform="translate(884.5, 456.2)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/><text x="6.7" y="7.1" font-size="5" fill="#000000" font-weight="normal" stroke="none" text-anchor="middle" dominant-baseline="central">媒體帳</text></g>
-    </g>
-
-    <!-- [需要圍布標註] -->
-    <g stroke="#f54927" stroke-width="2" fill="none">
-      <!-- 宮廷帳 6x6 圍布 -->
-      <!-- 北廣場 攝影棚 1頂4面-->
-      <g transform="translate(53.3, 381.0)"><rect width="26.7" height="28.6"/> <text x="12" y="34.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">四面需要圍布</text></g>
-
-      <!-- 北廣場 台電+電器維修宮廷帳 3頂單面-->
-      <g transform="translate(266.7, 314.3)"><line x1="0" y1="0" x2="0" y2="28.6"/></g>
-      <g transform="translate(266.7, 285.7)"><line x1="0" y1="0" x2="0" y2="28.6"/></g>
-      <g transform="translate(266.7, 247.6)"><line x1="0" y1="0" x2="0" y2="28.6"/></g>
-      <text x="266.7" y="247.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠市場S那面需要圍布</text>
-
-      <!-- 兒本交通區 6x6 1頂單面 -->
-      <g transform="translate(751.1, 428.6)"><line x1="0" y1="0" x2="26.7" y2="0"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠人行道那面需要圍布</text></g>
-
-      <!-- 氣候變遷小學堂 6x6 4頂單面 -->
-      <g transform="translate(728.9, 547.6)"><line x1="0" y1="0" x2="0" y2="57.2"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠外側那面需要圍布</text></g>
-      <g transform="translate(799.8, 547.6)"><line x1="0" y1="0" x2="0" y2="57.2"/><text x="10.7" y="-2.1" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">靠外側那面需要圍布</text></g>
 
 
-      <!-- 標準帳 3x3 圍布 -->
-      <!-- 北廣場飲食區工作帳 3x3 2頂-->
-      <g transform="translate(271.1, 19.0)"><rect width="26.6" height="14.3"/></g>
-      <text x="278" y="40" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">工作帳，四面需要圍布</text>
-
-      <!-- 小舞台化妝帳 3x3 1頂-->
-      <g transform="translate(22.2, 200.2)"><rect width="13.3" height="28.6"/></g>
-      <text x="22.2" y="198.0" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">化妝帳，四面需要圍布</text>
-
-      <!-- 北廣場 攝影棚 1頂4面-->
-      <g transform="translate(84.4, 381.0)"><rect width="13.3" height="14.3"/><text x="16" y="20.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">四面需要圍布</text></g>
-
-      <!-- 北廣場清潔帳 3x3 2頂-->
-      <g transform="translate(271.1, 386.0)"><rect width="26.6" height="14.3"/></g>
-      <text x="278" y="384" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">清潔帳，四面需要圍布</text>
-
-      <!-- 彩繪區 工作帳 3x3 1+3頂-->
-      <g transform="translate(191.1, 428.6)"><line x1="0" y1="0" x2="13.3" y2="0"/><line x1="0" y1="0" x2="" y2="14.3"/><line x1="13.3" y1="0" x2="13.3" y2="14.3"/></g>
-      <text x="191.1" y="426.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">缺口向下圍成ㄇ字型</text>
-      <g transform="translate(266.7, 428.6)"><line x1="0" y1="0" x2="39.9" y2="0"/><line x1="0" y1="0" x2="" y2="14.3"/><line x1="39.9" y1="0" x2="39.9" y2="14.3"/></g>
-      <text x="284.7" y="426.6" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">缺口向下圍成ㄇ字型</text>
-
-      <!-- 戲水區 更衣帳 3x3 3頂-->
-      <g transform="translate(266.7, 604.8)"><rect width="13.3" height="14.3"/><line x1="6.7" y1="0" x2="6.7" y2="14.3"/></g>
-      <g transform="translate(280.0, 604.8)"><rect width="13.3" height="14.3"/><line x1="6.7" y1="0" x2="6.7" y2="14.3"/></g>
-      <g transform="translate(293.3, 604.8)"><rect width="13.3" height="14.3"/><line x1="6.7" y1="0" x2="6.7" y2="14.3"/></g>
-      <text x="280" y="624.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">更衣帳一頂分兩間，共三頂分六間</text>
-      <text x="280" y="630.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">都要全圍，一頂有兩個開口</text>
-    </g>
-
- <!-- [集章帳] -->
+<span id="PING_CONTENT_DLS_POPUP" style="display: none;"></span><div style="background-color: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; bottom: 15px; display: block; margin: 0px; opacity: 1; padding: 0px; position: fixed; right: 15px; z-index: 2147483647;"></div>
 
 
-    <!-- [鋼構桁架廣播塔 (5座)] -->
-    <g fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2">
-      <g transform="translate(288.9, 162.0)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
-      <g transform="translate(111.1, 428.6)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
-      <g transform="translate(364.4, 619.0)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
-      <g transform="translate(840.0, 609.5)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
-      <g transform="translate(546.7, 428.6)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
-    </g>
 
-    <!-- [服務台 (3座，含右移 4m)] -->
-    <g transform="translate(520.0, 428.6)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i2</text></g>
-    <g transform="translate(302.2, 171.4)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i3</text></g>
-    <!-- [右移4m: X: 884.5] -->
-    <g transform="translate(884.5, 470.8)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i1</text></g>
 
-    <!-- [救護站 (2座)] -->
-    <g transform="translate(533.3, 428.6)"><rect width="13.3" height="14.3" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/><path d="M 6.7 3 L 6.7 11 M 3 7.1 L 10.3 7.1" stroke="#dc2626" stroke-width="1.5"/></g>
-    <g transform="translate(288.9, 171.4)"><rect width="13.3" height="14.3" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/><path d="M 6.7 3 L 6.7 11 M 3 7.1 L 10.3 7.1" stroke="#dc2626" stroke-width="1.5"/></g>
 
-    <!-- [餐車] -->
-    <g transform="translate(111.1, 19.0)"><rect width="17.8" height="14.3" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/><rect x="2" y="2" width="13.8" height="3" fill="#fde68a" stroke="#b45309" stroke-width="0.5"/><text x="8.9" y="9.5" font-size="6" fill="#78350f" font-weight="bold" text-anchor="middle" dominant-baseline="central">餐車</text></g>
 
-    <!-- [水車 / 哺乳車 / 工程車] -->
-    <g transform="translate(173.3, 604.8)"><rect width="35.6" height="14.3" fill="#f8fafc" stroke="#0284c7" stroke-width="1"/><circle cx="6" cy="7.1" r="3" fill="#e0f2fe"/><text x="20" y="7.1" font-size="7" fill="#0369a1" text-anchor="middle" dominant-baseline="central">水車 8×3m</text></g>
-    <g transform="translate(297.8, 61.9)"><rect width="13.3" height="19.0" fill="#fdf2f8" stroke="#db2777" stroke-width="1"/><text x="6.7" y="9.5" font-size="6" fill="#be185d" text-anchor="middle" dominant-baseline="central">哺乳車</text></g>
-    <g transform="translate(840.0, 476.2)"><g transform="rotate(-45 11.1 7.1)"><rect width="22.2" height="14.3" fill="#f8fafc" stroke="#1d4ed8" stroke-width="1"/><circle cx="4" cy="7.1" r="2.5" fill="#dbeafe"/><text x="10.7" y="7.1" font-size="7" fill="#0369a1" text-anchor="middle" dominant-baseline="central">硬派卡</text></g></g>
 
-    <!-- [流動廁所與無障礙廁所] -->
-    <g stroke="#0e7490" stroke-width="0.8" fill="#ecfeff">
-      <g transform="translate(355.6, 252.4)"><rect width="8.9" height="9.5"/><text x="4.4" y="4.8" font-size="6" fill="#0891b2" text-anchor="middle" dominant-baseline="central">♿</text></g>
-      <g transform="translate(351.1, 281.0)"><rect width="13.3" height="38.1"/><text x="6.7" y="20" font-size="8" fill="#0891b2" text-anchor="middle">🚻</text></g>
-      <g transform="translate(355.6, 347.6)"><rect width="8.9" height="9.5"/><text x="4.4" y="4.8" font-size="6" fill="#0891b2" text-anchor="middle" dominant-baseline="central">♿</text></g>
 
-      <g transform="translate(355.6, 695.2)"><rect width="8.9" height="9.5"/><text x="4.4" y="4.8" font-size="6" fill="#0891b2" text-anchor="middle" dominant-baseline="central">♿</text></g>
-      <g transform="translate(355.6, 709.5)"><rect width="8.9" height="9.5"/><text x="4.4" y="4.8" font-size="6" fill="#0891b2" text-anchor="middle" dominant-baseline="central">♿</text></g>
-      <g transform="translate(351.1, 728.6)"><rect width="13.3" height="38.1"/><text x="6.7" y="20" font-size="8" fill="#0891b2" text-anchor="middle">🚻</text></g>
 
-      <!-- 洗手區 (175, 123) -->
-      <g transform="translate(297.8, 19.0)"><rect width="13.3" height="14.3" fill="#cffafe"/><text x="6.7" y="7.1" font-size="5.5" fill="#0e7490" font-weight="normal" stroke="none" text-anchor="middle" dominant-baseline="central">洗手區</text></g>
-    </g>
 
-    <!-- [發電機 (3座 2x2m)] -->
-    <g transform="translate(302.2, 85.7)"><rect width="8.9" height="9.5" fill="#fefce8" stroke="#ca8a04" stroke-width="0.8"/><rect x="1.5" y="1.5" width="5.9" height="6.5" fill="none" stroke="#eab308" stroke-width="0.5"/><text x="4.4" y="4.8" font-size="4.5" fill="#ca8a04" font-weight="bold" text-anchor="middle" dominant-baseline="central">發</text></g>
-    <g transform="translate(400.0, 619.0)"><rect width="8.9" height="9.5" fill="#fefce8" stroke="#ca8a04" stroke-width="0.8"/><rect x="1.5" y="1.5" width="5.9" height="6.5" fill="none" stroke="#eab308" stroke-width="0.5"/><text x="4.4" y="4.8" font-size="4.5" fill="#ca8a04" font-weight="bold" text-anchor="middle" dominant-baseline="central">發</text></g>
-    <g transform="translate(373.3, 400.0)"><rect width="8.9" height="9.5" fill="#fefce8" stroke="#ca8a04" stroke-width="0.8"/><rect x="1.5" y="1.5" width="5.9" height="6.5" fill="none" stroke="#eab308" stroke-width="0.5"/><text x="4.4" y="4.8" font-size="4.5" fill="#ca8a04" font-weight="bold" text-anchor="middle" dominant-baseline="central">發</text></g>
-
-    <!-- [垃圾桶 (8座 1x1m)] -->
-	<use href="#trash-icon" x="231.1" y="395.2" />
-  	<use href="#trash-icon" x="253.3" y="609.5" />
-  	<use href="#trash-icon" x="258.2" y="429.1" />
-	<use href="#trash-icon" x="302.2" y="47.6" />
-  	<use href="#trash-icon" x="506.7" y="429.1" />
-  	<use href="#trash-icon" x="546.7" y="609.5" />
-  	<use href="#trash-icon" x="715.6" y="609.5" />
-  	<use href="#trash-icon" x="742.4" y="429.1" />
- 
-    <!-- [結構桁架] -->
-    <g transform="translate(391.1, 547.6)">
-      <rect width="13.3" height="42.9" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.2"/>
-      <path d="M 0 0 L 13.3 14.3 L 0 28.6 L 13.3 42.9 M 13.3 0 L 0 14.3 L 13.3 28.6 L 0 42.9" stroke="#6366f1" stroke-width="0.6" fill="none"/>
-      <text x="6.7" y="21.4" font-size="7" fill="#312e81" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 6.7 21.4)">籃球架Truss</text>
-    </g>
-
-    <!-- [入口意象區 X: 866.7)] -->
-    <rect x="866.7" y="428.6" width="44.4" height="190.4" fill="rgba(226, 75, 74, 0.08)" stroke="#e11d48" stroke-width="1" stroke-dasharray="5,3"/>
-    <text x="870" y="602" font-size="8" fill="#be123c" font-weight="bold">入口意象區</text>
-    <text x="872" y="612" font-size="7" fill="#be123c" font-weight="bold"> (10×40m)</text>
-
-    <!-- [實體城門與設施 (右移 4m: X: 884.5)] -->
-    <g transform="translate(884.5, 485.7)">
-      <rect width="26.7" height="76.2" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
-      <path d="M 0 0 L 26.7 38.1 L 0 76.2 M 26.7 0 L 0 38.1 L 26.7 76.2" stroke="#8b5cf6" stroke-width="0.8" fill="none"/>
-      <text x="13.3" y="38.1" font-size="8" fill="#5b21b6" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 13.3 38.1)">入口城門 (6×16m)</text>
-    </g>
-
-    <g transform="translate(884.5, 437.0)">
-      <rect width="8.9" height="19.0" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
-      <text x="4.4" y="9.5" font-size="5" fill="#5b21b6" font-weight="bold" text-anchor="middle" dominant-baseline="central">採訪背板</text>
-    </g>
-  </g>
-
-  <!-- 5. 尺寸標註界線 -->
-  <g id="cad-dimensions">
-    <line x1="133.3" y1="418.6" x2="315.6" y2="418.6" stroke="#475569" stroke-width="0.8" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
-    <text x="224.4" y="416.6" font-size="8" fill="#334155" font-weight="normal" text-anchor="middle">凱道西段 41.00 m</text>
-
-    <line x1="364.4" y1="418.6" x2="866.7" y2="418.6" stroke="#475569" stroke-width="0.8" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
-    <text x="615.6" y="416.6" font-size="8" fill="#334155" font-weight="normal" text-anchor="middle">凱道東段 113.00 m</text>
-
-    <line x1="315.6" y1="418.6" x2="364.4" y2="418.6" stroke="#475569" stroke-width="0.8" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
-    <text x="340.0" y="416.6" font-size="8" fill="#334155" font-weight="normal" text-anchor="middle">11.00 m</text>
-
-    <!-- 路幅總寬標註 -->
-    <line x1="1005.0" y1="428.6" x2="1005.0" y2="619.0" stroke="#475569" stroke-width="0.8" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
-    <text x="980.0" y="543.8" font-size="8" fill="#334155" font-weight="normal" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 980.0 515)">路幅總寬 40.00 m</text>
-  </g>
-
-  <!-- 6. 圖例說明框 (LEGEND PANEL) -->
-  <g id="legend-panel">
-    <rect x="620" y="20" width="370" height="180" rx="4" fill="#ffffff" fill-opacity="0.96" stroke="#0f172a" stroke-width="1.2"/>
-    <rect x="620" y="20" width="370" height="24" rx="4" fill="#f1f5f9" stroke="#0f172a" stroke-width="1.2"/>
-    <text x="630" y="36" font-size="11" fill="#0f172a" font-weight="bold">圖例說明 (LEGEND)</text>
-    <text x="980" y="36" font-size="9" fill="#64748b" text-anchor="end">格線：細 1m / 粗 10m</text>
-
-    <!-- 欄位 1：帳篷類設施 -->
-    <g transform="translate(630, 55)">
-      <!-- 10米帝王帳 -->
-      <rect x="0" y="0" width="14" height="14" fill="#fef3c7" stroke="#78350f" stroke-width="1"/>
-      <line x1="0" y1="0" x2="14" y2="14" stroke="#b45309" stroke-width="0.6"/><line x1="0" y1="14" x2="14" y2="0" stroke="#b45309" stroke-width="0.6"/>
-      <text x="20" y="11" font-size="9" fill="#334155">10米帝王帳 (10×10m)</text>
-
-      <!-- 宮廷帳 -->
-      <rect x="0" y="24" width="14" height="14" fill="#f8fafc" stroke="#007500" stroke-width="0.8"/>
-      <line x1="0" y1="24" x2="14" y2="38" stroke="#94a3b8" stroke-width="0.5"/><line x1="0" y1="38" x2="14" y2="24" stroke="#94a3b8" stroke-width="0.5"/>
-      <text x="20" y="35" font-size="9" fill="#334155">宮廷帳 (6×6m)</text>
-
-      <!-- 接龍帳 -->
-      <rect x="0" y="48" width="42" height="14" fill="#f1f5f9" stroke="#334155" stroke-width="0.8"/>
-      <text x="50" y="59" font-size="9" fill="#334155">接龍帳 (9×3m 方塊)</text>
-
-      <!-- 標準帳 -->
-      <rect x="0" y="72" width="14" height="14" fill="#ffffff" stroke="#475569" stroke-width="0.6"/>
-      <line x1="0" y1="72" x2="14" y2="86" stroke="#475569" stroke-width="0.5"/><line x1="0" y1="86" x2="14" y2="72" stroke="#475569" stroke-width="0.5"/>
-      <text x="20" y="83" font-size="9" fill="#334155">標準帳 (3×3m)</text>
-
-      <!-- 鋼構廣播塔 -->
-       <g transform="translate(0, 96)"><rect width="26.7" height="8.9" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
-      <text x="30" y="107" font-size="9" fill="#334155">鋼構廣播塔 (6×2m)</text>
-
-      <!-- 桁架結構 / 門樓 / 主視覺背板 -->
-      <rect x="0" y="120" width="14" height="14" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
-      <path d="M 0 120 L 14 134 M 14 120 L 0 134" stroke="#8b5cf6" stroke-width="0.6"/>
-      <text x="20" y="131" font-size="9" fill="#334155">Truss / layher/ 城門 / 背板</text>
-    </g>
-
-    <!-- 欄位 2：服務與支援設施 -->
-    <g transform="translate(795, 55)">
-      <!-- 服務台 -->
-      <rect x="0" y="0" width="14" height="14" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
-      <text x="7" y="10" font-size="7" fill="#0369a1" font-weight="bold" text-anchor="middle">i</text>
-      <text x="20" y="11" font-size="9" fill="#334155">服務台 (標準帳 3×3m)</text>
-
-      <!-- 救護站 -->
-      <rect x="0" y="24" width="14" height="14" fill="#fee2e2" stroke="#dc2626" stroke-width="1"/>
-      <path d="M 7 27 L 7 35 M 3 31 L 11 31" stroke="#dc2626" stroke-width="1.2"/>
-      <text x="20" y="35" font-size="9" fill="#334155">救護站 (標準帳 3×3m)</text>
-
-      <!-- 流動廁所車 -->
-      <rect x="0" y="48" width="42" height="14" fill="#ecfeff" stroke="#0e7490" stroke-width="0.8"/>
-      <text x="20" y="58" font-size="8" fill="#0891b2" text-anchor="middle">🚻</text>
-      <text x="50" y="59" font-size="9" fill="#334155">流動廁所車 (3×8m)</text>
-
-      <!-- 無障礙廁所 -->
-      <rect x="0" y="72" width="14" height="14" fill="#ecfeff" stroke="#0e7490" stroke-width="0.8"/>
-      <text x="7" y="82" font-size="8" fill="#0891b2" text-anchor="middle">♿</text>
-      <text x="20" y="83" font-size="9" fill="#334155">無障礙廁所 (2×2m)</text>
-
-      <!-- 發電機 -->
-      <rect x="0" y="96" width="8" height="8" fill="#fefce8" stroke="#ca8a04" stroke-width="0.8"/>
-      <text x="1" y="102" font-size="6" fill="#ca8a04">發</text>
-      <text x="20" y="107" font-size="9" fill="#334155">發電機</text>
-
-      <!-- 垃圾桶 -->
-      <!-- rect x="0" y="120" width="4.4" height="4.8" fill="#fefce8" stroke="#ca8a04" stroke-width="0.8"/-->
-      <use href="#trash-icon" x="0" y="120" />
-      <text x="20" y="131" font-size="9" fill="#334155">垃圾桶</text>
-
-    </g>
-  </g>
-</svg>
+<span id="PING_CONTENT_DLS_POPUP" style="display: none;"></span><div style="background-color: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; bottom: 15px; display: block; margin: 0px; opacity: 1; padding: 0px; position: fixed; right: 15px; z-index: 2147483647;"></div></body></html>
