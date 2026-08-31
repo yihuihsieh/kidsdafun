@@ -164,6 +164,9 @@
       <g transform="translate(213.3, 76.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(213.3, 47.6)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
 
+    <!-- 北廣場服務台 - 宮廷帳 -->
+    <g transform="translate(262.0, 143.2)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/><text x="13.3" y="6" font-size="8" fill="#0369a1" font-weight="normal" text-anchor="middle" dominant-baseline="central">i3</text></g>
+
       <!-- 凱道西段宮廷帳 -->
       <g transform="translate(204.4, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
       <g transform="translate(257.8, 461.9)"><rect width="26.7" height="28.6"/><line x1="0" y1="0" x2="26.7" y2="28.6"/><line x1="0" y1="28.6" x2="26.7" y2="0"/></g>
@@ -242,7 +245,7 @@
       <g transform="translate(284.4, 385.7)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
 
       <!-- 凱道西段南側 泡泡老闆帳 (1頂) -->
-      <g transform="translate(142.2, 581.0)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
+      <g transform="translate(138.0, 571.6)"><rect width="13.3" height="14.3"/><line x1="0" y1="0" x2="13.3" y2="14.3"/><line x1="0" y1="14.3" x2="13.3" y2="0"/></g>
 
       <!-- 凱道西段南側 y=0 帳篷群 (5頂) -->
       <!-- 自由遊戲基地 戲水區 (5頂) -->
@@ -319,9 +322,6 @@
       <text x="280" y="630.8" font-size="6" fill="#f54927" stroke="none" font-weight="normal" text-anchor="middle">都要全圍，一頂有兩個開口</text>
     </g>
 
- <!-- [集章帳] -->
-
-
     <!-- [鋼構桁架廣播塔 (5座)] -->
     <g fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2">
       <g transform="translate(288.9, 162.0)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
@@ -331,15 +331,14 @@
       <g transform="translate(546.7, 428.6)"><rect width="26.7" height="8.9"/><line x1="0" y1="0" x2="26.7" y2="8.9" stroke="#475569" stroke-width="1.2"/><line x1="0" y1="8.9" x2="26.7" y2="0" stroke="#475569" stroke-width="1.2"/><rect x="5.3" y="2.1" width="16.0" height="4.4" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/><circle cx="13.3" cy="4.3" r="2" fill="#0284c7" stroke="#0f172a" stroke-width="0.8"/></g>
     </g>
 
-    <!-- [服務台 (3座，含右移 4m)] -->
+    <!-- [服務台 (2座，含右移 4m)] -->
     <g transform="translate(520.0, 428.6)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i2</text></g>
-    <g transform="translate(302.2, 171.4)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i3</text></g>
     <!-- [右移4m: X: 884.5] -->
     <g transform="translate(884.5, 470.8)"><rect width="13.3" height="14.3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/><text x="6.7" y="7.1" font-size="6" fill="#0369a1" font-weight="bold" text-anchor="middle" dominant-baseline="central">i1</text></g>
 
     <!-- [救護站 (2座)] -->
     <g transform="translate(533.3, 428.6)"><rect width="13.3" height="14.3" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/><path d="M 6.7 3 L 6.7 11 M 3 7.1 L 10.3 7.1" stroke="#dc2626" stroke-width="1.5"/></g>
-    <g transform="translate(288.9, 171.4)"><rect width="13.3" height="14.3" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/><path d="M 6.7 3 L 6.7 11 M 3 7.1 L 10.3 7.1" stroke="#dc2626" stroke-width="1.5"/></g>
+    <g transform="translate(262.0, 128.9)"><rect width="13.3" height="14.3" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/><path d="M 6.7 3 L 6.7 11 M 3 7.1 L 10.3 7.1" stroke="#dc2626" stroke-width="1.5"/></g>
 
     <!-- [餐車] -->
     <g transform="translate(111.1, 19.0)"><rect width="17.8" height="14.3" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/><rect x="2" y="2" width="13.8" height="3" fill="#fde68a" stroke="#b45309" stroke-width="0.5"/><text x="8.9" y="9.5" font-size="6" fill="#78350f" font-weight="bold" text-anchor="middle" dominant-baseline="central">餐車</text></g>
