@@ -359,6 +359,7 @@
       <g transform="translate(351.1, 728.6)"><rect width="13.3" height="38.1"/><text x="6.7" y="20" font-size="8" fill="#0891b2" text-anchor="middle">🚻</text></g>
 
     <!-- 洗手區已移除 (175, 123) -->
+    </g>
 
     <!-- [發電機 (3座 2x2m)] -->
     <g transform="translate(302.2, 85.7)"><rect width="8.9" height="9.5" fill="#fefce8" stroke="#ca8a04" stroke-width="0.8"/><rect x="1.5" y="1.5" width="5.9" height="6.5" fill="none" stroke="#eab308" stroke-width="0.5"/><text x="4.4" y="4.8" font-size="4.5" fill="#ca8a04" font-weight="bold" text-anchor="middle" dominant-baseline="central">發</text></g>
